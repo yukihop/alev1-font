@@ -7,6 +7,7 @@ font:
   unitsPerEm: 1000
   ascender: 880
   descender: -120
+  glyphScale: 0.95
   advanceWidth: 1000
   spaceWidth: 320
   inputGlyphWidth: 420

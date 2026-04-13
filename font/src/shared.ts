@@ -373,12 +373,17 @@ function transformContoursToFontSpace(contours, model, viewBox) {
   const targetTop = model.font.ascender;
   const targetBottom = model.font.descender;
   const targetHeight = targetTop - targetBottom;
+  const glyphScale = Number(model.font.glyphScale ?? 1);
+  const scaledWidth = targetWidth * glyphScale;
+  const scaledHeight = targetHeight * glyphScale;
+  const offsetX = (targetWidth - scaledWidth) / 2;
+  const offsetY = (targetHeight - scaledHeight) / 2;
 
   return contours.map((contour) =>
     contour.map((point) => ({
       ...point,
-      x: ((point.x - viewBox.minX) / viewBox.width) * targetWidth,
-      y: targetTop - ((point.y - viewBox.minY) / viewBox.height) * targetHeight,
+      x: offsetX + ((point.x - viewBox.minX) / viewBox.width) * scaledWidth,
+      y: targetTop - offsetY - ((point.y - viewBox.minY) / viewBox.height) * scaledHeight,
     })),
   );
 }
