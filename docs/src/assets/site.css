@@ -507,70 +507,6 @@ html[data-theme="light"] {
     resize: vertical;
   }
 
-  .simple-editor-popover {
-    position: absolute;
-    inset: auto auto auto 0;
-    margin: 0;
-    padding: 0;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: rgba(7, 12, 24, 0.94);
-    color: var(--text);
-    box-shadow: var(--shadow);
-    min-width: 13rem;
-    max-width: min(18rem, calc(100% - 24px));
-
-    &::backdrop {
-      background: transparent;
-    }
-  }
-
-  .simple-editor-suggestions {
-    display: grid;
-    gap: 2px;
-    padding: 6px;
-  }
-
-  .simple-editor-suggestion {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 10px;
-    border: 0;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--text);
-    padding: 0.55rem 0.7rem;
-    text-align: left;
-    cursor: pointer;
-
-    &:hover,
-    &:focus-visible,
-    &.is-active {
-      background: var(--accent-soft);
-    }
-  }
-
-  .simple-editor-suggestion-word {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .simple-editor-suggestion-glyph {
-    font-family: var(--font-alev), var(--font-ui) !important;
-    font-feature-settings:
-      "liga" 1,
-      "clig" 1,
-      "calt" 1;
-    font-variant-ligatures: common-ligatures;
-    font-synthesis: none;
-    letter-spacing: 0;
-    white-space: nowrap;
-    color: var(--text-muted);
-  }
-
   .simple-editor-controls {
     display: grid;
     gap: 14px 16px;
@@ -702,15 +638,80 @@ html[data-theme="light"] {
   }
 }
 
+/* Keyword suggestions popover — shared between SimpleEditor and MarkdownEditor */
+.simple-editor-popover {
+  position: fixed;
+  inset: auto auto auto 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(7, 12, 24, 0.94);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  min-width: 13rem;
+  max-width: min(18rem, calc(100% - 24px));
+
+  &::backdrop {
+    background: transparent;
+  }
+}
+
+.simple-editor-suggestions {
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+}
+
+.simple-editor-suggestion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible,
+  &.is-active {
+    background: var(--accent-soft);
+  }
+}
+
+.simple-editor-suggestion-word {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.simple-editor-suggestion-glyph {
+  font-family: var(--font-alev), var(--font-ui) !important;
+  font-feature-settings:
+    "liga" 1,
+    "clig" 1,
+    "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  font-synthesis: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+
 html[data-theme="light"] {
   .simple-editor {
     .simple-editor-input {
       background: rgba(255, 255, 255, 0.86);
     }
+  }
 
-    .simple-editor-popover {
-      background: rgba(255, 255, 255, 0.96);
-    }
+  .simple-editor-popover {
+    background: rgba(255, 255, 255, 0.96);
   }
 }
 
@@ -974,10 +975,10 @@ html[data-theme="light"] .keyword-pill {
       grid-template-columns: repeat(6, minmax(0, 1fr));
       justify-items: center;
     }
+  }
 
-    .simple-editor-popover {
-      max-width: calc(100% - 24px);
-    }
+  .simple-editor-popover {
+    max-width: calc(100% - 24px);
   }
 }
 
