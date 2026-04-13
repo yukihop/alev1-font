@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 
-import { METADATA_PATH, PREVIEW_PATH, isMain, loadGlyphModel, writeText } from './shared.mjs';
+import { METADATA_PATH, PREVIEW_PATH, isMain, loadGlyphModel, writeText } from './shared.ts';
 
 export async function buildPreview() {
   const model = await loadGlyphModel();

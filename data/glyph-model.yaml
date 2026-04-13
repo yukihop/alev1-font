@@ -2,6 +2,7 @@ version: 1
 font:
   familyName: "Alev1"
   styleName: "Regular"
+  designer: "naruto"
   outputFileBase: "alev1"
   unitsPerEm: 1000
   ascender: 880

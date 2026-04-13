@@ -1,0 +1,49 @@
+name: Release Font
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release-font:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build font
+        run: pnpm --filter font build
+
+      - name: Package release zip
+        run: node scripts/package-font-release.mjs "${GITHUB_REF_NAME}"
+
+      - name: Create or update GitHub release
+        run: |
+          asset_path="release/alev1-${GITHUB_REF_NAME}.zip"
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" "$asset_path" --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" "$asset_path" --title "${GITHUB_REF_NAME}" --notes "See the documentation site for the changelog."
+          fi

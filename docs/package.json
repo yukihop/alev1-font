@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:client": "node ./scripts/build-client.mjs",
-    "dev": "node ./node_modules/@11ty/eleventy/cmd.cjs --serve",
-    "build": "node ./node_modules/@11ty/eleventy/cmd.cjs"
+    "build:client": "node ./scripts/build-client.ts",
+    "dev": "node ./node_modules/@11ty/eleventy/cmd.cjs --config=eleventy.config.ts --serve",
+    "build": "node ./node_modules/@11ty/eleventy/cmd.cjs --config=eleventy.config.ts"
   },
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",

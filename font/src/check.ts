@@ -1,6 +1,6 @@
 import { access } from 'node:fs/promises';
 
-import { DONOR_FONT_PATH, DONOR_LICENSE_PATH, isMain, loadGlyphModel, loadLexicon, loadSvgParts } from './shared.mjs';
+import { DONOR_FONT_PATH, DONOR_LICENSE_PATH, isMain, loadGlyphModel, loadLexicon, loadSvgParts } from './shared.ts';
 
 export async function runCheck() {
   const model = await loadGlyphModel();

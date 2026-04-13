@@ -5,7 +5,7 @@ import {
   isMain,
   loadLexicon,
   writeText,
-} from './shared.mjs';
+} from './shared.ts';
 
 export async function generateFeatures() {
   const lexicon = await loadLexicon();

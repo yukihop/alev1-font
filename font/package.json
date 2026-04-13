@@ -3,14 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node src/build.mjs",
-    "build:glyphs": "node src/generate-glyphs.mjs",
-    "build:features": "node src/generate-features.mjs",
-    "build:metadata": "node src/build-metadata.mjs",
-    "build:preview": "node src/build-preview.mjs",
-    "build:font": "node src/build-font.mjs",
-    "check": "node src/check.mjs",
-    "clean": "node src/clean.mjs"
+    "build": "node src/build.ts",
+    "build:glyphs": "node src/generate-glyphs.ts",
+    "build:features": "node src/generate-features.ts",
+    "build:metadata": "node src/build-metadata.ts",
+    "build:preview": "node src/build-preview.ts",
+    "build:font": "node src/build-font.ts",
+    "check": "node src/check.ts",
+    "clean": "node src/clean.ts"
   },
   "dependencies": {
     "yaml": "^2.8.1"

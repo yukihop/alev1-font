@@ -1,5 +1,5 @@
 ---
-title: インストール
+title: インストールしての利用
 layout: layouts/base.njk
 navOrder: 5
 tags:
@@ -8,7 +8,38 @@ tags:
 
 ## ダウンロードとインストール
 
-TTFファイル（デスクトップ用）、WOFFファイル（ブラウザ用）ともGitHubからダウンロード可能です。
+以下のような場合には、フォントファイルを直接ダウンロードして利用して下さい。
+
+- デスクトップアプリ（WordやPowerPointやメモ帳など）でALEV文字を使いたい
+- 自分のウェブサイトでALEV文字を使いたい
+
+TTFファイル（デスクトップ用）、WOFFファイル（ブラウザ用）とも、GitHubからダウンロード可能です。
+
+<div className="links">
+
+- [リリース](https://github.com/yukihop/alev1-font/releases)
+
+</div>
+
+TTFファイルは、右クリックするなどしてOSにインストールしてください。
+
+WOFFファイルは以下のようにして利用します。
+
+```css
+@font-face {
+  font-family: "Alev1";
+  src: url("/path/to/alev1.woff2") format("woff2");
+  font-display: swap;
+}
+
+.alev {
+  font-family: "Alev1", monospace;
+}
+```
+
+```html
+<span class="alev">:straylight:</span>
+```
 
 ## 使い方（デスクトップ・ブラウザ共通）
 

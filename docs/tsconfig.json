@@ -13,5 +13,5 @@
     "resolveJsonModule": true,
     "types": ["node", "react", "react-dom"]
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "./eleventy.config.mjs"]
+  "include": ["./**/*.ts", "./**/*.tsx", "./eleventy.config.ts"]
 }

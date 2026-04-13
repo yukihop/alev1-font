@@ -10,7 +10,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import remarkGfm from 'remark-gfm';
 import * as runtime from 'react/jsx-runtime';
 
-import { buildAllAssets } from './scripts/build-client.mjs';
+import { buildAllAssets } from './scripts/build-client.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

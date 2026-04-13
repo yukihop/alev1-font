@@ -13,7 +13,7 @@ import {
   listFiles,
   loadGlyphModel,
   REPO_DIR,
-} from './shared.mjs';
+} from './shared.ts';
 
 export async function buildFont() {
   const model = await loadGlyphModel();

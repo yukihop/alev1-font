@@ -19,7 +19,7 @@ import {
   plistXml,
   rectContour,
   writeText,
-} from './shared.mjs';
+} from './shared.ts';
 
 export async function generateGlyphs() {
   const model = await loadGlyphModel();
@@ -97,6 +97,7 @@ export async function generateGlyphs() {
     plistXml({
       familyName: model.font.familyName,
       styleName: model.font.styleName,
+      openTypeNameDesigner: model.font.designer,
       unitsPerEm: model.font.unitsPerEm,
       ascender: model.font.ascender,
       descender: model.font.descender,

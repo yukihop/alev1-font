@@ -10,7 +10,7 @@ import {
   loadGlyphModel,
   loadLexicon,
   writeJson,
-} from './shared.mjs';
+} from './shared.ts';
 
 export async function buildMetadata() {
   const model = await loadGlyphModel();

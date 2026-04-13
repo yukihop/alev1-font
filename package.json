@@ -1,11 +1,13 @@
 {
   "name": "alev1-font",
   "private": true,
+  "type": "module",
   "engines": {
     "node": "24.6"
   },
   "packageManager": "pnpm@10.27.0",
   "scripts": {
+    "release:package": "node scripts/package-font-release.ts",
     "pages:build-all": "pnpm --filter font build && pnpm --filter docs build",
     "build": "pnpm --filter font build",
     "check": "pnpm --filter font check",

@@ -1,4 +1,4 @@
-import { resetDir, GENERATED_DIR, DIST_DIR, isMain } from './shared.mjs';
+import { resetDir, GENERATED_DIR, DIST_DIR, isMain } from './shared.ts';
 
 export async function runClean() {
   await resetDir(GENERATED_DIR);
