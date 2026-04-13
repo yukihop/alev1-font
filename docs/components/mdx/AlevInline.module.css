@@ -1,0 +1,15 @@
+.inline {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  white-space: nowrap;
+  unicode-bidi: isolate;
+  font-family: var(--font-alev), var(--font-ui);
+  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-transform: none;
+}

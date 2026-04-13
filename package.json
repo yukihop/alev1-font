@@ -14,5 +14,9 @@
     "check": "pnpm --filter font check",
     "docs:build": "pnpm --filter docs build",
     "docs:dev": "pnpm --filter docs dev"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^5.9.3"
   }
 }

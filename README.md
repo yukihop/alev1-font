@@ -1,12 +1,12 @@
 # Alevish: ALEV-1 フォント
 
-ALEV-1 フォントビルド＋説明サイトのためのリポジトリです。
+ALEV-1 フォント本体と、Next.js ベースの静的ドキュメントサイトを管理するリポジトリです。
 
 ## 構成
 
 - `data/`: 共有の正本データ。概念語辞書はここにある `lexicon.yaml`。
 - `font/`: フォント生成パッケージ。`UFO` と OpenType feature を中間モデルとして生成し、`TTF` / `WOFF2` を出力。
-- `docs/`: 11ty ベースのドキュメントサイト。
+- `docs/`: Next.js App Router + MDX ベースの静的ドキュメントサイト。
 
 ## 前提ツール
 
@@ -32,8 +32,8 @@ pnpm --filter font build
 
 主な出力先:
 
-- `font/dist/alev1.ttf`
-- `font/dist/alev1.woff2`
+- `font/dist/alevish.ttf`
+- `font/dist/alevish.woff2`
 - `font/dist/manifest.json`
 - `font/dist/preview.html`
 
@@ -47,20 +47,6 @@ pnpm --filter font build
 開発サーバー:
 
 ```bash
-pnpm --filter site dev
-```
-
-本番ビルド:
-
-```bash
-pnpm --filter site build
-```
-
-## ドキュメントサイトを起動する
-
-docs は 11ty ベースです。先にフォントをビルドして `font/dist/` を用意してから起動します。
-
-```bash
 pnpm --filter font build
 pnpm --filter docs dev
 ```
@@ -68,6 +54,7 @@ pnpm --filter docs dev
 本番ビルド:
 
 ```bash
+pnpm --filter font build
 pnpm --filter docs build
 ```
 

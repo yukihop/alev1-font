@@ -1,0 +1,262 @@
+.panel {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.glyphText {
+  font-family: var(--font-alev), var(--font-ui);
+  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.matrixWrap {
+  overflow-x: auto;
+}
+
+.matrix {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.matrix th,
+.matrix td {
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.matrix td:has(.matrixLink:hover),
+.matrix td:has(.matrixLink:focus-visible) {
+  background: var(--accent-soft);
+}
+
+.matrix thead th,
+.matrix tbody th {
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--bg-soft);
+}
+
+.matrixLink {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: color 120ms ease, transform 120ms ease;
+}
+
+.matrixLink:hover,
+.matrixLink:focus-visible {
+  color: var(--text);
+  transform: scale(1.02);
+}
+
+.matrixLinkKeyword {
+  color: #ffd54f;
+}
+
+.matrixLinkKeyword:hover,
+.matrixLinkKeyword:focus-visible {
+  color: #fff2ba;
+}
+
+:global(html[data-theme="light"]) .matrixLinkKeyword {
+  color: #9a6a00;
+}
+
+:global(html[data-theme="light"]) .matrixLinkKeyword:hover,
+:global(html[data-theme="light"]) .matrixLinkKeyword:focus-visible {
+  color: #6f4900;
+}
+
+.matrixEmpty {
+  color: var(--text-muted);
+}
+
+.glyphMark,
+.glyphCell,
+.dictionaryGlyph {
+  font-family: var(--font-alev), var(--font-ui);
+  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
+  font-variant-ligatures: common-ligatures;
+  font-synthesis: none;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.glyphPopover {
+  position: absolute;
+  inset: auto auto auto 0;
+  margin: 0;
+  max-width: min(24rem, calc(100vw - 24px));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--bg-elevated) 92%, transparent);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  transform: translateX(-50%);
+}
+
+.glyphPopover::backdrop {
+  background: transparent;
+}
+
+.glyphPopoverMeta,
+.glyphPopoverKeywords,
+.glyphMeta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.glyphPopoverKeywords {
+  margin-top: 10px;
+}
+
+.glyphPopoverComment,
+.glyphComment {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.glyphPopoverCopyStatus,
+.glyphCopyStatus {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.list,
+.dictionaryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list {
+  display: grid;
+  gap: 5px;
+}
+
+.glyphRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 10px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.glyphCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: var(--accent-soft);
+}
+
+.glyphDetail {
+  min-width: 0;
+}
+
+.binaryPill,
+.hexPill,
+.keywordPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.9rem;
+  padding: 0 0.72rem;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.binaryPill,
+.hexPill {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+.keywordPill {
+  border: 1px solid rgba(255, 214, 92, 0.22);
+  background: rgba(255, 214, 92, 0.12);
+  color: #ffdf7a;
+}
+
+:global(html[data-theme="light"]) .keywordPill {
+  border-color: rgba(176, 128, 0, 0.2);
+  background: rgba(227, 183, 39, 0.1);
+  color: #8a6200;
+}
+
+.copyButton:hover,
+.copyButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.dictionaryList {
+  display: grid;
+  gap: 10px;
+}
+
+.dictionaryRow {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) 70px minmax(0, 220px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.dictionaryWord {
+  font-weight: 600;
+}
+
+.dictionaryHex {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 720px) {
+  .glyphRow,
+  .dictionaryRow {
+    grid-template-columns: 1fr;
+  }
+
+  .glyphCell {
+    min-height: 88px;
+  }
+}

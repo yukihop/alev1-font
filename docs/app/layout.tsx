@@ -1,0 +1,31 @@
+import './globals.css';
+
+import type { Metadata } from 'next';
+import Script from 'next/script';
+
+const themeBootScript = `(function () {
+  var stored = localStorage.getItem('alev-docs-theme');
+  var theme = stored === 'light' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = theme;
+})();`;
+
+export const metadata: Metadata = {
+  title: {
+    default: 'ALEV-1 ドキュメント',
+    template: '%s | ALEV-1 ドキュメント',
+  },
+  description: 'ALEV-1 フォントの説明と検証用ドキュメントサイト',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        <Script id="theme-boot" strategy="beforeInteractive">
+          {themeBootScript}
+        </Script>
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}

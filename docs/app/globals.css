@@ -1,0 +1,102 @@
+:root {
+  --font-ui: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+  --font-alev: "Alev1";
+  --bg: #09111f;
+  --bg-elevated: rgba(12, 20, 36, 0.92);
+  --bg-soft: rgba(21, 31, 54, 0.72);
+  --text: #eff3ff;
+  --text-muted: #a8b4d8;
+  --border: rgba(137, 155, 226, 0.16);
+  --accent: #89a2ff;
+  --accent-soft: rgba(105, 129, 255, 0.18);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  font-family: var(--font-ui);
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(92, 120, 255, 0.18), transparent 30%),
+    linear-gradient(180deg, #0c1325 0%, #060a14 100%);
+  color-scheme: dark;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-theme="light"] {
+  --bg: #f6f8ff;
+  --bg-elevated: rgba(255, 255, 255, 0.94);
+  --bg-soft: rgba(227, 234, 255, 0.72);
+  --text: #17213a;
+  --text-muted: #52607f;
+  --border: rgba(100, 121, 188, 0.18);
+  --accent: #355fd9;
+  --accent-soft: rgba(53, 95, 217, 0.1);
+  --shadow: 0 24px 60px rgba(22, 34, 67, 0.12);
+  background:
+    radial-gradient(circle at top, rgba(53, 95, 217, 0.14), transparent 28%),
+    linear-gradient(180deg, #f7f9ff 0%, #eef3ff 100%);
+  color-scheme: light;
+}
+
+@font-face {
+  font-family: "Alev1";
+  src: url("/assets/alev1.woff2") format("woff2");
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+.docs-panel {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow);
+}
+
+.install-video-panel {
+  max-width: 700px;
+}
+
+.install-video {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.links {
+  padding-left: 1.2rem;
+}

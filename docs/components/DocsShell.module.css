@@ -1,0 +1,132 @@
+.shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px 18px;
+  border-right: 1px solid var(--border);
+  background: rgba(6, 11, 22, 0.74);
+  backdrop-filter: blur(18px);
+}
+
+:global(html[data-theme="light"]) .sidebar {
+  background: rgba(242, 246, 255, 0.84);
+}
+
+.sidebarInner {
+  display: grid;
+  gap: 28px;
+}
+
+.brand {
+  display: grid;
+  gap: 4px;
+}
+
+.brandMark {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.nav {
+  display: grid;
+  gap: 6px;
+}
+
+.navLink {
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible,
+.navLinkActive {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.main {
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 32px 12px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1;
+}
+
+.content {
+  padding: 8px 32px 56px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.paginationSlot {
+  min-width: 0;
+}
+
+@media (max-width: 980px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    padding-bottom: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .header,
+  .content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+}

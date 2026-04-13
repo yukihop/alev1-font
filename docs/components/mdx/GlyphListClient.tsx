@@ -1,0 +1,58 @@
+'use client';
+
+import type { GlyphRecord } from '@/lib/alev';
+
+import CopyPillButton, { useCopyFeedback } from './CopyPill';
+import styles from './Glyphs.module.css';
+
+export type GlyphListProps = {
+  glyphs: GlyphRecord[];
+};
+
+export default function GlyphListClient({ glyphs }: GlyphListProps) {
+  const { copiedId, copyText } = useCopyFeedback();
+
+  return (
+    <div className={styles.panel}>
+      <ol className={styles.list}>
+        {glyphs.map((glyph) => (
+          <li key={glyph.hex} id={`glyph-${glyph.hex}`} className={styles.glyphRow}>
+            <div className={`${styles.glyphCell} ${styles.glyphText}`} title={glyph.codepoint}>
+              {glyph.char}
+            </div>
+            <div className={styles.glyphDetail}>
+              <div className={styles.glyphMeta}>
+                <CopyPillButton
+                  className={`${styles.hexPill} ${styles.copyButton}`}
+                  copyId={glyph.hex}
+                  copyValue={`0x${glyph.hex}`}
+                  text={`0x${glyph.hex}`}
+                  onCopy={copyText}
+                />
+                <CopyPillButton
+                  className={`${styles.binaryPill} ${styles.copyButton}`}
+                  copyId={glyph.hex}
+                  copyValue={`0b${glyph.binary}`}
+                  text={`0b${glyph.binary}`}
+                  onCopy={copyText}
+                />
+                {glyph.keywords.map((keyword) => (
+                  <CopyPillButton
+                    key={keyword}
+                    className={`${styles.keywordPill} ${styles.copyButton}`}
+                    copyId={glyph.hex}
+                    copyValue={keyword}
+                    text={keyword}
+                    onCopy={copyText}
+                  />
+                ))}
+              </div>
+              {glyph.comment ? <div className={styles.glyphComment}>{glyph.comment}</div> : null}
+              {copiedId === glyph.hex ? <div className={styles.glyphCopyStatus}>Copied</div> : null}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
