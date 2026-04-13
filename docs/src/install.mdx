@@ -1,0 +1,43 @@
+---
+title: インストール
+layout: layouts/base.njk
+navOrder: 5
+tags:
+  - docs
+---
+
+このリポジトリでは、フォント生成と docs を分けています。
+
+## 前提ツール
+
+- Node.js
+- `pnpm`
+- `uv`  
+  これはフォントビルド時だけ使います。
+
+## フォントをビルドする
+
+```bash
+pnpm install
+pnpm --filter font build
+```
+
+フォントの主な生成物:
+
+- `font/dist/alev1.ttf`
+- `font/dist/alev1.woff2`
+- `font/dist/manifest.json`
+
+## docs を起動する
+
+```bash
+pnpm --filter docs dev
+```
+
+本番ビルド:
+
+```bash
+pnpm --filter docs build
+```
+
+Cloudflare Pages での配信を想定しているため、docs は静的 HTML を中心に構成しています。

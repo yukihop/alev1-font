@@ -1,6 +1,5 @@
 import {
   DIST_DIR,
-  activeComponentsForHex,
   bitArrayForHex,
   codepointForHex,
   codepointLabel,
@@ -28,7 +27,6 @@ export async function buildMetadata() {
       codepoint: codepointLabel(codepoint),
       char: String.fromCodePoint(codepoint),
       bits: bitArrayForHex(hex),
-      components: activeComponentsForHex(hex).map((component) => component.name),
       keywords: entry.keywords,
       label: entry.label,
       description: entry.description,

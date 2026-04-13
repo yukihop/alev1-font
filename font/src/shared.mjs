@@ -113,8 +113,10 @@ export async function loadGlyphModel() {
   return model;
 }
 
-export async function loadSvgParts() {
+export async function loadSvgParts(model = null) {
   const source = await readFile(SVG_PARTS_PATH, 'utf8');
+  const glyphModel = model ?? (await loadGlyphModel());
+  const viewBox = parseSvgViewBox(source);
   const parts = new Map();
 
   for (const part of PARTS) {
@@ -125,7 +127,7 @@ export async function loadSvgParts() {
 
     parts.set(part.name, {
       ...part,
-      contours: parseSvgPath(match[1]),
+      contours: transformContoursToFontSpace(parseSvgPath(match[1]), glyphModel, viewBox),
     });
   }
 
@@ -344,6 +346,40 @@ function escapeXml(value) {
 
 function formatNumber(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(3);
+}
+
+function parseSvgViewBox(source) {
+  const match = source.match(/<svg\b[^>]*viewBox="([^"]+)"/i);
+  if (!match) {
+    throw new Error(`Missing viewBox in ${SVG_PARTS_PATH}`);
+  }
+
+  const values = match[1]
+    .trim()
+    .split(/[\s,]+/)
+    .map((value) => Number(value));
+
+  if (values.length !== 4 || values.some((value) => Number.isNaN(value))) {
+    throw new Error(`Invalid viewBox in ${SVG_PARTS_PATH}: ${match[1]}`);
+  }
+
+  const [minX, minY, width, height] = values;
+  return { minX, minY, width, height };
+}
+
+function transformContoursToFontSpace(contours, model, viewBox) {
+  const targetWidth = model.font.advanceWidth;
+  const targetTop = model.font.ascender;
+  const targetBottom = model.font.descender;
+  const targetHeight = targetTop - targetBottom;
+
+  return contours.map((contour) =>
+    contour.map((point) => ({
+      ...point,
+      x: ((point.x - viewBox.minX) / viewBox.width) * targetWidth,
+      y: targetTop - ((point.y - viewBox.minY) / viewBox.height) * targetHeight,
+    })),
+  );
 }
 
 function parseSvgPath(d) {

@@ -8,14 +8,12 @@ export async function buildPreview() {
   const cards = manifest.glyphs
     .map((glyph) => {
       const keywords = glyph.keywords.length ? glyph.keywords.join(', ') : '&nbsp;';
-      const components = glyph.components.length ? glyph.components.join(', ') : '&nbsp;';
       return `
         <article class="card">
           <div class="binary">0b${glyph.binary}</div>
           <div class="hex">${glyph.hex}</div>
           <div class="glyph">${glyph.char}</div>
           <div class="codepoint">${glyph.codepoint}</div>
-          <div class="meta">${components}</div>
           <div class="keywords">${keywords}</div>
         </article>
       `;

@@ -24,7 +24,7 @@ import {
 export async function generateGlyphs() {
   const model = await loadGlyphModel();
   const lexicon = await loadLexicon();
-  const svgParts = await loadSvgParts();
+  const svgParts = await loadSvgParts(model);
   const glyphOrder = [];
   const contents = {};
 
@@ -104,8 +104,10 @@ export async function generateGlyphs() {
       xHeight: 500,
       openTypeHheaAscender: model.font.ascender,
       openTypeHheaDescender: model.font.descender,
+      openTypeHheaLineGap: 0,
       openTypeOS2TypoAscender: model.font.ascender,
       openTypeOS2TypoDescender: model.font.descender,
+      openTypeOS2TypoLineGap: 0,
       openTypeOS2WinAscent: model.font.ascender,
       openTypeOS2WinDescent: Math.abs(model.font.descender),
       versionMajor: 0,

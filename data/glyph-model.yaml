@@ -4,9 +4,9 @@ font:
   styleName: "Regular"
   outputFileBase: "alev1"
   unitsPerEm: 1000
-  ascender: 820
-  descender: -180
-  advanceWidth: 720
+  ascender: 880
+  descender: -120
+  advanceWidth: 1000
   spaceWidth: 320
   inputGlyphWidth: 420
-  notdefWidth: 720
+  notdefWidth: 1000

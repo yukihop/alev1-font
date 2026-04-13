@@ -1,0 +1,28 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_OPTIONS='--import tsx' eleventy --serve",
+    "build": "NODE_OPTIONS='--import tsx' eleventy"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "@mdx-js/mdx": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tsx": "^4.20.6",
+    "unist-util-visit": "^5.1.0",
+    "yaml": "^2.8.3"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "typescript": "^5.9.3"
+  }
+}
