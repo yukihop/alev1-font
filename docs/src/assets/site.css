@@ -281,6 +281,16 @@ html[data-theme="light"] {
   box-shadow: var(--shadow);
 }
 
+.install-video-panel {
+  max-width: 700px;
+}
+
+.install-video {
+  display: block;
+  width: 100%;
+  border-radius: 12px;
+}
+
 .component-shell + h2,
 h2 + .component-shell,
 h2 + .docs-panel,
