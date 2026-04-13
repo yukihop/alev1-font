@@ -19,7 +19,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   return entry ? { title: entry.title } : {};
 }
 
-export default async function ArticlePage(props: { params: Promise<{ slug: string }> }) {
+const ArticlePage = async (props: { params: Promise<{ slug: string }> }) => {
   const { slug } = await props.params;
   const [entry, article, { entries }, { prev, next }] = await Promise.all([
     getArticleEntry(slug),
@@ -39,4 +39,6 @@ export default async function ArticlePage(props: { params: Promise<{ slug: strin
       <RichText>{content}</RichText>
     </DocsShell>
   );
-}
+};
+
+export default ArticlePage;

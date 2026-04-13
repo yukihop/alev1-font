@@ -1,21 +1,24 @@
 'use client';
 
+import type { FC } from 'react';
+
 import type { GlyphRecord } from '@/lib/alev';
 
-import CopyPillButton, { useCopyFeedback } from './CopyPill';
+import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
 import styles from './Glyphs.module.css';
 
-export type GlyphListProps = {
+type GlyphListPanelProps = {
   glyphs: GlyphRecord[];
 };
 
-export default function GlyphListClient({ glyphs }: GlyphListProps) {
+const GlyphListClient: FC<GlyphListPanelProps> = props => {
+  const { glyphs } = props;
   const { copiedId, copyText } = useCopyFeedback();
 
   return (
     <div className={styles.panel}>
       <ol className={styles.list}>
-        {glyphs.map((glyph) => (
+        {glyphs.map(glyph => (
           <li key={glyph.hex} id={`glyph-${glyph.hex}`} className={styles.glyphRow}>
             <div className={`${styles.glyphCell} ${styles.glyphText}`} title={glyph.codepoint}>
               {glyph.char}
@@ -36,7 +39,7 @@ export default function GlyphListClient({ glyphs }: GlyphListProps) {
                   text={`0b${glyph.binary}`}
                   onCopy={copyText}
                 />
-                {glyph.keywords.map((keyword) => (
+                {glyph.keywords.map(keyword => (
                   <CopyPillButton
                     key={keyword}
                     className={`${styles.keywordPill} ${styles.copyButton}`}
@@ -55,4 +58,6 @@ export default function GlyphListClient({ glyphs }: GlyphListProps) {
       </ol>
     </div>
   );
-}
+};
+
+export default GlyphListClient;

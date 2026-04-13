@@ -4,10 +4,11 @@ export type SimpleEditorProps = {
   defaultValue?: string;
   defaultFontSize?: number;
   defaultLetterSpacing?: number;
-  keywordMap: KeywordMap;
 };
 
-export type SimpleEditorServerProps = Omit<SimpleEditorProps, 'keywordMap'>;
+export type SimpleEditorPanelProps = SimpleEditorProps & {
+  keywordMap: KeywordMap;
+};
 
 export type VisualPreset = {
   value: string;
@@ -39,11 +40,10 @@ export const visualPresets: VisualPreset[] = [
 
 export const defaultVisualPreset = visualPresets[0];
 
-export function binaryToHex(binary: string): string {
-  return Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
-}
+export const binaryToHex = (binary: string): string =>
+  Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
 
-export function normalizeEditorToken(token: string, keywordMap: KeywordMap): string {
+export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string => {
   if (/^0x[0-9a-f]{2}$/i.test(token)) {
     return `0x${token.slice(2).toUpperCase()}`;
   }
@@ -53,37 +53,35 @@ export function normalizeEditorToken(token: string, keywordMap: KeywordMap): str
   }
 
   return keywordMap[token] ? `0x${keywordMap[token]}` : token;
-}
+};
 
-export function normalizeEditorContent(value: string, keywordMap: KeywordMap): string {
-  return String(value ?? '').replace(/\S+/g, (token) => normalizeEditorToken(token, keywordMap));
-}
+export const normalizeEditorContent = (value: string, keywordMap: KeywordMap): string =>
+  String(value ?? '').replace(/\S+/g, token => normalizeEditorToken(token, keywordMap));
 
-export function getKeywordList(keywordMap: KeywordMap): string[] {
-  return Object.keys(keywordMap).sort((left, right) => left.localeCompare(right));
-}
+export const getKeywordList = (keywordMap: KeywordMap): string[] =>
+  Object.keys(keywordMap).sort((left, right) => left.localeCompare(right));
 
-export function getActiveTokenPrefix(value: string, selectionStart: number): string {
+export const getActiveTokenPrefix = (value: string, selectionStart: number): string => {
   const before = value.slice(0, selectionStart);
   const tokenMatch = before.match(/(?:^|\s)([^\s]*)$/);
   return tokenMatch?.[1] ?? '';
-}
+};
 
-export function getKeywordSuggestions(prefix: string, keywordList: string[]): string[] {
+export const getKeywordSuggestions = (prefix: string, keywordList: string[]): string[] => {
   const normalizedPrefix = prefix.trim().toLowerCase();
   if (!normalizedPrefix || /^0[bx]/i.test(normalizedPrefix)) {
     return [];
   }
 
-  return keywordList.filter((keyword) => keyword.startsWith(normalizedPrefix) && keyword !== normalizedPrefix).slice(0, 8);
-}
+  return keywordList.filter(keyword => keyword.startsWith(normalizedPrefix) && keyword !== normalizedPrefix).slice(0, 8);
+};
 
-export function applySuggestionToValue(
+export const applySuggestionToValue = (
   value: string,
   selectionStart: number,
   selectionEnd: number,
   suggestion: string,
-): { nextValue: string; nextCaret: number } {
+): { nextValue: string; nextCaret: number } => {
   const after = value.slice(selectionEnd);
   const prefix = getActiveTokenPrefix(value, selectionStart);
   const prefixStart = selectionStart - prefix.length;
@@ -96,4 +94,4 @@ export function applySuggestionToValue(
     nextValue: `${value.slice(0, prefixStart)}${suggestion}${spacer}${suffix}`,
     nextCaret: prefixStart + suggestion.length + spacer.length,
   };
-}
+};

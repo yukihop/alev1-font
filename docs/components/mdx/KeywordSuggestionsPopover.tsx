@@ -1,6 +1,5 @@
-'use client';
-
 import {
+  type FC,
   type CSSProperties,
   type KeyboardEvent,
   type RefObject,
@@ -12,7 +11,7 @@ import {
   getKeywordSuggestions,
   normalizeEditorContent,
   type KeywordMap,
-} from './simpleEditorShared';
+} from './editor-utils';
 import styles from './Editors.module.css';
 
 const caretStyleProps = [
@@ -48,7 +47,7 @@ const caretStyleProps = [
   'overflowWrap',
 ] as const;
 
-function getTextareaCaretPosition(textarea: HTMLTextAreaElement, selectionStart: number) {
+const getTextareaCaretPosition = (textarea: HTMLTextAreaElement, selectionStart: number) => {
   const computed = window.getComputedStyle(textarea);
   const mirror = document.createElement('div');
   const marker = document.createElement('span');
@@ -82,7 +81,7 @@ function getTextareaCaretPosition(textarea: HTMLTextAreaElement, selectionStart:
   document.body.removeChild(mirror);
 
   return { left, top, height };
-}
+};
 
 export type UseSuggestionsOptions = {
   getPrefix: (value: string, selectionStart: number) => string;
@@ -95,11 +94,11 @@ export type UseSuggestionsOptions = {
   onApply: (nextValue: string) => void;
 };
 
-export function useKeywordSuggestions(
+export const useKeywordSuggestions = (
   inputRef: RefObject<HTMLTextAreaElement | null>,
   keywordList: string[],
   { getPrefix, applyToValue, onApply }: UseSuggestionsOptions,
-) {
+) => {
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
@@ -202,7 +201,7 @@ export function useKeywordSuggestions(
     onChangeHandler,
     onKeyDownHandler,
   };
-}
+};
 
 type KeywordSuggestionsPopoverProps = {
   popoverRef: RefObject<HTMLDivElement | null>;
@@ -213,14 +212,16 @@ type KeywordSuggestionsPopoverProps = {
   keywordMap: KeywordMap;
 };
 
-export function KeywordSuggestionsPopover({
-  popoverRef,
-  suggestions,
-  activeSuggestionIndex,
-  popoverPosition,
-  applySuggestion,
-  keywordMap,
-}: KeywordSuggestionsPopoverProps) {
+export const KeywordSuggestionsPopover: FC<KeywordSuggestionsPopoverProps> = props => {
+  const {
+    popoverRef,
+    suggestions,
+    activeSuggestionIndex,
+    popoverPosition,
+    applySuggestion,
+    keywordMap,
+  } = props;
+
   return (
     <div
       ref={popoverRef}
@@ -256,4 +257,4 @@ export function KeywordSuggestionsPopover({
       </div>
     </div>
   );
-}
+};

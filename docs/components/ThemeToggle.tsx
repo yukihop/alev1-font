@@ -1,16 +1,18 @@
 'use client';
 
+import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import styles from './ThemeToggle.module.css';
 
 const themeKey = 'alev-docs-theme';
+type Theme = 'dark' | 'light';
 
-export default function ThemeToggle() {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+const ThemeToggle: FC = () => {
+  const [theme, setTheme] = useState<Theme>('dark');
 
   useEffect(() => {
-    const currentTheme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+    const currentTheme: Theme = document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
     setTheme(currentTheme);
   }, []);
 
@@ -29,4 +31,6 @@ export default function ThemeToggle() {
       <span>{theme === 'dark' ? 'Dark' : 'Light'}</span>
     </button>
   );
-}
+};
+
+export default ThemeToggle;

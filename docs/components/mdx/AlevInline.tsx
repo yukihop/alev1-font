@@ -1,4 +1,4 @@
-import { Children, type ReactNode } from 'react';
+import { Children, type FC, type ReactNode } from 'react';
 
 import { renderAlevContent } from '@/lib/alev';
 
@@ -9,7 +9,7 @@ type AlevInlineProps = {
   children?: ReactNode;
 };
 
-function textFromChildren(children: ReactNode): string {
+const textFromChildren = (children: ReactNode): string => {
   return Children.toArray(children)
     .map((child) => {
       if (typeof child === 'string') return child;
@@ -17,9 +17,9 @@ function textFromChildren(children: ReactNode): string {
       return '';
     })
     .join(' ');
-}
+};
 
-export default function AlevInline(props: AlevInlineProps) {
+const AlevInline: FC<AlevInlineProps> = props => {
   const { source = '', children } = props;
   const text = source || textFromChildren(children);
 
@@ -28,4 +28,6 @@ export default function AlevInline(props: AlevInlineProps) {
       {renderAlevContent(text)}
     </span>
   );
-}
+};
+
+export default AlevInline;

@@ -1,24 +1,25 @@
-import type { KeywordMap } from './simpleEditorShared';
+import type { KeywordMap } from './editor-utils';
 
 export type MarkdownEditorProps = {
   defaultValue?: string;
+};
+
+export type MarkdownEditorPanelProps = MarkdownEditorProps & {
   keywordMap: KeywordMap;
 };
 
-export type MarkdownEditorServerProps = Omit<MarkdownEditorProps, 'keywordMap'>;
-
-export function getMarkdownTokenPrefix(value: string, selectionStart: number): string {
+export const getMarkdownTokenPrefix = (value: string, selectionStart: number): string => {
   const before = value.slice(0, selectionStart);
   const match = before.match(/:([^:\s]*)$/);
   return match?.[1] ?? '';
-}
+};
 
-export function applyMarkdownSuggestion(
+export const applyMarkdownSuggestion = (
   value: string,
   selectionStart: number,
   selectionEnd: number,
   suggestion: string,
-): { nextValue: string; nextCaret: number } {
+): { nextValue: string; nextCaret: number } => {
   const before = value.slice(0, selectionStart);
   const colonPos = before.lastIndexOf(':');
   if (colonPos === -1) {
@@ -37,7 +38,7 @@ export function applyMarkdownSuggestion(
   const nextCaret = colonPos + insertion.length;
 
   return { nextValue, nextCaret };
-}
+};
 
 export const DEFAULT_MARKDOWN_VALUE = `# ALEV-1メモパッド
 

@@ -2,6 +2,7 @@ import './globals.css';
 
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import type { ReactNode } from 'react';
 
 const themeBootScript = `(function () {
   var stored = localStorage.getItem('alev-docs-theme');
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
   description: 'ALEV-1 フォントの説明と検証用ドキュメントサイト',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+type RootLayoutProps = {
+  children: ReactNode;
+};
+
+const RootLayout = (props: RootLayoutProps) => {
+  const { children } = props;
+
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
@@ -28,4 +35,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>{children}</body>
     </html>
   );
-}
+};
+
+export default RootLayout;

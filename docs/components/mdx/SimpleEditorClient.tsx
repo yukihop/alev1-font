@@ -1,6 +1,6 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, FC } from 'react';
 import { useId, useRef, useState } from 'react';
 
 import { KeywordSuggestionsPopover, useKeywordSuggestions } from './KeywordSuggestionsPopover';
@@ -14,13 +14,49 @@ import {
   getKeywordList,
   normalizeEditorContent,
   type KeywordMap,
-  type SimpleEditorProps,
+  type SimpleEditorPanelProps,
   type VisualPreset,
   visualPresets,
-} from './simpleEditorShared';
+} from './editor-utils';
 import styles from './Editors.module.css';
 
-export default function SimpleEditorClient(props: SimpleEditorProps) {
+type PresetButtonProps = {
+  keywordMap: KeywordMap;
+  preset: VisualPreset;
+  selected: boolean;
+  onSelect: (value: string) => void;
+};
+
+const PresetButton: FC<PresetButtonProps> = props => {
+  const { keywordMap, preset, selected, onSelect } = props;
+
+  return (
+    <button
+      type="button"
+      className={`${styles.presetButton} ${selected ? styles.presetButtonActive : ''}`.trim()}
+      aria-pressed={selected}
+      title={preset.label}
+      onClick={() => {
+        onSelect(preset.value);
+      }}
+    >
+      <span
+        className={styles.presetPreview}
+        style={
+          {
+            '--simple-editor-preset-background': preset.background,
+            '--simple-editor-preset-color': preset.color,
+            '--simple-editor-preset-shadow': preset.shadow,
+          } as CSSProperties
+        }
+      >
+        <span className={styles.presetGlyph}>{normalizeEditorContent(preset.sample, keywordMap)}</span>
+      </span>
+    </button>
+  );
+};
+
+const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
   const {
     defaultValue = DEFAULT_EDITOR_VALUE,
     defaultFontSize = DEFAULT_FONT_SIZE,
@@ -52,7 +88,7 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
     onApply: setInputValue,
   });
   const selectedPreset =
-    visualPresets.find((preset) => preset.value === selectedPresetValue) ?? defaultVisualPreset;
+    visualPresets.find(preset => preset.value === selectedPresetValue) ?? defaultVisualPreset;
   const previewStyle = {
     '--simple-editor-font-size': `${fontSize}px`,
     '--simple-editor-letter-spacing': `${letterSpacing}em`,
@@ -74,7 +110,7 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
         className={styles.textarea}
         spellCheck={false}
         value={inputValue}
-        onChange={(event) => {
+        onChange={event => {
           const nextValue = event.target.value;
           setInputValue(nextValue);
           onChangeHandler(nextValue, event.target.selectionStart ?? nextValue.length);
@@ -107,7 +143,7 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
               max="220"
               step="1"
               value={String(fontSize)}
-              onChange={(event) => {
+              onChange={event => {
                 setFontSize(Number(event.target.value));
               }}
             />
@@ -125,7 +161,7 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
               max="0.4"
               step="0.01"
               value={String(letterSpacing)}
-              onChange={(event) => {
+              onChange={event => {
                 setLetterSpacing(Number(event.target.value));
               }}
             />
@@ -136,7 +172,7 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
         <div className={`${styles.control} ${styles.controlPreset}`} role="group" aria-label="Preview presets">
           <span className={styles.caption}>Preview presets</span>
           <div className={styles.presetList}>
-            {visualPresets.map((preset) => (
+            {visualPresets.map(preset => (
               <PresetButton
                 key={preset.value}
                 keywordMap={keywordMap}
@@ -159,38 +195,6 @@ export default function SimpleEditorClient(props: SimpleEditorProps) {
       </div>
     </div>
   );
-}
+};
 
-function PresetButton(props: {
-  keywordMap: KeywordMap;
-  preset: VisualPreset;
-  selected: boolean;
-  onSelect: (value: string) => void;
-}) {
-  const { keywordMap, preset, selected, onSelect } = props;
-
-  return (
-    <button
-      type="button"
-      className={`${styles.presetButton} ${selected ? styles.presetButtonActive : ''}`.trim()}
-      aria-pressed={selected}
-      title={preset.label}
-      onClick={() => {
-        onSelect(preset.value);
-      }}
-    >
-      <span
-        className={styles.presetPreview}
-        style={
-          {
-            '--simple-editor-preset-background': preset.background,
-            '--simple-editor-preset-color': preset.color,
-            '--simple-editor-preset-shadow': preset.shadow,
-          } as CSSProperties
-        }
-      >
-        <span className={styles.presetGlyph}>{normalizeEditorContent(preset.sample, keywordMap)}</span>
-      </span>
-    </button>
-  );
-}
+export default SimpleEditorClient;

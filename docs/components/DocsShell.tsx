@@ -1,3 +1,4 @@
+import type { FC, ReactNode } from 'react';
 import Link from 'next/link';
 
 import type { ArticleEntry } from '@/lib/articles';
@@ -8,12 +9,12 @@ import ThemeToggle from './ThemeToggle';
 type DocsShellProps = {
   current: ArticleEntry;
   entries: ArticleEntry[];
-  children: React.ReactNode;
+  children: ReactNode;
   prev?: ArticleEntry | null;
   next?: ArticleEntry | null;
 };
 
-export default function DocsShell(props: DocsShellProps) {
+const DocsShell: FC<DocsShellProps> = props => {
   const { current, entries, children, prev, next } = props;
 
   return (
@@ -56,4 +57,6 @@ export default function DocsShell(props: DocsShellProps) {
       </div>
     </div>
   );
-}
+};
+
+export default DocsShell;

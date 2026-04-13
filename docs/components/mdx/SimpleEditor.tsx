@@ -1,10 +1,14 @@
+import type { FC } from 'react';
+
 import { getKeywordMap } from '@/lib/alev';
 
+import type { SimpleEditorProps } from './editor-utils';
 import SimpleEditorClient from './SimpleEditorClient';
-import type { SimpleEditorServerProps } from './simpleEditorShared';
 
-export default function SimpleEditor(props: SimpleEditorServerProps) {
+const SimpleEditor: FC<SimpleEditorProps> = props => {
   const keywordMap = Object.fromEntries([...getKeywordMap().entries()].sort(([left], [right]) => left.localeCompare(right)));
 
   return <SimpleEditorClient {...props} keywordMap={keywordMap} />;
-}
+};
+
+export default SimpleEditor;

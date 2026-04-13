@@ -1,8 +1,10 @@
+import type { FC } from 'react';
+
 import { getAlevData } from '@/lib/alev';
 
 import styles from './Glyphs.module.css';
 
-export default function ConceptDictionary() {
+const ConceptDictionary: FC = () => {
   const { dictionaryEntries } = getAlevData();
 
   return (
@@ -21,4 +23,6 @@ export default function ConceptDictionary() {
       </ul>
     </div>
   );
-}
+};
+
+export default ConceptDictionary;

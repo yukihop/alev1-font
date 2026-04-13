@@ -1,20 +1,22 @@
 'use client';
 
+import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
 import type { GlyphRecord } from '@/lib/alev';
 
-import CopyPillButton, { useCopyFeedback } from './CopyPill';
+import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
 import styles from './Glyphs.module.css';
 
-export type GlyphMatrixProps = {
+type GlyphMatrixPanelProps = {
   glyphs: GlyphRecord[];
   rows: string[];
   cols: string[];
 };
 
-export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixProps) {
-  const glyphMap = new Map(glyphs.map((glyph) => [glyph.hex, glyph]));
+const GlyphMatrixClient: FC<GlyphMatrixPanelProps> = props => {
+  const { glyphs, rows, cols } = props;
+  const glyphMap = new Map(glyphs.map(glyph => [glyph.hex, glyph]));
   const triggerRefs = useRef(new Map<string, HTMLButtonElement | null>());
   const popoverRefs = useRef(new Map<string, HTMLDivElement | null>());
   const hideTimerRef = useRef<number | null>(null);
@@ -33,7 +35,7 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
   const hidePopover = (hex: string) => {
     clearHideTimer();
     popoverRefs.current.get(hex)?.hidePopover();
-    setActiveHex((current) => (current === hex ? null : current));
+    setActiveHex(current => (current === hex ? null : current));
   };
 
   const positionPopover = (hex: string) => {
@@ -75,16 +77,16 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
           <thead>
             <tr>
               <th aria-label="corner" />
-              {cols.map((col) => (
+              {cols.map(col => (
                 <th key={col}>{col}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
+            {rows.map(row => (
               <tr key={row}>
                 <th>{row}</th>
-                {cols.map((col) => {
+                {cols.map(col => {
                   const hex = `${row}${col}`;
                   const glyph = glyphMap.get(hex);
 
@@ -93,7 +95,7 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
                       {glyph ? (
                         <>
                           <button
-                            ref={(node) => {
+                            ref={node => {
                               triggerRefs.current.set(glyph.hex, node);
                             }}
                             type="button"
@@ -123,7 +125,7 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
                             <span className={`${styles.glyphMark} ${styles.glyphText}`}>{glyph.char}</span>
                           </button>
                           <div
-                            ref={(node) => {
+                            ref={node => {
                               popoverRefs.current.set(glyph.hex, node);
                             }}
                             className={styles.glyphPopover}
@@ -151,7 +153,7 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
                             </div>
                             {glyph.keywords.length > 0 ? (
                               <div className={styles.glyphPopoverKeywords}>
-                                {glyph.keywords.map((keyword) => (
+                                {glyph.keywords.map(keyword => (
                                   <CopyPillButton
                                     key={keyword}
                                     className={`${styles.keywordPill} ${styles.copyButton}`}
@@ -184,4 +186,6 @@ export default function GlyphMatrixClient({ glyphs, rows, cols }: GlyphMatrixPro
       </div>
     </div>
   );
-}
+};
+
+export default GlyphMatrixClient;

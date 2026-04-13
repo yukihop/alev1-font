@@ -1,6 +1,7 @@
 'use client';
 
 import MarkdownIt from 'markdown-it';
+import type { FC } from 'react';
 import { useId, useMemo, useRef, useState } from 'react';
 
 import RichText from '@/components/RichText';
@@ -11,87 +12,11 @@ import {
   DEFAULT_MARKDOWN_VALUE,
   applyMarkdownSuggestion,
   getMarkdownTokenPrefix,
-  type MarkdownEditorProps,
-} from './markdownEditorShared';
-import {
-  getKeywordList,
-  normalizeEditorContent,
-} from './simpleEditorShared';
+  type MarkdownEditorPanelProps,
+} from './markdown-editor-utils';
+import { getKeywordList, normalizeEditorContent } from './editor-utils';
 
-export default function MarkdownEditorClient(props: MarkdownEditorProps) {
-  const { defaultValue = DEFAULT_MARKDOWN_VALUE, keywordMap } = props;
-  const inputId = useId();
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
-  const keywordList = getKeywordList(keywordMap);
-  const [inputValue, setInputValue] = useState(defaultValue);
-  const renderer = useMemo(() => createMarkdownRenderer(keywordMap, styles.alevInline), [keywordMap]);
-  const previewHtml = useMemo(() => renderer.render(inputValue), [inputValue, renderer]);
-  const {
-    popoverRef,
-    suggestions,
-    activeSuggestionIndex,
-    popoverPosition,
-    syncFromInput,
-    hideSuggestions,
-    applySuggestion,
-    onChangeHandler,
-    onKeyDownHandler,
-  } = useKeywordSuggestions(inputRef, keywordList, {
-    getPrefix: getMarkdownTokenPrefix,
-    applyToValue: applyMarkdownSuggestion,
-    onApply: setInputValue,
-  });
-
-  return (
-    <div className={`${styles.panel} ${styles.markdownEditor}`}>
-      <div className={styles.markdownGrid}>
-        <section className={styles.markdownPane}>
-          <label className={styles.label} htmlFor={inputId}>
-            Source
-          </label>
-          <textarea
-            id={inputId}
-            ref={inputRef}
-            className={`${styles.textarea} ${styles.markdownTextarea}`}
-            spellCheck={false}
-            value={inputValue}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              setInputValue(nextValue);
-              onChangeHandler(nextValue, event.target.selectionStart ?? nextValue.length);
-            }}
-            onFocus={syncFromInput}
-            onBlur={hideSuggestions}
-            onClick={syncFromInput}
-            onKeyUp={syncFromInput}
-            onSelect={syncFromInput}
-            onKeyDown={onKeyDownHandler}
-          />
-        </section>
-
-        <section className={styles.markdownPane}>
-          <div className={styles.label}>Preview</div>
-          <div className={styles.previewPane}>
-            <RichText>
-              <div className={styles.previewContent} dangerouslySetInnerHTML={{ __html: previewHtml }} />
-            </RichText>
-          </div>
-        </section>
-      </div>
-
-      <KeywordSuggestionsPopover
-        popoverRef={popoverRef}
-        suggestions={suggestions}
-        activeSuggestionIndex={activeSuggestionIndex}
-        popoverPosition={popoverPosition}
-        applySuggestion={applySuggestion}
-        keywordMap={keywordMap}
-      />
-    </div>
-  );
-}
-
-function createMarkdownRenderer(keywordMap: Record<string, string>, alevInlineClassName: string): MarkdownIt {
+const createMarkdownRenderer = (keywordMap: Record<string, string>, alevInlineClassName: string): MarkdownIt => {
   const renderer = new MarkdownIt({
     html: false,
     linkify: true,
@@ -135,4 +60,79 @@ function createMarkdownRenderer(keywordMap: Record<string, string>, alevInlineCl
   };
 
   return renderer;
-}
+};
+
+const MarkdownEditorClient: FC<MarkdownEditorPanelProps> = props => {
+  const { defaultValue = DEFAULT_MARKDOWN_VALUE, keywordMap } = props;
+  const inputId = useId();
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const keywordList = getKeywordList(keywordMap);
+  const [inputValue, setInputValue] = useState(defaultValue);
+  const renderer = useMemo(() => createMarkdownRenderer(keywordMap, styles.alevInline), [keywordMap]);
+  const previewHtml = useMemo(() => renderer.render(inputValue), [inputValue, renderer]);
+  const {
+    popoverRef,
+    suggestions,
+    activeSuggestionIndex,
+    popoverPosition,
+    syncFromInput,
+    hideSuggestions,
+    applySuggestion,
+    onChangeHandler,
+    onKeyDownHandler,
+  } = useKeywordSuggestions(inputRef, keywordList, {
+    getPrefix: getMarkdownTokenPrefix,
+    applyToValue: applyMarkdownSuggestion,
+    onApply: setInputValue,
+  });
+
+  return (
+    <div className={`${styles.panel} ${styles.markdownEditor}`}>
+      <div className={styles.markdownGrid}>
+        <section className={styles.markdownPane}>
+          <label className={styles.label} htmlFor={inputId}>
+            Source
+          </label>
+          <textarea
+            id={inputId}
+            ref={inputRef}
+            className={`${styles.textarea} ${styles.markdownTextarea}`}
+            spellCheck={false}
+            value={inputValue}
+            onChange={event => {
+              const nextValue = event.target.value;
+              setInputValue(nextValue);
+              onChangeHandler(nextValue, event.target.selectionStart ?? nextValue.length);
+            }}
+            onFocus={syncFromInput}
+            onBlur={hideSuggestions}
+            onClick={syncFromInput}
+            onKeyUp={syncFromInput}
+            onSelect={syncFromInput}
+            onKeyDown={onKeyDownHandler}
+          />
+        </section>
+
+        <section className={styles.markdownPane}>
+          <div className={styles.label}>Preview</div>
+          <div className={styles.previewPane}>
+            <RichText>
+              <div className={styles.previewContent} dangerouslySetInnerHTML={{ __html: previewHtml }} />
+            </RichText>
+          </div>
+        </section>
+      </div>
+
+      <KeywordSuggestionsPopover
+        popoverRef={popoverRef}
+        suggestions={suggestions}
+        activeSuggestionIndex={activeSuggestionIndex}
+        popoverPosition={popoverPosition}
+        applySuggestion={applySuggestion}
+        keywordMap={keywordMap}
+      />
+    </div>
+  );
+};
+
+export default MarkdownEditorClient;

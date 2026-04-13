@@ -1,12 +1,13 @@
 'use client';
 
+import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import type { GlyphRecord } from '@/lib/alev';
 
 import styles from './AlevSignalDemo.module.css';
 
-export type AlevSignalDemoProps = {
+type AlevSignalDemoPanelProps = {
   glyphs: GlyphRecord[];
 };
 
@@ -18,7 +19,26 @@ type Slot = {
 
 const slotCount = 42;
 
-export default function AlevSignalDemoClient({ glyphs }: AlevSignalDemoProps) {
+const createInitialSlots = (glyphs: GlyphRecord[]): Slot[] =>
+  Array.from({ length: slotCount }, () => createSlot(glyphs));
+
+const createSlot = (glyphs: GlyphRecord[]): Slot => {
+  const glyph = pickGlyph(glyphs);
+  return {
+    hex: glyph.hex,
+    char: glyph.char,
+    featured: glyph.keywords.length > 0,
+  };
+};
+
+const pickGlyph = (glyphs: GlyphRecord[]): GlyphRecord => {
+  const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
+  const pool = featuredGlyphs.length > 0 && Math.random() < 0.45 ? featuredGlyphs : glyphs;
+  return pool[Math.floor(Math.random() * pool.length)] ?? glyphs[0];
+};
+
+const AlevSignalDemoClient: FC<AlevSignalDemoPanelProps> = props => {
+  const { glyphs } = props;
   const [slots, setSlots] = useState(() => createInitialSlots(glyphs));
   const [focusHex, setFocusHex] = useState(() => pickGlyph(glyphs).hex);
   const [glitchPhase, setGlitchPhase] = useState(false);
@@ -30,7 +50,7 @@ export default function AlevSignalDemoClient({ glyphs }: AlevSignalDemoProps) {
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
-      setSlots((current) => {
+      setSlots(current => {
         const next = current.slice();
         const updates = 3 + Math.floor(Math.random() * 6);
 
@@ -43,7 +63,7 @@ export default function AlevSignalDemoClient({ glyphs }: AlevSignalDemoProps) {
       });
 
       setFocusHex(pickGlyph(glyphs).hex);
-      setGlitchPhase((current) => !current);
+      setGlitchPhase(current => !current);
     }, 85);
 
     return () => {
@@ -67,23 +87,6 @@ export default function AlevSignalDemoClient({ glyphs }: AlevSignalDemoProps) {
       </div>
     </div>
   );
-}
+};
 
-function createInitialSlots(glyphs: GlyphRecord[]): Slot[] {
-  return Array.from({ length: slotCount }, () => createSlot(glyphs));
-}
-
-function createSlot(glyphs: GlyphRecord[]): Slot {
-  const glyph = pickGlyph(glyphs);
-  return {
-    hex: glyph.hex,
-    char: glyph.char,
-    featured: glyph.keywords.length > 0,
-  };
-}
-
-function pickGlyph(glyphs: GlyphRecord[]): GlyphRecord {
-  const featuredGlyphs = glyphs.filter((glyph) => glyph.keywords.length > 0);
-  const pool = featuredGlyphs.length > 0 && Math.random() < 0.45 ? featuredGlyphs : glyphs;
-  return pool[Math.floor(Math.random() * pool.length)] ?? glyphs[0];
-}
+export default AlevSignalDemoClient;

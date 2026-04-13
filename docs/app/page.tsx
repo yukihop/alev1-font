@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return entry ? { title: entry.title } : {};
 }
 
-export default async function HomePage() {
+const HomePage = async () => {
   const [entry, article, { entries }, { prev, next }] = await Promise.all([
     getArticleEntry('index'),
     loadArticleSource('index').catch(() => null),
@@ -30,4 +30,6 @@ export default async function HomePage() {
       <RichText>{content}</RichText>
     </DocsShell>
   );
-}
+};
+
+export default HomePage;
