@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS='--import tsx' eleventy --serve",
-    "build": "NODE_OPTIONS='--import tsx' eleventy"
+    "build:client": "node ./scripts/build-client.mjs",
+    "dev": "node ./node_modules/@11ty/eleventy/cmd.cjs --serve",
+    "build": "node ./node_modules/@11ty/eleventy/cmd.cjs"
   },
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",
@@ -14,7 +15,6 @@
     "markdown-it": "^14.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tsx": "^4.20.6",
     "unist-util-visit": "^5.1.0",
     "yaml": "^2.8.3"
   },
@@ -23,6 +23,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
+    "esbuild": "^0.28.0",
     "typescript": "^5.9.3"
   }
 }

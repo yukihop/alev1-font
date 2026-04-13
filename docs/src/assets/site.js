@@ -24,22 +24,4 @@ function setupThemeToggle() {
   });
 }
 
-function setupLigatureTesters() {
-  for (const tester of document.querySelectorAll('[data-alev-tester]')) {
-    const input = tester.querySelector('[data-alev-input]');
-    const preview = tester.querySelector('[data-alev-preview]');
-    if (!(input instanceof HTMLTextAreaElement) || !(preview instanceof HTMLElement)) {
-      continue;
-    }
-
-    const sync = () => {
-      preview.textContent = input.value;
-    };
-
-    input.addEventListener('input', sync);
-    sync();
-  }
-}
-
 setupThemeToggle();
-setupLigatureTesters();

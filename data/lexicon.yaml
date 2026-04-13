@@ -4,6 +4,7 @@ entries:
       - i
       - alev1
       - me
+      - myself
   - binary: "10100001"
     keywords:
       - be
@@ -18,11 +19,10 @@ entries:
   - binary: "11010000"
     keywords:
       - perfect
-      - perfection
   - binary: "11110000"
     keywords:
       - one
-      - unknown
+      - wan
   - binary: "01001100"
     keywords:
       - straylight
@@ -36,3 +36,24 @@ entries:
   - binary: "01001111"
     keywords:
       - mei
+  - binary: "01000000"
+    keywords:
+      - robot
+  - binary: "01001000"
+    keywords:
+      - human
+  - binary: "11001101"
+    keywords:
+      - live
+      - life
+  - binary: "10100000"
+    keywords:
+      - do
+      - perform
+      - execute
+  - binary: "11001111"
+    keywords:
+      - error
+  - binary: "10100101"
+    keywords:
+      - receive

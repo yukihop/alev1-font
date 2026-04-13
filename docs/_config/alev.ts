@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,8 +40,26 @@ type Manifest = {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DOCS_DIR = path.resolve(__dirname, '..');
-const REPO_DIR = path.resolve(DOCS_DIR, '..');
+function resolveRepoDir(): string {
+  const candidates = [
+    process.cwd(),
+    path.resolve(process.cwd(), '..'),
+    path.resolve(__dirname, '..', '..'),
+    path.resolve(__dirname, '..', '..', '..'),
+  ];
+
+  for (const candidate of candidates) {
+    const manifestPath = path.join(candidate, 'font', 'dist', 'manifest.json');
+    const lexiconPath = path.join(candidate, 'data', 'lexicon.yaml');
+    if (existsSync(manifestPath) && existsSync(lexiconPath)) {
+      return candidate;
+    }
+  }
+
+  throw new Error('Could not resolve repository root for docs/_config/alev.ts');
+}
+
+const REPO_DIR = resolveRepoDir();
 const MANIFEST_PATH = path.join(REPO_DIR, 'font', 'dist', 'manifest.json');
 const LEXICON_PATH = path.join(REPO_DIR, 'data', 'lexicon.yaml');
 

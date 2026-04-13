@@ -6,38 +6,15 @@ tags:
   - docs
 ---
 
-このリポジトリでは、フォント生成と docs を分けています。
+## ダウンロード
 
-## 前提ツール
+- TTFファイル（デスクトップ用）
+- WOFFファイル（ブラウザ用）
 
-- Node.js
-- `pnpm`
-- `uv`  
-  これはフォントビルド時だけ使います。
+## 使い方
 
-## フォントをビルドする
+本フォントはリガチャ（合字）の仕組みを用いてALEV文字を表示します。
 
-```bash
-pnpm install
-pnpm --filter font build
-```
+## 注意
 
-フォントの主な生成物:
-
-- `font/dist/alev1.ttf`
-- `font/dist/alev1.woff2`
-- `font/dist/manifest.json`
-
-## docs を起動する
-
-```bash
-pnpm --filter docs dev
-```
-
-本番ビルド:
-
-```bash
-pnpm --filter docs build
-```
-
-Cloudflare Pages での配信を想定しているため、docs は静的 HTML を中心に構成しています。
+`:robot:` などのリガチャ表記は**非常に不安定**です。

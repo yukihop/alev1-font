@@ -9,8 +9,10 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import * as runtime from 'react/jsx-runtime';
 
+import { buildAllAssets } from './scripts/build-client.mjs';
+
 const __filename = fileURLToPath(import.meta.url);
-let mdxRuntimeCache = null;
+const __dirname = path.dirname(__filename);
 
 function getNavSlug(entry) {
   if (entry.fileSlug) {
@@ -34,25 +36,80 @@ function createMarkdownLibrary() {
 }
 
 async function loadMdxRuntime() {
-  if (!mdxRuntimeCache) {
-    mdxRuntimeCache = Promise.all([
-      import('./_config/mdx-components.tsx'),
-      import('./_config/remark-alev-inline.ts'),
-    ]).then(([mdxComponentsModule, remarkModule]) => ({
-      mdxComponents: mdxComponentsModule.mdxComponents,
-      remarkAlevInline: remarkModule.remarkAlevInline,
-    }));
-  }
+  const nonce = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const serverDir = path.join(__dirname, '.cache', 'server');
+  const alevInlineUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'AlevInline.js')).href}?v=${nonce}`;
+  const conceptDictionaryUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ConceptDictionary.js')).href}?v=${nonce}`;
+  const glyphListUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphList.js')).href}?v=${nonce}`;
+  const glyphMatrixUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphMatrix.js')).href}?v=${nonce}`;
+  const reactIslandUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ReactIsland.js')).href}?v=${nonce}`;
+  const simpleEditorClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'SimpleEditorClient.js')).href}?v=${nonce}`;
+  const alevUrl = `${pathToFileURL(path.join(serverDir, 'alev.js')).href}?v=${nonce}`;
+  const remarkUrl = `${pathToFileURL(path.join(serverDir, 'remark-alev-inline.js')).href}?v=${nonce}`;
+  const [
+    alevInlineModule,
+    conceptDictionaryModule,
+    glyphListModule,
+    glyphMatrixModule,
+    reactIslandModule,
+    simpleEditorClientModule,
+    alevModule,
+    remarkModule,
+  ] = await Promise.all([
+    import(alevInlineUrl),
+    import(conceptDictionaryUrl),
+    import(glyphListUrl),
+    import(glyphMatrixUrl),
+    import(reactIslandUrl),
+    import(simpleEditorClientUrl),
+    import(alevUrl),
+    import(remarkUrl),
+  ]);
+  const keywordMap = Object.fromEntries(
+    [...alevModule.getKeywordMap().entries()].sort(([left], [right]) => left.localeCompare(right)),
+  );
+  const SimpleEditor = props => {
+    const clientProps = {
+      defaultValue: props.defaultValue,
+      defaultFontSize: props.defaultFontSize,
+      defaultLetterSpacing: props.defaultLetterSpacing,
+      keywordMap,
+    };
 
-  return mdxRuntimeCache;
+    return React.createElement(
+      reactIslandModule.default,
+      { component: 'SimpleEditor', props: clientProps },
+      React.createElement(simpleEditorClientModule.default, clientProps),
+    );
+  };
+
+  return {
+    mdxComponents: {
+      AlevInline: alevInlineModule.default,
+      GlyphMatrix: glyphMatrixModule.default,
+      GlyphList: glyphListModule.default,
+      ConceptDictionary: conceptDictionaryModule.default,
+      SimpleEditor,
+      LigatureTester: SimpleEditor,
+    },
+    remarkAlevInline: remarkModule.remarkAlevInline,
+  };
 }
 
 export default function (eleventyConfig) {
   eleventyConfig.setLibrary('md', createMarkdownLibrary());
+  eleventyConfig.watchIgnores.add('./.cache/**');
   eleventyConfig.addPassthroughCopy({ 'src/assets': 'assets' });
+  eleventyConfig.addPassthroughCopy({ '.cache/site-react.js': 'assets/site-react.js' });
+  eleventyConfig.addPassthroughCopy({ '.cache/site-react.js.map': 'assets/site-react.js.map' });
   eleventyConfig.addPassthroughCopy({ '../font/dist/alev1.woff2': 'assets/alev1.woff2' });
   eleventyConfig.addWatchTarget('../font/dist/manifest.json');
   eleventyConfig.addWatchTarget('../data/lexicon.yaml');
+  eleventyConfig.addWatchTarget('./_config/');
+  eleventyConfig.addWatchTarget('./client/');
+  eleventyConfig.on('eleventy.before', async () => {
+    await buildAllAssets();
+  });
 
   eleventyConfig.addCollection('docsNav', (collectionApi) => {
     return collectionApi
@@ -79,16 +136,17 @@ export default function (eleventyConfig) {
       const parsed = matter(source);
       return parsed.data;
     },
-    async compile(inputContent, inputPath) {
-      const parsed = matter(inputContent);
-      const { remarkAlevInline, mdxComponents } = await loadMdxRuntime();
-      const compiled = await compileMdx(parsed.content, {
-        outputFormat: 'function-body',
-        providerImportSource: '@mdx-js/react',
-        remarkPlugins: [remarkAlevInline],
-      });
-
+    async compile(_, inputPath) {
       return async function render() {
+        const source = readFileSync(inputPath, 'utf8');
+        const parsed = matter(source);
+        const { remarkAlevInline, mdxComponents } = await loadMdxRuntime();
+        const compiled = await compileMdx(parsed.content, {
+          outputFormat: 'function-body',
+          providerImportSource: '@mdx-js/react',
+          remarkPlugins: [remarkAlevInline],
+        });
+
         const module = await run(compiled, {
           ...runtime,
           baseUrl: pathToFileURL(inputPath),
