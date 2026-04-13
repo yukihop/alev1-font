@@ -4,13 +4,16 @@ import { fileURLToPath } from 'node:url';
 
 import YAML from 'yaml';
 
-export type GlyphRecord = {
+export type ManifestGlyphRecord = {
   binary: string;
   hex: string;
   glyphName: string;
   codepoint: string;
   char: string;
   bits: boolean[];
+};
+
+export type GlyphRecord = ManifestGlyphRecord & {
   keywords: string[];
   label?: string | null;
   description?: string | null;
@@ -36,7 +39,16 @@ export type AlevData = {
 type Manifest = {
   familyName: string;
   glyphCount: number;
-  glyphs: GlyphRecord[];
+  glyphs: ManifestGlyphRecord[];
+};
+
+type LexiconEntry = {
+  binary?: string;
+  keywords?: string[];
+  label?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  comment?: string | null;
 };
 
 const __filename = fileURLToPath(import.meta.url);
@@ -65,7 +77,7 @@ const MANIFEST_PATH = path.join(REPO_DIR, 'font', 'dist', 'manifest.json');
 const LEXICON_PATH = path.join(REPO_DIR, 'data', 'lexicon.yaml');
 
 let manifestCache: Manifest | null = null;
-let lexiconCache: Array<{ binary?: string; keywords?: string[] }> | null = null;
+let lexiconCache: LexiconEntry[] | null = null;
 
 function loadManifest(): Manifest {
   if (!manifestCache) {
@@ -78,11 +90,33 @@ function loadManifest(): Manifest {
 function loadLexicon() {
   if (!lexiconCache) {
     const source = readFileSync(LEXICON_PATH, 'utf8');
-    const parsed = YAML.parse(source) as { entries?: Array<{ binary?: string; keywords?: string[] }> };
+    const parsed = YAML.parse(source) as { entries?: LexiconEntry[] };
     lexiconCache = Array.isArray(parsed?.entries) ? parsed.entries : [];
   }
 
   return lexiconCache;
+}
+
+function getLexiconMap(): Map<string, Omit<GlyphRecord, keyof ManifestGlyphRecord>> {
+  const lexiconMap = new Map<string, Omit<GlyphRecord, keyof ManifestGlyphRecord>>();
+
+  for (const entry of loadLexicon()) {
+    const binary = String(entry.binary ?? '').trim();
+    if (!/^[01]{8}$/.test(binary)) {
+      continue;
+    }
+
+    const hex = binaryToHex(binary);
+    lexiconMap.set(hex, {
+      keywords: Array.isArray(entry.keywords) ? entry.keywords.map((keyword) => String(keyword)) : [],
+      label: entry.label ? String(entry.label) : null,
+      description: entry.description ? String(entry.description) : null,
+      notes: entry.notes ? String(entry.notes) : null,
+      comment: entry.comment ? String(entry.comment) : null,
+    });
+  }
+
+  return lexiconMap;
 }
 
 export function binaryToHex(binary: string): string {
@@ -134,7 +168,17 @@ export function renderAlevContent(source: string, keywordMap = getKeywordMap()):
 
 export function getAlevData(): AlevData {
   const manifest = loadManifest();
-  const glyphs = Array.isArray(manifest.glyphs) ? manifest.glyphs : [];
+  const lexiconMap = getLexiconMap();
+  const glyphs = (Array.isArray(manifest.glyphs) ? manifest.glyphs : []).map((glyph) => ({
+    ...glyph,
+    ...(lexiconMap.get(glyph.hex) ?? {
+      keywords: [],
+      label: null,
+      description: null,
+      notes: null,
+      comment: null,
+    }),
+  }));
   const dictionaryEntries = glyphs
     .flatMap((glyph) =>
       glyph.keywords.map((keyword) => ({

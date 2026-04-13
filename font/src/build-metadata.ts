@@ -18,20 +18,14 @@ export async function buildMetadata() {
   await ensureDir(DIST_DIR);
 
   const glyphs = hexValues().map((hex) => {
-    const entry = lexicon.get(hex);
     const codepoint = codepointForHex(hex);
     return {
-      binary: entry.binary,
+      binary: lexicon.get(hex).binary,
       hex,
       glyphName: glyphNameForHex(hex),
       codepoint: codepointLabel(codepoint),
       char: String.fromCodePoint(codepoint),
       bits: bitArrayForHex(hex),
-      keywords: entry.keywords,
-      label: entry.label,
-      description: entry.description,
-      notes: entry.notes,
-      comment: entry.comment,
     };
   });
 

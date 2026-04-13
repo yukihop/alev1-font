@@ -1,20 +1,22 @@
 import { readFile } from 'node:fs/promises';
 
-import { METADATA_PATH, PREVIEW_PATH, isMain, loadGlyphModel, writeText } from './shared.ts';
+import { METADATA_PATH, PREVIEW_PATH, isMain, loadGlyphModel, loadLexicon, writeText } from './shared.ts';
 
 export async function buildPreview() {
   const model = await loadGlyphModel();
+  const lexicon = await loadLexicon();
   const manifest = JSON.parse(await readFile(METADATA_PATH, 'utf8'));
   const cards = manifest.glyphs
     .map((glyph) => {
-      const keywords = glyph.keywords.length ? glyph.keywords.join(', ') : '&nbsp;';
+      const keywords = lexicon.get(glyph.hex).keywords;
+      const keywordText = keywords.length ? keywords.join(', ') : '&nbsp;';
       return `
         <article class="card">
           <div class="binary">0b${glyph.binary}</div>
           <div class="hex">${glyph.hex}</div>
           <div class="glyph">${glyph.char}</div>
           <div class="codepoint">${glyph.codepoint}</div>
-          <div class="keywords">${keywords}</div>
+          <div class="keywords">${keywordText}</div>
         </article>
       `;
     })
