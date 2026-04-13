@@ -32,6 +32,7 @@ export async function buildServerAssets() {
   await build({
     entryPoints: [
       path.join(docsDir, "_config", "alev.ts"),
+      path.join(docsDir, "_config", "mdx", "AlevSignalDemoClient.tsx"),
       path.join(docsDir, "_config", "remark-alev-inline.ts"),
       path.join(docsDir, "_config", "mdx", "AlevInline.tsx"),
       path.join(docsDir, "_config", "mdx", "CopyPill.tsx"),

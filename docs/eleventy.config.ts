@@ -39,6 +39,7 @@ function createMarkdownLibrary() {
 async function loadMdxRuntime() {
   const nonce = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const serverDir = path.join(__dirname, '.cache', 'server');
+  const alevSignalDemoClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'AlevSignalDemoClient.js')).href}?v=${nonce}`;
   const alevInlineUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'AlevInline.js')).href}?v=${nonce}`;
   const conceptDictionaryUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ConceptDictionary.js')).href}?v=${nonce}`;
   const glyphListClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphListClient.js')).href}?v=${nonce}`;
@@ -49,6 +50,7 @@ async function loadMdxRuntime() {
   const alevUrl = `${pathToFileURL(path.join(serverDir, 'alev.js')).href}?v=${nonce}`;
   const remarkUrl = `${pathToFileURL(path.join(serverDir, 'remark-alev-inline.js')).href}?v=${nonce}`;
   const [
+    alevSignalDemoClientModule,
     alevInlineModule,
     conceptDictionaryModule,
     glyphListClientModule,
@@ -59,6 +61,7 @@ async function loadMdxRuntime() {
     alevModule,
     remarkModule,
   ] = await Promise.all([
+    import(alevSignalDemoClientUrl),
     import(alevInlineUrl),
     import(conceptDictionaryUrl),
     import(glyphListClientUrl),
@@ -84,6 +87,7 @@ async function loadMdxRuntime() {
       { component, props: clientProps },
       React.createElement(clientModule.default, clientProps),
     );
+  const AlevSignalDemo = () => renderIsland('AlevSignalDemo', { glyphs: glyphData.glyphs }, alevSignalDemoClientModule);
   const GlyphMatrix = () => renderIsland('GlyphMatrix', glyphData, glyphMatrixClientModule);
   const GlyphList = () => renderIsland('GlyphList', { glyphs: glyphData.glyphs }, glyphListClientModule);
   const SimpleEditor = props => {
@@ -107,6 +111,7 @@ async function loadMdxRuntime() {
 
   return {
     mdxComponents: {
+      AlevSignalDemo,
       AlevInline: alevInlineModule.default,
       GlyphMatrix,
       GlyphList,
