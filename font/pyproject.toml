@@ -1,0 +1,13 @@
+[project]
+name = "alev1-font-build"
+version = "0.1.0"
+description = "Build tooling for the Alev1 concept font"
+requires-python = ">=3.12"
+dependencies = [
+  "brotli>=1.1.0",
+  "fontmake>=3.11.0",
+  "fonttools[woff]>=4.58.0",
+]
+
+[tool.uv]
+package = false

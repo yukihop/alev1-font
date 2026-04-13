@@ -1,0 +1,9 @@
+node_modules/
+.pnpm-store/
+.local/
+font/.venv/
+font/generated/
+font/dist/
+site/node_modules/
+__pycache__/
+*.pyc

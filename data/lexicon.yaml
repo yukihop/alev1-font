@@ -1,0 +1,38 @@
+entries:
+  - binary: "01000001"
+    keywords:
+      - i
+      - alev1
+      - me
+  - binary: "10100001"
+    keywords:
+      - be
+      - am
+      - is
+  - binary: "10000001"
+    keywords:
+      - not
+  - binary: "11001100"
+    keywords:
+      - love
+  - binary: "11010000"
+    keywords:
+      - perfect
+      - perfection
+  - binary: "11110000"
+    keywords:
+      - one
+      - unknown
+  - binary: "01001100"
+    keywords:
+      - straylight
+  - binary: "01001101"
+    keywords:
+      - fuyuko
+      - fuyu
+  - binary: "01001110"
+    keywords:
+      - asahi
+  - binary: "01001111"
+    keywords:
+      - mei

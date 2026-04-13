@@ -1,0 +1,12 @@
+version: 1
+font:
+  familyName: "Alev1"
+  styleName: "Regular"
+  outputFileBase: "alev1"
+  unitsPerEm: 1000
+  ascender: 820
+  descender: -180
+  advanceWidth: 720
+  spaceWidth: 320
+  inputGlyphWidth: 420
+  notdefWidth: 720

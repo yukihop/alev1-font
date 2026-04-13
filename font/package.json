@@ -1,0 +1,18 @@
+{
+  "name": "font",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node src/build.mjs",
+    "build:glyphs": "node src/generate-glyphs.mjs",
+    "build:features": "node src/generate-features.mjs",
+    "build:metadata": "node src/build-metadata.mjs",
+    "build:preview": "node src/build-preview.mjs",
+    "build:font": "node src/build-font.mjs",
+    "check": "node src/check.mjs",
+    "clean": "node src/clean.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  }
+}
