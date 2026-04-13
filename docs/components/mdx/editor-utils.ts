@@ -43,16 +43,26 @@ export const defaultVisualPreset = visualPresets[0];
 export const binaryToHex = (binary: string): string =>
   Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
 
-export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string => {
+const alevCodepointBase = 0xe000;
+
+export const glyphCharForHex = (hex: string): string =>
+  String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
+
+const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null => {
   if (/^0x[0-9a-f]{2}$/i.test(token)) {
-    return `0x${token.slice(2).toUpperCase()}`;
+    return token.slice(2).toUpperCase();
   }
 
   if (/^0b[01]{8}$/i.test(token)) {
-    return `0x${binaryToHex(token.slice(2))}`;
+    return binaryToHex(token.slice(2));
   }
 
-  return keywordMap[token] ? `0x${keywordMap[token]}` : token;
+  return keywordMap[token] ?? null;
+};
+
+export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string => {
+  const hex = resolveTokenHex(token, keywordMap);
+  return hex ? glyphCharForHex(hex) : token;
 };
 
 export const normalizeEditorContent = (value: string, keywordMap: KeywordMap): string =>

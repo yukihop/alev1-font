@@ -83,6 +83,12 @@ export function binaryToHex(binary: string): string {
   return Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
 }
 
+const alevCodepointBase = 0xe000;
+
+export function glyphCharForHex(hex: string): string {
+  return String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
+}
+
 export const getKeywordMap = cache(() => {
   const keywordMap = new Map<string, string>();
 
@@ -126,15 +132,15 @@ function getLexiconMap(): Map<string, Omit<GlyphRecord, keyof ManifestGlyphRecor
 
 export function normalizeAlevToken(token: string, keywordMap = getKeywordMap()): string {
   if (/^0x[0-9a-f]{2}$/i.test(token)) {
-    return `0x${token.slice(2).toUpperCase()}`;
+    return glyphCharForHex(token.slice(2).toUpperCase());
   }
 
   if (/^0b[01]{8}$/i.test(token)) {
-    return `0x${binaryToHex(token.slice(2))}`;
+    return glyphCharForHex(binaryToHex(token.slice(2)));
   }
 
   const mapped = keywordMap.get(token);
-  return mapped ? `0x${mapped}` : token;
+  return mapped ? glyphCharForHex(mapped) : token;
 }
 
 export function renderAlevContent(source: string, keywordMap = getKeywordMap()): string {

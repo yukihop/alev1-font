@@ -27,12 +27,12 @@ const RootLayout = (props: RootLayoutProps) => {
 
   return (
     <html lang="ja" suppressHydrationWarning>
-      <head>
+      <body>
         <Script id="theme-boot" strategy="beforeInteractive">
           {themeBootScript}
         </Script>
-      </head>
-      <body>{children}</body>
+        {children}
+      </body>
     </html>
   );
 };
