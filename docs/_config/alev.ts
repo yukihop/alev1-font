@@ -15,6 +15,7 @@ export type GlyphRecord = {
   label?: string | null;
   description?: string | null;
   notes?: string | null;
+  comment?: string | null;
 };
 
 export type DictionaryEntry = {

@@ -78,8 +78,7 @@ pre,
 .dictionary-hex,
 .binary-pill,
 .hex-pill,
-.nav-link,
-.brand-sub {
+.nav-link {
   font-family: var(--font-mono);
 }
 
@@ -832,6 +831,13 @@ html[data-theme="light"] {
     flex-wrap: wrap;
     color: var(--text-muted);
     font-size: 0.92rem;
+  }
+
+  .glyph-comment {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
 }
 

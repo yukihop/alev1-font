@@ -20,6 +20,7 @@ const GlyphList: FC = () => {
                   </span>
                 ))}
               </div>
+              {glyph.comment ? <div className="glyph-comment">{glyph.comment}</div> : null}
             </div>
           </li>
         ))}

@@ -31,6 +31,7 @@ export async function buildMetadata() {
       label: entry.label,
       description: entry.description,
       notes: entry.notes,
+      comment: entry.comment,
     };
   });
 

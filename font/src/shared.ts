@@ -140,7 +140,7 @@ export async function loadLexicon() {
   const allEntries = new Map(
     binaryValues().map((binary) => {
       const hex = hexForBinary(binary);
-      return [hex, { binary, hex, keywords: [], label: null, description: null, notes: null }];
+      return [hex, { binary, hex, keywords: [], label: null, description: null, notes: null, comment: null }];
     }),
   );
   const seenBinary = new Set();
@@ -192,6 +192,7 @@ export async function loadLexicon() {
       label: entry.label ? String(entry.label) : null,
       description: entry.description ? String(entry.description) : null,
       notes: entry.notes ? String(entry.notes) : null,
+      comment: entry.comment ? String(entry.comment) : null,
     });
   }
 
