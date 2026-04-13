@@ -1,9 +1,9 @@
 version: 1
 font:
-  familyName: "Alev1"
+  familyName: "Alevish"
   styleName: "Regular"
   designer: "naruto"
-  outputFileBase: "alev1"
+  outputFileBase: "alevish"
   unitsPerEm: 1000
   ascender: 880
   descender: -120

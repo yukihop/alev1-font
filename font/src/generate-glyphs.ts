@@ -87,7 +87,7 @@ export async function generateGlyphs() {
   await writeText(
     path.join(UFO_DIR, 'metainfo.plist'),
     plistXml({
-      creator: 'Alev1 build scripts',
+      creator: 'Alevish build scripts',
       formatVersion: 3,
     }),
   );

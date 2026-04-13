@@ -9,7 +9,7 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "alev1-font-build"
+name = "alevish-font-build"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [

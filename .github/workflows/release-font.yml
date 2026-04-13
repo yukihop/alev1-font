@@ -41,7 +41,7 @@ jobs:
 
       - name: Create or update GitHub release
         run: |
-          asset_path="release/alev1-${GITHUB_REF_NAME}.zip"
+          asset_path="release/alevish-${GITHUB_REF_NAME}.zip"
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
             gh release upload "${GITHUB_REF_NAME}" "$asset_path" --clobber
           else
