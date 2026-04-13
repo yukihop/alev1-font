@@ -1,6 +1,9 @@
 {
   "name": "alev1-font",
   "private": true,
+  "engines": {
+    "node": "24.6"
+  },
   "packageManager": "pnpm@10.27.0",
   "scripts": {
     "pages:build-all": "pnpm --filter font build && pnpm --filter docs build",
