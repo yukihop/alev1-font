@@ -1,12 +1,17 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
+import GlyphListClient, { type GlyphListProps } from '../_config/mdx/GlyphListClient.tsx';
+import GlyphMatrixClient from '../_config/mdx/GlyphMatrixClient.tsx';
 import MarkdownEditorClient from '../_config/mdx/MarkdownEditorClient.tsx';
 import SimpleEditorClient from '../_config/mdx/SimpleEditorClient.tsx';
+import { type GlyphMatrixProps } from '../_config/mdx/GlyphMatrixClient.tsx';
 import { type MarkdownEditorProps } from '../_config/mdx/markdownEditorShared.ts';
 import { type SimpleEditorProps } from '../_config/mdx/simpleEditorShared.ts';
 
 const islandRegistry = {
+  GlyphList: GlyphListClient,
+  GlyphMatrix: GlyphMatrixClient,
   MarkdownEditor: MarkdownEditorClient,
   SimpleEditor: SimpleEditorClient,
   LigatureTester: SimpleEditorClient,
@@ -27,7 +32,7 @@ function hydrateIslands() {
     }
 
     const rawProps = root.dataset.reactProps ?? '{}';
-    const props = JSON.parse(rawProps) as SimpleEditorProps | MarkdownEditorProps;
+    const props = JSON.parse(rawProps) as GlyphListProps | GlyphMatrixProps | SimpleEditorProps | MarkdownEditorProps;
     hydrateRoot(root, React.createElement(Component, props));
   }
 }

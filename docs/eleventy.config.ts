@@ -41,8 +41,8 @@ async function loadMdxRuntime() {
   const serverDir = path.join(__dirname, '.cache', 'server');
   const alevInlineUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'AlevInline.js')).href}?v=${nonce}`;
   const conceptDictionaryUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ConceptDictionary.js')).href}?v=${nonce}`;
-  const glyphListUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphList.js')).href}?v=${nonce}`;
-  const glyphMatrixUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphMatrix.js')).href}?v=${nonce}`;
+  const glyphListClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphListClient.js')).href}?v=${nonce}`;
+  const glyphMatrixClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphMatrixClient.js')).href}?v=${nonce}`;
   const markdownEditorClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'MarkdownEditorClient.js')).href}?v=${nonce}`;
   const reactIslandUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ReactIsland.js')).href}?v=${nonce}`;
   const simpleEditorClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'SimpleEditorClient.js')).href}?v=${nonce}`;
@@ -51,8 +51,8 @@ async function loadMdxRuntime() {
   const [
     alevInlineModule,
     conceptDictionaryModule,
-    glyphListModule,
-    glyphMatrixModule,
+    glyphListClientModule,
+    glyphMatrixClientModule,
     markdownEditorClientModule,
     reactIslandModule,
     simpleEditorClientModule,
@@ -61,17 +61,31 @@ async function loadMdxRuntime() {
   ] = await Promise.all([
     import(alevInlineUrl),
     import(conceptDictionaryUrl),
-    import(glyphListUrl),
-    import(glyphMatrixUrl),
+    import(glyphListClientUrl),
+    import(glyphMatrixClientUrl),
     import(markdownEditorClientUrl),
     import(reactIslandUrl),
     import(simpleEditorClientUrl),
     import(alevUrl),
     import(remarkUrl),
   ]);
+  const alevData = alevModule.getAlevData();
+  const glyphData = {
+    glyphs: alevData.glyphs,
+    rows: alevData.rows,
+    cols: alevData.cols,
+  };
   const keywordMap = Object.fromEntries(
     [...alevModule.getKeywordMap().entries()].sort(([left], [right]) => left.localeCompare(right)),
   );
+  const renderIsland = (component, clientProps, clientModule) =>
+    React.createElement(
+      reactIslandModule.default,
+      { component, props: clientProps },
+      React.createElement(clientModule.default, clientProps),
+    );
+  const GlyphMatrix = () => renderIsland('GlyphMatrix', glyphData, glyphMatrixClientModule);
+  const GlyphList = () => renderIsland('GlyphList', { glyphs: glyphData.glyphs }, glyphListClientModule);
   const SimpleEditor = props => {
     const clientProps = {
       defaultValue: props.defaultValue,
@@ -80,11 +94,7 @@ async function loadMdxRuntime() {
       keywordMap,
     };
 
-    return React.createElement(
-      reactIslandModule.default,
-      { component: 'SimpleEditor', props: clientProps },
-      React.createElement(simpleEditorClientModule.default, clientProps),
-    );
+    return renderIsland('SimpleEditor', clientProps, simpleEditorClientModule);
   };
   const MarkdownEditor = props => {
     const clientProps = {
@@ -92,18 +102,14 @@ async function loadMdxRuntime() {
       keywordMap,
     };
 
-    return React.createElement(
-      reactIslandModule.default,
-      { component: 'MarkdownEditor', props: clientProps },
-      React.createElement(markdownEditorClientModule.default, clientProps),
-    );
+    return renderIsland('MarkdownEditor', clientProps, markdownEditorClientModule);
   };
 
   return {
     mdxComponents: {
       AlevInline: alevInlineModule.default,
-      GlyphMatrix: glyphMatrixModule.default,
-      GlyphList: glyphListModule.default,
+      GlyphMatrix,
+      GlyphList,
       ConceptDictionary: conceptDictionaryModule.default,
       MarkdownEditor,
       SimpleEditor,
