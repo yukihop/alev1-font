@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.27.0",
   "scripts": {
+    "pages:build-all": "pnpm --filter font build && pnpm --filter docs build",
     "build": "pnpm --filter font build",
     "check": "pnpm --filter font check",
     "docs:build": "pnpm --filter docs build",
