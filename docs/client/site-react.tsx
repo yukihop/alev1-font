@@ -1,10 +1,13 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 
+import MarkdownEditorClient from '../_config/mdx/MarkdownEditorClient.tsx';
 import SimpleEditorClient from '../_config/mdx/SimpleEditorClient.tsx';
+import { type MarkdownEditorProps } from '../_config/mdx/markdownEditorShared.ts';
 import { type SimpleEditorProps } from '../_config/mdx/simpleEditorShared.ts';
 
 const islandRegistry = {
+  MarkdownEditor: MarkdownEditorClient,
   SimpleEditor: SimpleEditorClient,
   LigatureTester: SimpleEditorClient,
 } as const;
@@ -24,7 +27,7 @@ function hydrateIslands() {
     }
 
     const rawProps = root.dataset.reactProps ?? '{}';
-    const props = JSON.parse(rawProps) as SimpleEditorProps;
+    const props = JSON.parse(rawProps) as SimpleEditorProps | MarkdownEditorProps;
     hydrateRoot(root, React.createElement(Component, props));
   }
 }

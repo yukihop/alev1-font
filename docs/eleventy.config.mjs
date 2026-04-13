@@ -42,6 +42,7 @@ async function loadMdxRuntime() {
   const conceptDictionaryUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ConceptDictionary.js')).href}?v=${nonce}`;
   const glyphListUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphList.js')).href}?v=${nonce}`;
   const glyphMatrixUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'GlyphMatrix.js')).href}?v=${nonce}`;
+  const markdownEditorClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'MarkdownEditorClient.js')).href}?v=${nonce}`;
   const reactIslandUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'ReactIsland.js')).href}?v=${nonce}`;
   const simpleEditorClientUrl = `${pathToFileURL(path.join(serverDir, 'mdx', 'SimpleEditorClient.js')).href}?v=${nonce}`;
   const alevUrl = `${pathToFileURL(path.join(serverDir, 'alev.js')).href}?v=${nonce}`;
@@ -51,6 +52,7 @@ async function loadMdxRuntime() {
     conceptDictionaryModule,
     glyphListModule,
     glyphMatrixModule,
+    markdownEditorClientModule,
     reactIslandModule,
     simpleEditorClientModule,
     alevModule,
@@ -60,6 +62,7 @@ async function loadMdxRuntime() {
     import(conceptDictionaryUrl),
     import(glyphListUrl),
     import(glyphMatrixUrl),
+    import(markdownEditorClientUrl),
     import(reactIslandUrl),
     import(simpleEditorClientUrl),
     import(alevUrl),
@@ -82,6 +85,18 @@ async function loadMdxRuntime() {
       React.createElement(simpleEditorClientModule.default, clientProps),
     );
   };
+  const MarkdownEditor = props => {
+    const clientProps = {
+      defaultValue: props.defaultValue,
+      keywordMap,
+    };
+
+    return React.createElement(
+      reactIslandModule.default,
+      { component: 'MarkdownEditor', props: clientProps },
+      React.createElement(markdownEditorClientModule.default, clientProps),
+    );
+  };
 
   return {
     mdxComponents: {
@@ -89,6 +104,7 @@ async function loadMdxRuntime() {
       GlyphMatrix: glyphMatrixModule.default,
       GlyphList: glyphListModule.default,
       ConceptDictionary: conceptDictionaryModule.default,
+      MarkdownEditor,
       SimpleEditor,
       LigatureTester: SimpleEditor,
     },

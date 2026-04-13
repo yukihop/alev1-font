@@ -37,6 +37,7 @@ export async function buildServerAssets() {
       path.join(docsDir, '_config', 'mdx', 'ConceptDictionary.tsx'),
       path.join(docsDir, '_config', 'mdx', 'GlyphList.tsx'),
       path.join(docsDir, '_config', 'mdx', 'GlyphMatrix.tsx'),
+      path.join(docsDir, '_config', 'mdx', 'MarkdownEditorClient.tsx'),
       path.join(docsDir, '_config', 'mdx', 'ReactIsland.tsx'),
       path.join(docsDir, '_config', 'mdx', 'SimpleEditorClient.tsx'),
     ],

@@ -6,5 +6,6 @@ font/generated/
 font/dist/
 site/node_modules/
 docs/_site/
+docs/.cache/
 __pycache__/
 *.pyc
