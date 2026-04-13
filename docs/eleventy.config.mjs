@@ -7,6 +7,7 @@ import matter from 'gray-matter';
 import markdownIt from 'markdown-it';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import remarkGfm from 'remark-gfm';
 import * as runtime from 'react/jsx-runtime';
 
 import { buildAllAssets } from './scripts/build-client.mjs';
@@ -160,7 +161,7 @@ export default function (eleventyConfig) {
         const compiled = await compileMdx(parsed.content, {
           outputFormat: 'function-body',
           providerImportSource: '@mdx-js/react',
-          remarkPlugins: [remarkAlevInline],
+          remarkPlugins: [remarkGfm, remarkAlevInline],
         });
 
         const module = await run(compiled, {

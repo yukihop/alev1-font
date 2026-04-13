@@ -201,7 +201,6 @@ html[data-theme="light"] {
     line-height: 1.1;
   }
 
-  p,
   li,
   blockquote {
     color: var(--text);
@@ -251,6 +250,26 @@ html[data-theme="light"] {
       padding: 0;
       background: transparent;
     }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  th,
+  td {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    color: var(--text-muted);
+    background: var(--bg-soft);
+    font-weight: 600;
   }
 }
 
@@ -375,7 +394,6 @@ h2 + .docs-panel,
       font-size: 1.08rem;
     }
 
-    p,
     li,
     blockquote,
     th,
