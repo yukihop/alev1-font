@@ -17,7 +17,9 @@ export const GLYPHS_DIR = path.join(UFO_DIR, 'glyphs');
 export const FEATURES_PATH = path.join(UFO_DIR, 'features.fea');
 export const METADATA_PATH = path.join(DIST_DIR, 'manifest.json');
 export const PREVIEW_PATH = path.join(DIST_DIR, 'preview.html');
-export const SVG_PARTS_PATH = path.join(FONT_DIR, 'alev-base.svg');
+export const SVG_PARTS_PATH = path.join(DATA_DIR, 'glyphs', 'alevish.svg');
+export const OPEN_BRACKET_SVG_PATH = path.join(DATA_DIR, 'glyphs', 'open_bracket.svg');
+export const CLOSE_BRACKET_SVG_PATH = path.join(DATA_DIR, 'glyphs', 'close_bracket.svg');
 export const DONOR_FONT_PATH = path.join(FONT_DIR, 'vendor', 'IBMPlexMono-Regular.ttf');
 export const DONOR_LICENSE_PATH = path.join(FONT_DIR, 'vendor', 'IBMPlexMono-OFL.txt');
 
@@ -30,6 +32,11 @@ const PARTS = Object.freeze([
   { name: 'part6', mask: 0x04 },
   { name: 'part7', mask: 0x02 },
   { name: 'part8', mask: 0x01 },
+]);
+
+const BRACKET_GLYPHS = Object.freeze([
+  { char: '[', filePath: OPEN_BRACKET_SVG_PATH },
+  { char: ']', filePath: CLOSE_BRACKET_SVG_PATH },
 ]);
 
 export function isMain(importMeta) {
@@ -114,24 +121,48 @@ export async function loadGlyphModel() {
 }
 
 export async function loadSvgParts(model = null) {
-  const source = await readFile(SVG_PARTS_PATH, 'utf8');
   const glyphModel = model ?? (await loadGlyphModel());
-  const viewBox = parseSvgViewBox(source);
+  const { source, viewBox } = await loadSvgSource(SVG_PARTS_PATH);
   const parts = new Map();
 
   for (const part of PARTS) {
-    const match = source.match(new RegExp(`<path\\b[^>]*id="${part.name}"[^>]*d="([^"]+)"[^>]*/?>`, 's'));
-    if (!match) {
-      throw new Error(`Missing ${part.name} in ${SVG_PARTS_PATH}`);
-    }
-
     parts.set(part.name, {
       ...part,
-      contours: transformContoursToFontSpace(parseSvgPath(match[1]), glyphModel, viewBox),
+      contours: transformContoursToFontSpace(
+        extractNamedSvgContours(source, SVG_PARTS_PATH, part.name),
+        glyphModel,
+        viewBox,
+        {
+          targetWidth: glyphModel.font.advanceWidth,
+          scale: Number(glyphModel.font.glyphScale ?? 1),
+        },
+      ),
     });
   }
 
   return parts;
+}
+
+export async function loadBracketGlyphs(model = null) {
+  const glyphModel = model ?? (await loadGlyphModel());
+
+  return Promise.all(
+    BRACKET_GLYPHS.map(async ({ char, filePath }) => {
+      const { source, viewBox } = await loadSvgSource(filePath);
+      return {
+        char,
+        glyphName: inputGlyphNameForChar(char),
+        width: viewBox.width,
+        unicodes: [char.codePointAt(0)],
+        contours: transformContoursToFontSpace(
+          extractSingleSvgContours(source, filePath),
+          glyphModel,
+          viewBox,
+          { targetWidth: viewBox.width, scale: 1 },
+        ),
+      };
+    }),
+  );
 }
 
 export async function loadLexicon() {
@@ -349,10 +380,15 @@ function formatNumber(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(3);
 }
 
-function parseSvgViewBox(source) {
+async function loadSvgSource(filePath) {
+  const source = await readFile(filePath, 'utf8');
+  return { source, viewBox: parseSvgViewBox(source, filePath) };
+}
+
+function parseSvgViewBox(source, sourceLabel) {
   const match = source.match(/<svg\b[^>]*viewBox="([^"]+)"/i);
   if (!match) {
-    throw new Error(`Missing viewBox in ${SVG_PARTS_PATH}`);
+    throw new Error(`Missing viewBox in ${sourceLabel}`);
   }
 
   const values = match[1]
@@ -361,21 +397,22 @@ function parseSvgViewBox(source) {
     .map((value) => Number(value));
 
   if (values.length !== 4 || values.some((value) => Number.isNaN(value))) {
-    throw new Error(`Invalid viewBox in ${SVG_PARTS_PATH}: ${match[1]}`);
+    throw new Error(`Invalid viewBox in ${sourceLabel}: ${match[1]}`);
   }
 
   const [minX, minY, width, height] = values;
+  if (width <= 0 || height <= 0) {
+    throw new Error(`Invalid viewBox size in ${sourceLabel}: ${match[1]}`);
+  }
   return { minX, minY, width, height };
 }
 
-function transformContoursToFontSpace(contours, model, viewBox) {
-  const targetWidth = model.font.advanceWidth;
+function transformContoursToFontSpace(contours, model, viewBox, { targetWidth, scale = 1 }) {
   const targetTop = model.font.ascender;
   const targetBottom = model.font.descender;
   const targetHeight = targetTop - targetBottom;
-  const glyphScale = Number(model.font.glyphScale ?? 1);
-  const scaledWidth = targetWidth * glyphScale;
-  const scaledHeight = targetHeight * glyphScale;
+  const scaledWidth = targetWidth * scale;
+  const scaledHeight = targetHeight * scale;
   const offsetX = (targetWidth - scaledWidth) / 2;
   const offsetY = (targetHeight - scaledHeight) / 2;
 
@@ -386,6 +423,85 @@ function transformContoursToFontSpace(contours, model, viewBox) {
       y: targetTop - offsetY - ((point.y - viewBox.minY) / viewBox.height) * scaledHeight,
     })),
   );
+}
+
+function extractNamedSvgContours(source, sourceLabel, name) {
+  const elements = extractSupportedSvgElements(source).filter(({ attributes }) =>
+    attributes.id === name || attributes['data-name'] === name,
+  );
+
+  if (elements.length === 0) {
+    throw new Error(`Missing ${name} in ${sourceLabel}`);
+  }
+
+  return contoursFromSvgElement(elements[0], sourceLabel);
+}
+
+function extractSingleSvgContours(source, sourceLabel) {
+  const elements = extractSupportedSvgElements(source);
+  if (elements.length !== 1) {
+    throw new Error(`Expected exactly one path or polygon in ${sourceLabel}, received ${elements.length}.`);
+  }
+
+  return contoursFromSvgElement(elements[0], sourceLabel);
+}
+
+function extractSupportedSvgElements(source) {
+  return Array.from(source.matchAll(/<(path|polygon)\b([^>]*)\/?>/gis), ([, tagName, rawAttributes]) => ({
+    tagName: tagName.toLowerCase(),
+    attributes: parseSvgAttributes(rawAttributes),
+  }));
+}
+
+function parseSvgAttributes(rawAttributes) {
+  const attributes = {};
+  for (const match of rawAttributes.matchAll(/([A-Za-z_:][-A-Za-z0-9_:.]*)="([^"]*)"/g)) {
+    attributes[match[1]] = match[2];
+  }
+  return attributes;
+}
+
+function contoursFromSvgElement(element, sourceLabel) {
+  if (element.tagName === 'path') {
+    if (!element.attributes.d) {
+      throw new Error(`Missing d attribute on <path> in ${sourceLabel}`);
+    }
+
+    return parseSvgPath(element.attributes.d);
+  }
+
+  if (element.tagName === 'polygon') {
+    if (!element.attributes.points) {
+      throw new Error(`Missing points attribute on <polygon> in ${sourceLabel}`);
+    }
+
+    return parseSvgPolygon(element.attributes.points, sourceLabel);
+  }
+
+  throw new Error(`Unsupported SVG element <${element.tagName}> in ${sourceLabel}`);
+}
+
+function parseSvgPolygon(pointsSource, sourceLabel) {
+  const values = pointsSource
+    .trim()
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .map((value) => Number(value));
+
+  if (values.length < 6 || values.length % 2 !== 0 || values.some((value) => Number.isNaN(value))) {
+    throw new Error(`Invalid polygon points in ${sourceLabel}: ${pointsSource}`);
+  }
+
+  const contour = [];
+  for (let index = 0; index < values.length; index += 2) {
+    contour.push({ x: values[index], y: values[index + 1], type: 'line' });
+  }
+
+  if (contour.length > 1 && samePoint(contour[0], contour[contour.length - 1])) {
+    contour.pop();
+  }
+
+  return [contour];
 }
 
 function parseSvgPath(d) {

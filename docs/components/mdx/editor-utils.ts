@@ -48,6 +48,10 @@ const alevCodepointBase = 0xe000;
 export const glyphCharForHex = (hex: string): string =>
   String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
 
+const TOKEN_PREFIX_PATTERN = /(?:^|[\s\[\]])([^\s\[\]]*)$/;
+const TOKEN_SUFFIX_PATTERN = /^[^\s\[\]]*/;
+const TOKEN_SEPARATOR_PATTERN = /^[\s\[\]:]/;
+
 const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null => {
   if (/^0x[0-9a-f]{2}$/i.test(token)) {
     return token.slice(2).toUpperCase();
@@ -66,15 +70,41 @@ export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): str
 };
 
 export const normalizeEditorContent = (value: string, keywordMap: KeywordMap): string =>
-  String(value ?? '').replace(/\S+/g, token => normalizeEditorToken(token, keywordMap));
+  String(value ?? '')
+    .split(/([\[\]])/)
+    .map(fragment => (fragment === '[' || fragment === ']' ? fragment : fragment.replace(/\S+/g, token => normalizeEditorToken(token, keywordMap))))
+    .join('');
+
+export const getActiveTokenPrefixFromFragment = (fragment: string): string =>
+  fragment.match(TOKEN_PREFIX_PATTERN)?.[1] ?? '';
+
+export const replaceActiveTokenWithSuggestion = (
+  value: string,
+  selectionStart: number,
+  selectionEnd: number,
+  suggestion: string,
+  prefix: string,
+  suffixPattern: RegExp,
+): { nextValue: string; nextCaret: number } => {
+  const after = value.slice(selectionEnd);
+  const prefixStart = selectionStart - prefix.length;
+  const suffixMatch = after.match(suffixPattern);
+  const suffixLength = suffixMatch?.[0]?.length ?? 0;
+  const suffix = value.slice(selectionEnd + suffixLength);
+  const spacer = suffix.length === 0 || TOKEN_SEPARATOR_PATTERN.test(suffix) ? '' : ' ';
+
+  return {
+    nextValue: `${value.slice(0, prefixStart)}${suggestion}${spacer}${suffix}`,
+    nextCaret: prefixStart + suggestion.length + spacer.length,
+  };
+};
 
 export const getKeywordList = (keywordMap: KeywordMap): string[] =>
   Object.keys(keywordMap).sort((left, right) => left.localeCompare(right));
 
 export const getActiveTokenPrefix = (value: string, selectionStart: number): string => {
   const before = value.slice(0, selectionStart);
-  const tokenMatch = before.match(/(?:^|\s)([^\s]*)$/);
-  return tokenMatch?.[1] ?? '';
+  return getActiveTokenPrefixFromFragment(before);
 };
 
 export const getKeywordSuggestions = (prefix: string, keywordList: string[]): string[] => {
@@ -92,16 +122,6 @@ export const applySuggestionToValue = (
   selectionEnd: number,
   suggestion: string,
 ): { nextValue: string; nextCaret: number } => {
-  const after = value.slice(selectionEnd);
   const prefix = getActiveTokenPrefix(value, selectionStart);
-  const prefixStart = selectionStart - prefix.length;
-  const suffixMatch = after.match(/^[^\s]*/);
-  const suffixLength = suffixMatch?.[0]?.length ?? 0;
-  const suffix = value.slice(selectionEnd + suffixLength);
-  const spacer = suffix.startsWith(' ') || suffix.length === 0 ? '' : ' ';
-
-  return {
-    nextValue: `${value.slice(0, prefixStart)}${suggestion}${spacer}${suffix}`,
-    nextCaret: prefixStart + suggestion.length + spacer.length,
-  };
+  return replaceActiveTokenWithSuggestion(value, selectionStart, selectionEnd, suggestion, prefix, TOKEN_SUFFIX_PATTERN);
 };

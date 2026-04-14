@@ -1,4 +1,8 @@
-import type { KeywordMap } from './editor-utils';
+import {
+  getActiveTokenPrefixFromFragment,
+  replaceActiveTokenWithSuggestion,
+  type KeywordMap,
+} from './editor-utils';
 
 export type MarkdownEditorProps = {
   defaultValue?: string;
@@ -10,8 +14,17 @@ export type MarkdownEditorPanelProps = MarkdownEditorProps & {
 
 export const getMarkdownTokenPrefix = (value: string, selectionStart: number): string => {
   const before = value.slice(0, selectionStart);
-  const match = before.match(/:([^:\s]*)$/);
-  return match?.[1] ?? '';
+  const colonPos = before.lastIndexOf(':');
+  if (colonPos === -1) {
+    return '';
+  }
+
+  const fragment = before.slice(colonPos + 1);
+  if (/[\r\n]/.test(fragment)) {
+    return '';
+  }
+
+  return getActiveTokenPrefixFromFragment(fragment);
 };
 
 export const applyMarkdownSuggestion = (
@@ -26,18 +39,13 @@ export const applyMarkdownSuggestion = (
     return { nextValue: value, nextCaret: selectionStart };
   }
 
-  const after = value.slice(selectionEnd);
-  const suffixMatch = after.match(/^[^:\s]*/);
-  const skipLength = suffixMatch?.[0]?.length ?? 0;
-  const hasClosingColon = value[selectionEnd + skipLength] === ':';
-  const insertion = `:${suggestion}:`;
-  const nextValue =
-    value.slice(0, colonPos) +
-    insertion +
-    value.slice(selectionEnd + skipLength + (hasClosingColon ? 1 : 0));
-  const nextCaret = colonPos + insertion.length;
+  const fragment = value.slice(colonPos + 1, selectionStart);
+  if (/[\r\n]/.test(fragment)) {
+    return { nextValue: value, nextCaret: selectionStart };
+  }
 
-  return { nextValue, nextCaret };
+  const prefix = getActiveTokenPrefixFromFragment(fragment);
+  return replaceActiveTokenWithSuggestion(value, selectionStart, selectionEnd, suggestion, prefix, /^[^\s:\[\]]*/);
 };
 
 export const DEFAULT_MARKDOWN_VALUE = `# ALEV-1メモパッド

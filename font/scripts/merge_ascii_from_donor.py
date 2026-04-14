@@ -8,6 +8,8 @@ from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.ttLib import TTFont
 
+EXCLUDED_CODEPOINTS = {0x0020, 0x005B, 0x005D}
+
 
 def main() -> int:
     if len(sys.argv) != 3:
@@ -35,6 +37,9 @@ def main() -> int:
     missing = []
 
     for codepoint in range(0x20, 0x7F):
+        if codepoint in EXCLUDED_CODEPOINTS:
+            continue
+
         target_name = target_cmap.get(codepoint)
         if target_name is None:
             continue

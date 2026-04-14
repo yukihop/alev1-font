@@ -13,6 +13,7 @@ import {
   hexValues,
   inputGlyphNameForChar,
   isMain,
+  loadBracketGlyphs,
   loadGlyphModel,
   loadLexicon,
   loadSvgParts,
@@ -25,6 +26,7 @@ export async function generateGlyphs() {
   const model = await loadGlyphModel();
   const lexicon = await loadLexicon();
   const svgParts = await loadSvgParts(model);
+  const bracketGlyphs = await loadBracketGlyphs(model);
   const glyphOrder = [];
   const contents = {};
 
@@ -59,11 +61,22 @@ export async function generateGlyphs() {
     unicodes: [0x0020],
   });
 
-  for (const char of collectInputChars(lexicon).filter((value) => value !== ' ')) {
+  const customInputChars = new Set(bracketGlyphs.map((glyph) => glyph.char));
+
+  for (const char of collectInputChars(lexicon).filter((value) => value !== ' ' && !customInputChars.has(value))) {
     await addGlyph({
       glyphName: inputGlyphNameForChar(char),
       width: model.font.inputGlyphWidth,
       unicodes: [char.codePointAt(0)],
+    });
+  }
+
+  for (const glyph of bracketGlyphs) {
+    await addGlyph({
+      glyphName: glyph.glyphName,
+      width: glyph.width,
+      unicodes: glyph.unicodes,
+      contours: glyph.contours,
     });
   }
 
