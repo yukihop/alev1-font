@@ -1,4 +1,4 @@
-import { generateAlevSvg } from '../../lib/alev-svg';
+import { generateAlevSvg } from "../../docs/lib/alev-svg";
 import { ZodError } from "zod";
 
 export const onRequestGet = async ({ request }: { request: Request }) => {
@@ -23,8 +23,8 @@ export const onRequestGet = async ({ request }: { request: Request }) => {
 
   return new Response(svg, {
     headers: {
-      'content-type': 'image/svg+xml; charset=utf-8',
-      'cache-control': 'public, max-age=3600',
+      "content-type": "image/svg+xml; charset=utf-8",
+      "cache-control": "public, max-age=3600",
     },
   });
 };
