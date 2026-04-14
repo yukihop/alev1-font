@@ -13,6 +13,7 @@ export const onRequestGet = async ({ request }: { request: Request }) => {
       letterSpacing: params.ls,
       color: params.c,
       shadowColor: params.sc,
+      backgroundColor: params.bc,
     });
   } catch (error) {
     return new Response(

@@ -138,8 +138,8 @@ export const applySuggestionToValue = (
 };
 
 export const normalizeHexColor = (value: string): string | null => {
-  const normalized = String(value ?? '').trim().toLowerCase();
-  return /^#[0-9a-f]{6}$/i.test(normalized) ? normalized : null;
+  const normalized = String(value ?? '').trim();
+  return /^#[0-9a-f]{6}$/.test(normalized) ? normalized : null;
 };
 
 export const buildPreviewShadow = (shadowColor: string | null): string => {
@@ -232,12 +232,14 @@ export const buildSvgDownloadUrl = ({
   letterSpacing,
   color,
   shadowColor,
+  backgroundColor,
 }: {
   text: string;
   fontSize: number;
   letterSpacing: number;
   color: string;
   shadowColor: string | null;
+  backgroundColor: string | null;
 }): string => {
   const params = new URLSearchParams({
     t: text,
@@ -248,6 +250,10 @@ export const buildSvgDownloadUrl = ({
 
   if (shadowColor) {
     params.set('sc', shadowColor);
+  }
+
+  if (backgroundColor) {
+    params.set('bc', backgroundColor);
   }
 
   return `/api/svg?${params.toString()}`;

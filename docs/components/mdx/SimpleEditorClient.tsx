@@ -114,6 +114,10 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = (props) => {
         letterSpacing,
         color: selectedPreset.color,
         shadowColor: selectedPreset.shadowColor,
+        backgroundColor:
+          selectedPreset.background === "#ffffff"
+            ? null
+            : selectedPreset.background,
       })
     : null;
   const downloadStatus = canonicalized.ok

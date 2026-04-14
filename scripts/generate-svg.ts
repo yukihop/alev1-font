@@ -17,6 +17,7 @@ async function main() {
     outputPath,
     color = "#000000",
     shadowColor = null,
+    backgroundColor = null,
     fontSize = 36,
     letterSpacing = 0,
   } = parseArgs(process.argv.slice(2));
@@ -32,6 +33,7 @@ async function main() {
     text,
     color,
     shadowColor,
+    backgroundColor,
     fontSize,
     letterSpacing,
   });
@@ -48,6 +50,7 @@ function parseArgs(args: string[]) {
   let outputPath = "";
   let color = "#000000";
   let shadowColor: string | null = null;
+  let backgroundColor: string | null = null;
   let fontSize = 36;
   let letterSpacing = 0;
 
@@ -61,6 +64,11 @@ function parseArgs(args: string[]) {
 
     if (arg === "-sc" || arg === "--shadow-color") {
       shadowColor = readValue(args, ++index, arg);
+      continue;
+    }
+
+    if (arg === "-bc" || arg === "--background-color") {
+      backgroundColor = readValue(args, ++index, arg);
       continue;
     }
 
@@ -93,7 +101,15 @@ function parseArgs(args: string[]) {
     );
   }
 
-  return { text, outputPath, color, shadowColor, fontSize, letterSpacing };
+  return {
+    text,
+    outputPath,
+    color,
+    shadowColor,
+    backgroundColor,
+    fontSize,
+    letterSpacing,
+  };
 }
 
 function readValue(args: string[], index: number, flag: string) {

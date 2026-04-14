@@ -7,6 +7,7 @@ type AlevSvgProps = {
   letterSpacing?: number | string;
   color?: string;
   shadowColor?: string | null | undefined;
+  backgroundColor?: string | null | undefined;
 };
 
 type GlyphElement = {
@@ -89,7 +90,7 @@ const alevSvgPropsSchema = z.object({
   ),
   color: z.preprocess(
     (value) => (value === undefined || value === "" ? "#000000" : value),
-    z.string().regex(/^#[0-9a-f]{6}$/i, "文字色は #rrggbb 形式で指定してください"),
+    z.string().regex(/^#[0-9a-f]{6}$/, "文字色は小文字の #rrggbb 形式で指定してください"),
   ),
   shadowColor: z.preprocess(
     (value) =>
@@ -98,7 +99,17 @@ const alevSvgPropsSchema = z.object({
       z.null(),
       z
         .string()
-        .regex(/^#[0-9a-f]{6}$/i, "影色は #rrggbb 形式で指定してください"),
+        .regex(/^#[0-9a-f]{6}$/, "影色は小文字の #rrggbb 形式で指定してください"),
+    ]),
+  ),
+  backgroundColor: z.preprocess(
+    (value) =>
+      value === undefined || value === null || value === "" ? null : value,
+    z.union([
+      z.null(),
+      z
+        .string()
+        .regex(/^#[0-9a-f]{6}$/, "背景色は小文字の #rrggbb 形式で指定してください"),
     ]),
   ),
 });
@@ -195,7 +206,7 @@ const parseCanonicalLine = (text: string): ParsedGlyph[] => {
 };
 
 export function generateAlevSvg(props: AlevSvgProps): string {
-  const { text, fontSize, letterSpacing, color, shadowColor } =
+  const { text, fontSize, letterSpacing, color, shadowColor, backgroundColor } =
     normalizeAlevSvgProps(props);
   const lines = text.split("\n").map((line) => parseCanonicalLine(line));
   const tracking = (letterSpacing / 1000) * glyphData.unitsPerEm;
@@ -247,11 +258,15 @@ export function generateAlevSvg(props: AlevSvgProps): string {
   const body = shadowColor
     ? `<g filter="url(#alev-glow)">\n${nodes.join("\n")}\n</g>`
     : nodes.join("\n");
+  const backgroundMarkup = backgroundColor
+    ? `<rect x="0" y="0" width="${formatNumber(svgWidth)}" height="${formatNumber(svgHeight)}" fill="${escapeXml(backgroundColor)}"/>`
+    : "";
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     `<svg xmlns="http://www.w3.org/2000/svg" width="${formatNumber(widthPt)}pt" height="${formatNumber(heightPt)}pt" viewBox="0 0 ${formatNumber(svgWidth)} ${formatNumber(svgHeight)}" role="img" aria-label="ALEV SVG">`,
     filterMarkup,
+    backgroundMarkup,
     body,
     "</svg>",
     "",
