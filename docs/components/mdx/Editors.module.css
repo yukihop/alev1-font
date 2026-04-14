@@ -47,30 +47,40 @@
 
 .controls {
   display: grid;
-  gap: 14px 16px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  grid-template-columns: repeat(2, minmax(18rem, 24rem));
   align-items: start;
+  justify-content: start;
 }
 
 .control {
   display: grid;
   gap: 8px;
   min-width: 0;
+  max-width: 24rem;
 }
 
-.controlPreset {
+.controlWide {
   grid-column: 1 / -1;
+  max-width: none;
 }
 
 .fontRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 4.75rem;
+  gap: 12px;
   align-items: center;
 }
 
 .fontValue {
-  min-width: 4.5rem;
+  min-width: 0;
+  color: var(--text-muted);
+  text-align: left;
+  font-family: var(--font-mono);
+}
+
+.fontValueLabel {
+  min-width: 5rem;
   color: var(--text-muted);
   text-align: right;
   font-family: var(--font-mono);
@@ -122,6 +132,37 @@
   color: var(--simple-editor-preset-color, #000);
 }
 
+.colorRow,
+.toggleRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.toggleRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.colorInput {
+  width: 3rem;
+  height: 2.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  padding: 0.18rem;
+}
+
+.helpText {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.errorText {
+  color: #d84a5c;
+}
+
 .alevInline,
 .previewText,
 .suggestionGlyph,
@@ -158,11 +199,48 @@
 .previewText {
   white-space: pre-wrap;
   word-break: break-word;
-  font-size: var(--simple-editor-font-size, 96px);
+  color: var(--simple-editor-preview-color, #000);
+  font-size: var(--simple-editor-font-size, 36pt);
   line-height: 1.45;
   min-height: 1.45em;
   letter-spacing: var(--simple-editor-letter-spacing, 0em);
   filter: var(--simple-editor-drop-shadow, none);
+}
+
+.actionRow {
+  display: grid;
+  gap: 8px;
+}
+
+.downloadLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-height: 2.75rem;
+  padding: 0.72rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 56%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-soft) 68%, transparent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.downloadLinkDisabled {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+@media (max-width: 820px) {
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .control {
+    max-width: none;
+  }
 }
 
 .popover {

@@ -1,62 +1,65 @@
-'use client';
+"use client";
 
-import type { CSSProperties, FC } from 'react';
-import { useId, useRef, useState } from 'react';
+import type { CSSProperties, FC } from "react";
+import { useId, useRef, useState } from "react";
 
-import { KeywordSuggestionsPopover, useKeywordSuggestions } from './KeywordSuggestionsPopover';
+import {
+  KeywordSuggestionsPopover,
+  useKeywordSuggestions,
+} from "./KeywordSuggestionsPopover";
 import {
   DEFAULT_EDITOR_VALUE,
   DEFAULT_FONT_SIZE,
   DEFAULT_LETTER_SPACING,
   applySuggestionToValue,
+  buildPreviewShadow,
+  buildSvgDownloadUrl,
+  canonicalizeEditorContent,
   defaultVisualPreset,
   getActiveTokenPrefix,
   getKeywordList,
   normalizeEditorContent,
-  type KeywordMap,
   type SimpleEditorPanelProps,
   type VisualPreset,
   visualPresets,
-} from './editor-utils';
-import styles from './Editors.module.css';
+} from "./editor-utils";
+import styles from "./Editors.module.css";
 
 type PresetButtonProps = {
-  keywordMap: KeywordMap;
+  keywordMap: SimpleEditorPanelProps["keywordMap"];
   preset: VisualPreset;
   selected: boolean;
   onSelect: (value: string) => void;
 };
 
-const PresetButton: FC<PresetButtonProps> = props => {
+const PresetButton: FC<PresetButtonProps> = (props) => {
   const { keywordMap, preset, selected, onSelect } = props;
+  const previewStyle = {
+    "--simple-editor-preset-background": preset.background,
+    "--simple-editor-preset-color": preset.color,
+    "--simple-editor-preset-shadow": buildPreviewShadow(preset.shadowColor),
+  } as CSSProperties;
 
   return (
     <button
       type="button"
-      className={`${styles.presetButton} ${selected ? styles.presetButtonActive : ''}`.trim()}
+      className={`${styles.presetButton} ${selected ? styles.presetButtonActive : ""}`.trim()}
       aria-pressed={selected}
       title={preset.label}
       onClick={() => {
         onSelect(preset.value);
       }}
     >
-      <span
-        className={styles.presetPreview}
-        style={
-          {
-            '--simple-editor-preset-background': preset.background,
-            '--simple-editor-preset-color': preset.color,
-            '--simple-editor-preset-shadow': preset.shadow,
-          } as CSSProperties
-        }
-      >
-        <span className={styles.presetGlyph}>{normalizeEditorContent(preset.sample, keywordMap)}</span>
+      <span className={styles.presetPreview} style={previewStyle}>
+        <span className={styles.presetGlyph}>
+          {normalizeEditorContent(preset.sample, keywordMap)}
+        </span>
       </span>
     </button>
   );
 };
 
-const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
+const SimpleEditorClient: FC<SimpleEditorPanelProps> = (props) => {
   const {
     defaultValue = DEFAULT_EDITOR_VALUE,
     defaultFontSize = DEFAULT_FONT_SIZE,
@@ -71,7 +74,9 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
   const [inputValue, setInputValue] = useState(defaultValue);
   const [fontSize, setFontSize] = useState(defaultFontSize);
   const [letterSpacing, setLetterSpacing] = useState(defaultLetterSpacing);
-  const [selectedPresetValue, setSelectedPresetValue] = useState(defaultVisualPreset.value);
+  const [selectedPresetValue, setSelectedPresetValue] = useState(
+    defaultVisualPreset.value,
+  );
   const {
     popoverRef,
     suggestions,
@@ -88,16 +93,34 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
     onApply: setInputValue,
   });
   const selectedPreset =
-    visualPresets.find(preset => preset.value === selectedPresetValue) ?? defaultVisualPreset;
+    visualPresets.find((preset) => preset.value === selectedPresetValue) ??
+    defaultVisualPreset;
   const previewStyle = {
-    '--simple-editor-font-size': `${fontSize}px`,
-    '--simple-editor-letter-spacing': `${letterSpacing}em`,
-    '--simple-editor-drop-shadow': selectedPreset.shadow,
+    "--simple-editor-font-size": `${fontSize}pt`,
+    "--simple-editor-letter-spacing": `${letterSpacing / 1000}em`,
+    "--simple-editor-drop-shadow": buildPreviewShadow(
+      selectedPreset.shadowColor,
+    ),
+    "--simple-editor-preview-color": selectedPreset.color,
   } as CSSProperties;
   const frameStyle = {
-    '--simple-editor-preview-background': selectedPreset.background,
-    '--simple-editor-preview-color': selectedPreset.color,
+    "--simple-editor-preview-background": selectedPreset.background,
   } as CSSProperties;
+  const canonicalized = canonicalizeEditorContent(inputValue, keywordMap);
+  const downloadHref = canonicalized.ok
+    ? buildSvgDownloadUrl({
+        text: canonicalized.text,
+        fontSize,
+        letterSpacing,
+        color: selectedPreset.color,
+        shadowColor: selectedPreset.shadowColor,
+      })
+    : null;
+  const downloadStatus = canonicalized.ok
+    ? null
+    : canonicalized.token
+      ? `SVGを書き出せません: ${canonicalized.reason} (${canonicalized.token})`
+      : `SVGを書き出せません: ${canonicalized.reason}`;
 
   return (
     <div className={`${styles.panel} ${styles.simpleEditor}`}>
@@ -110,10 +133,13 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
         className={styles.textarea}
         spellCheck={false}
         value={inputValue}
-        onChange={event => {
+        onChange={(event) => {
           const nextValue = event.target.value;
           setInputValue(nextValue);
-          onChangeHandler(nextValue, event.target.selectionStart ?? nextValue.length);
+          onChangeHandler(
+            nextValue,
+            event.target.selectionStart ?? nextValue.length,
+          );
         }}
         onFocus={syncFromInput}
         onBlur={hideSuggestions}
@@ -134,45 +160,48 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
 
       <div className={styles.controls}>
         <label className={styles.control} htmlFor={fontSizeId}>
-          <span className={styles.caption}>Font size</span>
+          <span className={styles.caption}>Font size (pt)</span>
           <div className={styles.fontRow}>
             <input
               id={fontSizeId}
               type="range"
-              min="32"
+              min="9"
               max="220"
               step="1"
               value={String(fontSize)}
-              onChange={event => {
+              onChange={(event) => {
                 setFontSize(Number(event.target.value));
               }}
             />
-            <span className={styles.fontValue}>{fontSize}px</span>
+            <span className={styles.fontValue}>{fontSize}pt</span>
           </div>
         </label>
 
         <label className={styles.control} htmlFor={letterSpacingId}>
-          <span className={styles.caption}>Letter spacing</span>
+          <span className={styles.caption}>Letter spacing (1/1000em)</span>
           <div className={styles.fontRow}>
             <input
               id={letterSpacingId}
               type="range"
-              min="-0.2"
-              max="0.4"
-              step="0.01"
+              min="-200"
+              max="400"
+              step="10"
               value={String(letterSpacing)}
-              onChange={event => {
+              onChange={(event) => {
                 setLetterSpacing(Number(event.target.value));
               }}
             />
-            <span className={styles.fontValue}>{letterSpacing.toFixed(2)}em</span>
+            <span className={styles.fontValue}>{letterSpacing}</span>
           </div>
         </label>
 
-        <div className={`${styles.control} ${styles.controlPreset}`} role="group" aria-label="Preview presets">
-          <span className={styles.caption}>Preview presets</span>
+        <div
+          className={`${styles.control} ${styles.controlWide}`}
+          role="group"
+          aria-label="Preview presets"
+        >
           <div className={styles.presetList}>
-            {visualPresets.map(preset => (
+            {visualPresets.map((preset) => (
               <PresetButton
                 key={preset.value}
                 keywordMap={keywordMap}
@@ -186,12 +215,37 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = props => {
       </div>
 
       <div className={styles.previewWrap}>
-        <div className={styles.caption}>Preview</div>
+        <div className={styles.caption}>プレビュー</div>
         <div className={styles.previewFrame} style={frameStyle}>
           <div className={styles.previewText} style={previewStyle}>
             {normalizeEditorContent(inputValue, keywordMap)}
           </div>
         </div>
+      </div>
+
+      <div className={styles.actionRow}>
+        {downloadHref ? (
+          <a
+            className={styles.downloadLink}
+            href={downloadHref}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Download SVG
+          </a>
+        ) : (
+          <span
+            className={`${styles.downloadLink} ${styles.downloadLinkDisabled}`}
+            aria-disabled="true"
+          >
+            Download SVG
+          </span>
+        )}
+        {downloadStatus ? (
+          <div className={`${styles.helpText} ${styles.errorText}`}>
+            {downloadStatus}
+          </div>
+        ) : null}
       </div>
     </div>
   );

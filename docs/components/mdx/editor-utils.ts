@@ -15,27 +15,38 @@ export type VisualPreset = {
   label: string;
   background: string;
   color: string;
-  shadow: string;
+  shadowColor: string | null;
   sample: string;
 };
 
+export type CanonicalizeEditorResult =
+  | {
+      ok: true;
+      text: string;
+    }
+  | {
+      ok: false;
+      reason: string;
+      token?: string;
+    };
+
 export const DEFAULT_EDITOR_VALUE = 'i love straylight 0xFF';
-export const DEFAULT_FONT_SIZE = 96;
+export const DEFAULT_FONT_SIZE = 36;
 export const DEFAULT_LETTER_SPACING = 0;
 
 export const visualPresets: VisualPreset[] = [
-  { value: 'plain-paper', label: 'Plain Paper', background: '#ffffff', color: '#000000', shadow: 'none', sample: 'straylight' },
-  { value: 'asahi-paper', label: 'Asahi', background: '#ffffff', color: '#000000', shadow: 'drop-shadow(0 0 0.08em rgba(255, 104, 104, 0.95)) drop-shadow(0 0 0.24em rgba(255, 104, 104, 0.62))', sample: 'asahi' },
-  { value: 'fuyuko-paper', label: 'Fuyuko', background: '#ffffff', color: '#000000', shadow: 'drop-shadow(0 0 0.08em rgba(127, 242, 140, 0.95)) drop-shadow(0 0 0.24em rgba(127, 242, 140, 0.62))', sample: 'fuyuko' },
-  { value: 'mei-paper', label: 'Mei', background: '#ffffff', color: '#000000', shadow: 'drop-shadow(0 0 0.08em rgba(255, 97, 184, 0.95)) drop-shadow(0 0 0.24em rgba(255, 97, 184, 0.62))', sample: 'mei' },
-  { value: 'alev1-paper', label: 'ALEV1', background: '#ffffff', color: '#000000', shadow: 'drop-shadow(0 0 0.055em rgba(68, 220, 255, 0.9)) drop-shadow(0 0 0.18em rgba(68, 220, 255, 0.45))', sample: 'i' },
-  { value: 'gold-paper', label: 'Gold', background: '#ffffff', color: '#000000', shadow: 'drop-shadow(0 0 0.055em rgba(255, 196, 61, 0.9)) drop-shadow(0 0 0.18em rgba(255, 196, 61, 0.45))', sample: 'human' },
-  { value: 'plain-ink', label: 'Plain Ink', background: '#000000', color: '#ffffff', shadow: 'none', sample: 'straylight' },
-  { value: 'asahi-night', label: 'Asahi', background: '#000000', color: '#ffffff', shadow: 'drop-shadow(0 0 0.08em rgba(255, 104, 104, 0.95)) drop-shadow(0 0 0.24em rgba(255, 104, 104, 0.62))', sample: 'asahi' },
-  { value: 'fuyuko-night', label: 'Fuyuko', background: '#000000', color: '#ffffff', shadow: 'drop-shadow(0 0 0.08em rgba(127, 242, 140, 0.95)) drop-shadow(0 0 0.24em rgba(127, 242, 140, 0.62))', sample: 'fuyuko' },
-  { value: 'mei-night', label: 'Mei', background: '#000000', color: '#ffffff', shadow: 'drop-shadow(0 0 0.08em rgba(255, 97, 184, 0.95)) drop-shadow(0 0 0.24em rgba(255, 97, 184, 0.62))', sample: 'mei' },
-  { value: 'alev1-night', label: 'ALEV1', background: '#000000', color: '#ffffff', shadow: 'drop-shadow(0 0 0.055em rgba(68, 220, 255, 0.9)) drop-shadow(0 0 0.18em rgba(68, 220, 255, 0.45))', sample: 'i' },
-  { value: 'gold-night', label: 'Gold', background: '#000000', color: '#ffffff', shadow: 'drop-shadow(0 0 0.055em rgba(255, 196, 61, 0.9)) drop-shadow(0 0 0.18em rgba(255, 196, 61, 0.45))', sample: 'human' },
+  { value: 'plain-paper', label: 'Plain Paper', background: '#ffffff', color: '#000000', shadowColor: null, sample: 'straylight' },
+  { value: 'asahi-paper', label: 'Asahi', background: '#ffffff', color: '#000000', shadowColor: '#ff6868', sample: 'asahi' },
+  { value: 'fuyuko-paper', label: 'Fuyuko', background: '#ffffff', color: '#000000', shadowColor: '#7ff28c', sample: 'fuyuko' },
+  { value: 'mei-paper', label: 'Mei', background: '#ffffff', color: '#000000', shadowColor: '#ff61b8', sample: 'mei' },
+  { value: 'alev1-paper', label: 'ALEV1', background: '#ffffff', color: '#000000', shadowColor: '#44dcff', sample: 'i' },
+  { value: 'gold-paper', label: 'Gold', background: '#ffffff', color: '#000000', shadowColor: '#ffc43d', sample: 'human' },
+  { value: 'plain-ink', label: 'Plain Ink', background: '#000000', color: '#ffffff', shadowColor: null, sample: 'straylight' },
+  { value: 'asahi-night', label: 'Asahi', background: '#000000', color: '#ffffff', shadowColor: '#ff6868', sample: 'asahi' },
+  { value: 'fuyuko-night', label: 'Fuyuko', background: '#000000', color: '#ffffff', shadowColor: '#7ff28c', sample: 'fuyuko' },
+  { value: 'mei-night', label: 'Mei', background: '#000000', color: '#ffffff', shadowColor: '#ff61b8', sample: 'mei' },
+  { value: 'alev1-night', label: 'ALEV1', background: '#000000', color: '#ffffff', shadowColor: '#44dcff', sample: 'i' },
+  { value: 'gold-night', label: 'Gold', background: '#000000', color: '#ffffff', shadowColor: '#ffc43d', sample: 'human' },
 ];
 
 export const defaultVisualPreset = visualPresets[0];
@@ -52,7 +63,7 @@ const TOKEN_PREFIX_PATTERN = /(?:^|[\s\[\]])([^\s\[\]]*)$/;
 const TOKEN_SUFFIX_PATTERN = /^[^\s\[\]]*/;
 const TOKEN_SEPARATOR_PATTERN = /^[\s\[\]:]/;
 
-const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null => {
+export const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null => {
   if (/^0x[0-9a-f]{2}$/i.test(token)) {
     return token.slice(2).toUpperCase();
   }
@@ -124,4 +135,120 @@ export const applySuggestionToValue = (
 ): { nextValue: string; nextCaret: number } => {
   const prefix = getActiveTokenPrefix(value, selectionStart);
   return replaceActiveTokenWithSuggestion(value, selectionStart, selectionEnd, suggestion, prefix, TOKEN_SUFFIX_PATTERN);
+};
+
+export const normalizeHexColor = (value: string): string | null => {
+  const normalized = String(value ?? '').trim().toLowerCase();
+  return /^#[0-9a-f]{6}$/i.test(normalized) ? normalized : null;
+};
+
+export const buildPreviewShadow = (shadowColor: string | null): string => {
+  const normalized = shadowColor ? normalizeHexColor(shadowColor) : null;
+  if (!normalized) {
+    return 'none';
+  }
+
+  const red = Number.parseInt(normalized.slice(1, 3), 16);
+  const green = Number.parseInt(normalized.slice(3, 5), 16);
+  const blue = Number.parseInt(normalized.slice(5, 7), 16);
+
+  return [
+    `drop-shadow(0 0 0.055em rgba(${red}, ${green}, ${blue}, 0.9))`,
+    `drop-shadow(0 0 0.18em rgba(${red}, ${green}, ${blue}, 0.45))`,
+  ].join(' ');
+};
+
+export const canonicalizeEditorContent = (value: string, keywordMap: KeywordMap): CanonicalizeEditorResult => {
+  const source = String(value ?? '').replace(/\r\n?/g, '\n');
+  let pendingToken = '';
+  let canonicalText = '';
+  let hasGlyph = false;
+
+  const flushToken = (): CanonicalizeEditorResult | null => {
+    if (!pendingToken) {
+      return null;
+    }
+
+    const resolvedHex = resolveTokenHex(pendingToken, keywordMap);
+    if (!resolvedHex) {
+      return { ok: false, reason: '未定義のトークンです', token: pendingToken };
+    }
+
+    canonicalText += resolvedHex.toLowerCase();
+    pendingToken = '';
+    hasGlyph = true;
+    return null;
+  };
+
+  for (const char of source) {
+    if (char === '[' || char === ']') {
+      const flushResult = flushToken();
+      if (flushResult) {
+        return flushResult;
+      }
+
+      canonicalText += char;
+      hasGlyph = true;
+      continue;
+    }
+
+    if (/\s/.test(char)) {
+      const flushResult = flushToken();
+      if (flushResult) {
+        return flushResult;
+      }
+
+      canonicalText += char === '\n' ? '\n' : ' ';
+      continue;
+    }
+
+    pendingToken += char;
+  }
+
+  const flushResult = flushToken();
+  if (flushResult) {
+    return flushResult;
+  }
+
+  if (!hasGlyph) {
+    return { ok: false, reason: '出力できる文字がありません' };
+  }
+
+  const lines = canonicalText.split('\n');
+  if (lines.length > 5) {
+    return { ok: false, reason: '行数は5行以内にしてください' };
+  }
+
+  if (lines.some(line => line.length > 100)) {
+    return { ok: false, reason: '1行は100文字以内にしてください' };
+  }
+
+  return { ok: true, text: canonicalText };
+};
+
+export const buildSvgDownloadUrl = ({
+  text,
+  fontSize,
+  letterSpacing,
+  color,
+  shadowColor,
+}: {
+  text: string;
+  fontSize: number;
+  letterSpacing: number;
+  color: string;
+  shadowColor: string | null;
+}): string => {
+  const params = new URLSearchParams({
+    t: text,
+    fs: String(fontSize),
+    ls: String(letterSpacing),
+    c: color,
+  });
+
+  if (shadowColor) {
+    params.set('sc', shadowColor);
+  }
+
+  return `/api/svg?${params.toString()}`;
 };

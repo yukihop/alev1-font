@@ -3,3 +3,4 @@ next-env.d.ts
 out/
 public/assets/alevish.woff2
 tsconfig.tsbuildinfo
+lib/generated/
