@@ -1,4 +1,5 @@
 .next/
+next-env.d.ts
 out/
-public/assets/alev1.woff2
+public/assets/alevish.woff2
 tsconfig.tsbuildinfo

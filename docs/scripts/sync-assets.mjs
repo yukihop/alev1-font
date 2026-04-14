@@ -10,7 +10,7 @@ const repoDir = path.resolve(docsDir, '..');
 const copies = [
   {
     from: path.join(repoDir, 'font', 'dist', 'alevish.woff2'),
-    to: path.join(docsDir, 'public', 'assets', 'alev1.woff2'),
+    to: path.join(docsDir, 'public', 'assets', 'alevish.woff2'),
   },
 ];
 

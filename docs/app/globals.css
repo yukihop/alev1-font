@@ -41,8 +41,8 @@ html[data-theme="light"] {
 }
 
 @font-face {
-  font-family: "Alev1";
-  src: url("/assets/alev1.woff2") format("woff2");
+  font-family: "Alevish";
+  src: url("/assets/alevish.woff2") format("woff2");
   font-display: swap;
 }
 
