@@ -34,7 +34,6 @@ entries:
       - something
   - binary: "01110010"
     comment: 候補は「言葉」「意図」「発言」「要求」あたり。品詞的にかなり抽象的な言葉。
-  - binary: "10000010"
   - binary: "11010000"
     keywords:
       - perfect

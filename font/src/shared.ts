@@ -200,8 +200,8 @@ export async function loadLexicon() {
     const uniqueKeywords = new Set();
 
     for (const keyword of normalizedKeywords) {
-      if (!/^[a-z0-9]+$/.test(keyword)) {
-        throw new Error(`Keyword "${keyword}" for ${binary} must be lowercase ASCII letters and digits only.`);
+      if (!/^[a-z0-9-]+$/.test(keyword)) {
+        throw new Error(`Keyword "${keyword}" for ${binary} must be lowercase ASCII letters, digits, and hyphen only.`);
       }
 
       if (uniqueKeywords.has(keyword)) {
