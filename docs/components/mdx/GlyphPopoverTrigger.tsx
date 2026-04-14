@@ -1,0 +1,216 @@
+'use client';
+
+import type { FC, ReactNode } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
+import type { GlyphRecord } from '@/lib/alev';
+
+import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
+import styles from './Glyphs.module.css';
+
+type GlyphPopoverTriggerProps = {
+  glyph: GlyphRecord;
+  className: string;
+  contentClassName?: string;
+  ariaLabel?: string;
+  pressed?: boolean;
+  onPress?: () => void;
+  usageCount?: number;
+  togglePopoverOnClick?: boolean;
+  children?: ReactNode;
+};
+
+const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
+  const {
+    glyph,
+    className,
+    contentClassName,
+    ariaLabel,
+    pressed,
+    onPress,
+    usageCount,
+    togglePopoverOnClick = true,
+    children,
+  } = props;
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const hideTimerRef = useRef<number | null>(null);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const instanceId = useId();
+  const { copiedId, copyText } = useCopyFeedback();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const clearHideTimer = () => {
+    if (hideTimerRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = null;
+  };
+
+  const positionPopover = () => {
+    const trigger = triggerRef.current;
+    if (!trigger) {
+      return;
+    }
+
+    const rect = trigger.getBoundingClientRect();
+    setPosition({
+      top: rect.bottom + 8,
+      left: rect.left + rect.width / 2,
+    });
+  };
+
+  const showPopover = () => {
+    clearHideTimer();
+    positionPopover();
+    setOpen(true);
+  };
+
+  const hidePopover = () => {
+    clearHideTimer();
+    setOpen(false);
+  };
+
+  const scheduleHide = () => {
+    clearHideTimer();
+    hideTimerRef.current = window.setTimeout(() => {
+      hidePopover();
+    }, 90);
+  };
+
+  const copyId = `${instanceId}-${glyph.hex}`;
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handleReposition = () => {
+      positionPopover();
+    };
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as Node | null;
+      if (!target) {
+        return;
+      }
+
+      if (triggerRef.current?.contains(target) || popoverRef.current?.contains(target)) {
+        return;
+      }
+
+      hidePopover();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        hidePopover();
+      }
+    };
+
+    window.addEventListener('resize', handleReposition);
+    window.addEventListener('scroll', handleReposition, true);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('resize', handleReposition);
+      window.removeEventListener('scroll', handleReposition, true);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className={className}
+        aria-label={ariaLabel ?? `Show glyph ${glyph.hex}`}
+        aria-pressed={pressed}
+        onMouseEnter={showPopover}
+        onMouseLeave={scheduleHide}
+        onFocus={showPopover}
+        onBlur={scheduleHide}
+        onClick={() => {
+          onPress?.();
+
+          if (!togglePopoverOnClick) {
+            return;
+          }
+
+          if (open) {
+            hidePopover();
+            return;
+          }
+
+          showPopover();
+        }}
+      >
+        <span className={contentClassName}>{children ?? glyph.char}</span>
+      </button>
+      {mounted && open
+        ? createPortal(
+            <div
+              ref={popoverRef}
+              className={styles.glyphPopover}
+              style={{ top: `${position.top}px`, left: `${position.left}px` }}
+              onMouseEnter={clearHideTimer}
+              onMouseLeave={scheduleHide}
+            >
+              <div className={styles.glyphPopoverMeta}>
+                <CopyPillButton
+                  className={`${styles.hexPill} ${styles.copyButton}`}
+                  copyId={copyId}
+                  copyValue={`0x${glyph.hex}`}
+                  text={`0x${glyph.hex}`}
+                  onCopy={copyText}
+                />
+                <CopyPillButton
+                  className={`${styles.binaryPill} ${styles.copyButton}`}
+                  copyId={copyId}
+                  copyValue={`0b${glyph.binary}`}
+                  text={`0b${glyph.binary}`}
+                  onCopy={copyText}
+                />
+              </div>
+              {glyph.keywords.length > 0 ? (
+                <div className={styles.glyphPopoverKeywords}>
+                  {glyph.keywords.map((keyword) => (
+                    <CopyPillButton
+                      key={keyword}
+                      className={`${styles.keywordPill} ${styles.copyButton}`}
+                      copyId={copyId}
+                      copyValue={keyword}
+                      text={keyword}
+                      onCopy={copyText}
+                    />
+                  ))}
+                </div>
+              ) : null}
+              {glyph.comment || copiedId === copyId || usageCount !== undefined ? (
+                <div className={styles.glyphPopoverFooter} aria-live="polite">
+                  <span className={styles.glyphPopoverBadge}>
+                    {copiedId === copyId ? 'Copied' : `出現数: ${usageCount}`}
+                  </span>
+                  {glyph.comment ? <span className={styles.glyphPopoverComment}>{glyph.comment}</span> : null}
+                </div>
+              ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
+  );
+};
+
+export default GlyphPopoverTrigger;

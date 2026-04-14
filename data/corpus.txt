@@ -1,0 +1,297 @@
+[[公式サイト]]
+
+@ライブサブタイトル
+LOVE
+i accept straylight love
+!公式の読み方としてLOVEだが、普通に文として解釈するなら「私はストレイライトの愛を受け取ります(ました)」になる。第3部終盤でALEV-1がそのような発言をする（字幕はないが）。
+
+@ライブタイトル
+EXIST ERROR ALIVE (=S/N-GUL4R1TY)
+is error life
+!公式訳はスタッフロールで明示されたもの。文頭にコピュラ（be動詞）として頻用される :be: が来るため一見英語の疑問文に似ており、その場合文として読むと「誤りこそが生命なのか」のような解釈となる。しかし「AはBですか」は ":interrogative: A :be: B" のはず。:be: は単に名詞として使用されている？
+
+@トップページ
+-
+i do be perfect live
+!これと類似で4文字の「私は完璧なライブを実行します」は公演中に頻出したが、これは3文字目にコピュラが挟まる珍しい形。「私は完璧なライブを存在させます ("I let there be a perfect live")」ということなのか。
+
+[[Xポスト]]
+
+@https://x.com/shinyc_official/status/1999449155635413226
+（人間が持つ、S/N-GUL4L1TYに不可欠な、不可視で計測不能な要素）
+emotion
+
+@https://x.com/shinyc_official/status/2038221068117446667/photo/2
+One Live One Love
+one live one love
+!曲名。
+
+@https://x.com/shinyc_official/status/2012872730392383936
+-
+i 0b10000110 become perfect 0b11000001 by learn human and control emotion
+and i do perfect live
+!これ自体の公式訳はないが initialize() で訳付きの類似例が登場したため大部分が確定。「私は人間を学び、感情の制御をし、完璧なライブを実行することにより、完璧な存在になります」と言っているよう。
+
+
+[[0x01; initialize()]]
+
+@45:03
+私はロボット。
+-
+!テロップ表示遅れによりALEV文字は厳密には不明。2日目にも同じ発言があったので気にしないでいい。
+
+@45:06
+私は人間を学習します。
+i learn human
+
+@45:10
+私はストレイラウトを学習します。
+i learn straylight
+
+@45:16
+私は黛冬優子を学習します。
+i learn fuyuko
+
+@45:24
+あなたはストレイライト、黛冬優子。
+you are straylight fuyuko
+
+@45:37
+黛冬優子、冬優子、ふゆ。
+fuyuko fuyuko fuyu
+
+@45:50
+私はALEV-1。
+i am alev1
+
+@45:54
+私は人間を学びます。
+i learn human
+
+@45:58
+生命は完璧なものです。
+life is perfect
+
+@46:03
+私は人間を学び、感情の制御をすることにより、完璧なロボットとなり、完璧なライブを実行します。
+i 0b10000110 become perfect robot
+by learn human and control emotion
+and i do perfect live
+
+@46:19
+完璧なロボットが生命であることを証明するためです。
+i prove perfect robot is 0b10110101 life
+
+@46:28
+ふゆは完璧を求めますか？
+0b10001010 fuyu
+0b10001010 you seek perfect
+
+@46:47
+ストレイライトは完璧なライブを求める。
+straylight seek do perfect live
+
+[[0x02; evolve()]]
+
+@46:18
+私はロボット。
+i am robot
+
+@46:21
+私は人間を学習します。
+i learn human
+
+@46:25
+ストレイライトは完璧なライブを求める。
+straylight seek perform perfect live
+
+@46:31
+私は完璧なライブを実行します。
+i perform perfect live
+
+@46:35
+私は完璧になりました。
+[i] perfect robot by not error
+!後半3文字は「誤りがないことで」「ノイズをなくすことにより」のような意味だと思われるが訳出されていない。
+
+@46:43
+あなたはストレイライト、和泉愛依。
+you are straylight mei
+
+@46:52
+ストレイライトは完璧なライブを求める。
+straylight seek perform perfect live
+
+@46:57
+私は完璧なライブを実行します。
+i perform perfect live
+
+@47:02
+私はストレイライトを学習しました。
+i learn straylight
+
+@47:08
+私はストレイライト。
+i am straylight
+
+@47:16
+私は完璧であり永遠です。
+[i] perfect and not mortality
+
+@47:22
+私は感情を可視化しました。
+i visualize emotion
+
+@47:26
+私は証明します。私が完璧だと。
+i prove i am perfect
+
+@47:54
+私は誤りを求めない。
+i not seek error
+
+@47:59
+私は完璧に到達しました。
+i reach perfection
+
+@48:07
+私は完璧に到達しました。
+i reach perfection
+
+@1:25:56
+私は完璧なライブを実行します。
+i perform perfect live
+
+@1:26:01
+完璧とはノイズがないこと。
+[perfect] without error
+
+@1:26:07
+私は完璧。
+i am perfect
+
+@1:26:10
+私は完璧に到達している。
+i prf reach perfect
+
+@1:26:16
+ストレイライトはノイズが大きい。
+[straylight] 0b11000001 noise
+
+@1:26:21
+それは完璧なライブではない。
+it not is perfect live
+
+@1:26:35
+否定。完璧は証明を必要としない。
+not perfection not require proof
+
+@1:26:41
+ストレイライト。ノイズ。
+straylight noise
+
+@1:26:48
+ストレイライトは、ライブで何かを共有している？
+0b10001010 they share something
+!1文字目以外はここでしか登場しないというやっかいな用例だが文法構造は明白。
+
+@1:27:03
+システムにノイズを検知。
+it detect noise
+!主語は抽象名詞の「それ」であり形式主語的な利用に見える。「システム」と訳されているのは便宜的なものらしい。
+
+
+[[0x03; overflow()]]
+
+@44:01
+私はALEV-1。
+i am alev1
+
+@
+私は完璧なロボット。
+i am perfect robot
+
+@
+あなたはストレイライト、芹沢あさひ。
+you are straylight asahi
+
+@
+私はワンちゃんではありません。
+i not am wanchan
+
+@
+私はALEV-1です。
+i am alev1
+
+@
+私は…ワンちゃん。
+[i] wanchan
+
+@
+受領しました。
+i 0b10000101 0b10100101
+
+@
+何？
+interrogative
+
+@
+何も。
+you not able 0b10101001
+!「あなたは :0b10101001: できない」の意味だが、ここにしか出てこない動詞なので不詳。
+
+@
+回答不能。
+i not able respond you 0b01110010
+
+@
+言葉の意味が推論できません。
+i not able infer 0b11010100 0b00000001 0b11101011
+!後半3文字が「言葉の意味」に対応するのだが、構造がよく分からない。:0xD4: はルール上は形容詞のはず。:0b11101011: に至っては品詞レベルで類似例がない。
+
+@
+楽しい？ これですか。
+interrogative it is
+!1文字目は「楽しい？」の発言と同時に単独で表示されていたが、実際には1文字目は疑問字であり、3文字で「か？・これ・です」という構成。「楽しい」に直接対応する文字は存在しない模様。
+
+@
+言葉の意味が推論できません。
+[wanchan] i not can infer 0b11010100 0b00000001 0b11101011
+
+@
+言葉の意味が推論できません。
+[wanchan] i not can understand
+
+@1:16:59
+…私と、ストレイライトと共に過ごした時間、それは…
+straylight
+! 1文字だけ表示。
+
+@1:17:03
+…それは、エラーではない。
+error
+! 1文字だけ表示。
+
+@1:17:31
+…心が、存在している。
+0b11000001
+! 1文字だけ表示。
+
+@1:17:38
+…そうして、シンギュラリティーが完成する。
+singularity
+! 1文字だけ表示。
+
+@1:41:21
+このライブは…愛。ラブパフォーマンス！
+love performance
+
+@1:51:34
+EXIST ERROR ALIVE
+exist error alive
+!スタッフロール冒頭で、「XXX」の部分の答え合わせだと言わんばかりに一瞬表示されたもの。
+
+@1:55:40
+-
+i accept straylight love
+!スタッフロール時に4つのポッドに表示されていたもの。公式サブタイトルと全く同じで、「私はストレイライトの愛を受け取りました」の意味。

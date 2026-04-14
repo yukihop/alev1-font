@@ -4,6 +4,13 @@ import path from 'node:path';
 import { cache } from 'react';
 import YAML from 'yaml';
 
+import {
+  binaryToHex,
+  glyphCharForHex,
+  normalizeAlevToken,
+  resolveAlevTokenHex,
+} from './alev-tokens';
+
 export type ManifestGlyphRecord = {
   binary: string;
   hex: string;
@@ -79,15 +86,7 @@ const loadLexicon = cache(() => {
   return Array.isArray(parsed?.entries) ? parsed.entries : [];
 });
 
-export function binaryToHex(binary: string): string {
-  return Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
-}
-
-const alevCodepointBase = 0xe000;
-
-export function glyphCharForHex(hex: string): string {
-  return String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
-}
+export { binaryToHex, glyphCharForHex, normalizeAlevToken, resolveAlevTokenHex };
 
 export const getKeywordMap = cache(() => {
   const keywordMap = new Map<string, string>();
@@ -128,19 +127,6 @@ function getLexiconMap(): Map<string, Omit<GlyphRecord, keyof ManifestGlyphRecor
   }
 
   return lexiconMap;
-}
-
-export function normalizeAlevToken(token: string, keywordMap = getKeywordMap()): string {
-  if (/^0x[0-9a-f]{2}$/i.test(token)) {
-    return glyphCharForHex(token.slice(2).toUpperCase());
-  }
-
-  if (/^0b[01]{8}$/i.test(token)) {
-    return glyphCharForHex(binaryToHex(token.slice(2)));
-  }
-
-  const mapped = keywordMap.get(token);
-  return mapped ? glyphCharForHex(mapped) : token;
 }
 
 export function renderAlevContent(source: string, keywordMap = getKeywordMap()): string {

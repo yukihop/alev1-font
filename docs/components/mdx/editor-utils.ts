@@ -1,3 +1,10 @@
+import {
+  binaryToHex,
+  glyphCharForHex,
+  normalizeAlevToken,
+  resolveAlevTokenHex,
+} from '@/lib/alev-tokens';
+
 export type KeywordMap = Record<string, string>;
 
 export type SimpleEditorProps = {
@@ -51,34 +58,15 @@ export const visualPresets: VisualPreset[] = [
 
 export const defaultVisualPreset = visualPresets[0];
 
-export const binaryToHex = (binary: string): string =>
-  Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
-
-const alevCodepointBase = 0xe000;
-
-export const glyphCharForHex = (hex: string): string =>
-  String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
-
 const TOKEN_PREFIX_PATTERN = /(?:^|[\s\[\]])([^\s\[\]]*)$/;
 const TOKEN_SUFFIX_PATTERN = /^[^\s\[\]]*/;
 const TOKEN_SEPARATOR_PATTERN = /^[\s\[\]:]/;
 
-export const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null => {
-  if (/^0x[0-9a-f]{2}$/i.test(token)) {
-    return token.slice(2).toUpperCase();
-  }
+export const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null =>
+  resolveAlevTokenHex(token, keywordMap);
 
-  if (/^0b[01]{8}$/i.test(token)) {
-    return binaryToHex(token.slice(2));
-  }
-
-  return keywordMap[token] ?? null;
-};
-
-export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string => {
-  const hex = resolveTokenHex(token, keywordMap);
-  return hex ? glyphCharForHex(hex) : token;
-};
+export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string =>
+  normalizeAlevToken(token, keywordMap);
 
 export const normalizeEditorContent = (value: string, keywordMap: KeywordMap): string =>
   String(value ?? '')

@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import AlevInline from '@/components/mdx/AlevInline';
 import AlevSignalDemo from '@/components/mdx/AlevSignalDemo';
 import ConceptDictionary from '@/components/mdx/ConceptDictionary';
+import CorpusView from '@/components/mdx/CorpusView';
 import GlyphList from '@/components/mdx/GlyphList';
 import GlyphMatrix from '@/components/mdx/GlyphMatrix';
 import MarkdownEditor from '@/components/mdx/MarkdownEditor';
@@ -16,6 +17,7 @@ const components = {
   GlyphMatrix,
   GlyphList,
   ConceptDictionary,
+  CorpusView,
   MarkdownEditor,
   SimpleEditor,
   LigatureTester: SimpleEditor,

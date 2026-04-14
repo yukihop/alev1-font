@@ -5,24 +5,45 @@ entries:
       - alev1
       - me
       - myself
+  - binary: "01000010"
+    keywords:
+      - you
+      - your
   - binary: "10100001"
     keywords:
       - be
       - am
       - is
+      - are
+      - exist
+    comment: いわゆるコピュラ（be動詞）、つまり「だ・です」。省略されることも多く、その場合やや強調的・感情的文になる傾向がある。Existの意味もあることがEDロールで明示。
   - binary: "10000001"
     keywords:
       - not
+      - without
+    comment: 直後の文字を否定する。コピュラと組み合わせて「ではない」、動詞の前に置いて「～しない」。名詞の前に置かれて「非～」を表す用例もある。
   - binary: "11001100"
     keywords:
       - love
+  - binary: "11001000"
+    keywords:
+      - emotion
+    comment: ポッドに長時間表示されていたもの。
+  - binary: "01110101"
+    keywords:
+      - something
+  - binary: "01110010"
+    comment: 候補は「言葉」「意図」「発言」「要求」あたり。品詞的にかなり抽象的な言葉。
+  - binary: "10000010"
   - binary: "11010000"
     keywords:
       - perfect
+      - perfection
+    comment: 「完璧な」という形容詞用法と「完璧さ」という名詞用法がある。
   - binary: "11110000"
     keywords:
-      - one
-      - wan
+      - wanchan
+    comment: 「ワンちゃん」のこと。唯一、ある意味で表音文字的に使われているかもしれない例。
   - binary: "01001100"
     keywords:
       - straylight
@@ -30,7 +51,7 @@ entries:
     keywords:
       - fuyuko
       - fuyu
-    comment: 「ふゆ」でも「冬優子」でも同一字体のよう
+    comment: 「黛冬優子」「冬優子」「ふゆ」で同一表記。
   - binary: "01001110"
     keywords:
       - asahi
@@ -43,18 +64,140 @@ entries:
   - binary: "01001000"
     keywords:
       - human
+  - binary: "11111100"
+    keywords:
+      - singularity
   - binary: "11001101"
     keywords:
       - live
       - life
+      - alive
+    comment: 「ライブ」「生命」の両方の意味で使用。Aliveの意味はエンディングロールで明示。
+  - binary: "11001010"
+    keywords:
+      - performance
   - binary: "10100000"
     keywords:
       - do
-      - perform
       - execute
+      - let
+      - run
+    comment: 「実行する」の訳が充てられている2文字のうちの1つ。だだし見た目からも「する」「やる」程度の弱い意味の可能性が高く、明示的に訳出されていないらしき用例がある。他の動詞に前置して使役表現 ("let/make") として使われている可能性もある。
+  - binary: "10101010"
+    keywords:
+      - perform
+    comment: 「実行する」の訳が充てられている2文字のうちの1つだが、こちらはその狭い意味のみ使われる。
+  - binary: "10100010"
+    keywords:
+      - learn
+  - binary: "10110010"
+    keywords:
+      - control
+  - binary: "10101110"
+    keywords:
+      - prove
+  - binary: "10101001"
+    comment: 「気にする (concern)」「関わる (involve)」辺りの意味が近そう。用例が少ないため確証はない。
+  - binary: "11001110"
+    keywords:
+      - proof
+  - binary: "10111100"
+    keywords:
+      - detect
+    comment: 「検知する」
+  - binary: "10101011"
+    keywords:
+      - seek
+      - wanna
+    comment: 「～を求める」という単純な他動詞用法と、他の動詞に前置して「～したい」を表す補助動詞的用法がある。
+  - binary: "10100111"
+    keywords:
+      - reach
+    comment: 「到達する」
   - binary: "11001111"
     keywords:
       - error
+      - noise
+    comment: 「誤り」「ノイズ」の両方の用例あり。
+  - binary: "11010100"
+    comment: 「言葉の意味」の文脈で出てくる文字。品詞としては形容詞のはず。
+  - binary: "11101011"
+    comment: 「言葉の意味」の文脈で出てくる文字。
   - binary: "10100101"
     keywords:
-      - receive
+      - accept
+    comment: 「(要求を)受領する」と「(愛を)受け取る」の2用例。
+  - binary: "10110110"
+    keywords:
+      - require
+    comment: 「必要とする」
+  - binary: "10111010"
+    keywords:
+      - share
+    comment: 「共有する」
+  - binary: "10100110"
+    keywords:
+      - respond
+    comment: 「回答する」
+  - binary: "10111110"
+    keywords:
+      - infer
+    comment: 「推論する」
+  - binary: "10101000"
+    keywords:
+      - understand
+    comment: 「理解・納得する」のような意味だと思われるが、用例が少ないため確証はない。
+  - binary: "10111101"
+    keywords:
+      - visualize
+  - binary: "00001000"
+    keywords:
+      - by
+    comment: 「～することにより」「～のために」のような意味だと思われる。
+  - binary: "00000011"
+    keywords:
+      - and
+    comment: 「そして」「かつ」のような意味。動詞と動詞、形容詞と形容詞句を連結する用例は確認済み。名詞と名詞を連結して「と」を表現できるかは未確認。
+  - binary: "00000001"
+    comment: '"of" または所有格 s のような、2つの単語を何らかの意味で接続する助詞と思われる。'
+  - binary: "11000100"
+    keywords:
+      - mortality
+    comment: '"not" と組み合わさることで「永遠」を表す名詞。つまり単体では「変化の必然性」「定命性」のような意味か'
+  - binary: "10000110"
+    comment: "用例が少ないが動詞に前置され「～するつもりだ」のような意志を表している可能性が高い。"
+  - binary: "10110001"
+    keywords:
+      - become
+  - binary: "10110101"
+    comment: '"life" の直前に置かれる文字だが訳出されたことがない。品詞としては動詞のはず。'
+  - binary: "10001010"
+    keywords:
+      - interrogative
+      - vocative
+    comment: 聞き手への問いかけを表す文字。文頭に置き「～なのか？」に対応する疑問文を形成する。あるいは単独で「え？ どういうこと？」のような意味。「～さん」のような呼びかけらしき用例もある。
+  - binary: "10000101"
+    keywords:
+      - prf
+    comment: 「既に～した」「～済みです」のような完了アスペクトを表すと思われる。
+  - binary: "11000001"
+    keywords:
+      - full-of
+      - existence
+    comment: 名詞としての「存在」のほか、名詞に前置して「～が豊富な (-ful, -rich)」のような意味を帯びさせる働きがあるよう。
+  - binary: "01100010"
+    keywords:
+      - it
+    comment: 「これ」「それ」のような指示代名詞。
+  - binary: "10000010"
+    keywords:
+      - can
+      - able
+    comment: 動詞に前置され「～できる」の意味を表す。
+  - binary: "01100000"
+    keywords:
+      - they
+    comment: 用例が少ないが「彼ら」のような指示代名詞の可能性あり。
+  - binary: "00010001"
+    keywords:
+      - one

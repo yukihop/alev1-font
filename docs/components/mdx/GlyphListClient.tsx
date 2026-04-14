@@ -9,10 +9,11 @@ import styles from './Glyphs.module.css';
 
 type GlyphListPanelProps = {
   glyphs: GlyphRecord[];
+  usageCounts: Record<string, number>;
 };
 
 const GlyphListClient: FC<GlyphListPanelProps> = props => {
-  const { glyphs } = props;
+  const { glyphs, usageCounts } = props;
   const { copiedId, copyText } = useCopyFeedback();
 
   return (
@@ -50,8 +51,12 @@ const GlyphListClient: FC<GlyphListPanelProps> = props => {
                   />
                 ))}
               </div>
-              {glyph.comment ? <div className={styles.glyphComment}>{glyph.comment}</div> : null}
-              {copiedId === glyph.hex ? <div className={styles.glyphCopyStatus}>Copied</div> : null}
+              <div className={styles.glyphCopyStatus}>
+                <span className={styles.glyphPopoverBadge}>
+                  {copiedId === glyph.hex ? 'Copied' : `出現数: ${usageCounts[glyph.hex] ?? 0}`}
+                </span>
+                {glyph.comment ? <span className={styles.glyphComment}>{glyph.comment}</span> : null}
+              </div>
             </div>
           </li>
         ))}
