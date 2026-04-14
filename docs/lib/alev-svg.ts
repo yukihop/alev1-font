@@ -1,4 +1,4 @@
-import glyphData from "./generated/alev-glyph-data.json" with { type: "json" };
+import glyphData from "./generated/alev-glyph-data.json";
 import { z } from "zod";
 
 type AlevSvgProps = {
