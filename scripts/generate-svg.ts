@@ -8,7 +8,7 @@ const glyphDataPath = path.join(
   "docs",
   "lib",
   "generated",
-  "alev-glyph-data.json",
+  "alev-glyph-data.ts",
 );
 
 async function main() {
@@ -23,7 +23,7 @@ async function main() {
 
   if (!existsSync(glyphDataPath)) {
     throw new Error(
-      "Missing docs/lib/generated/alev-glyph-data.json. Run `pnpm --filter docs generate:glyph-data` first.",
+      "Missing docs/lib/generated/alev-glyph-data.ts. Run `pnpm --filter docs generate:glyph-data` first.",
     );
   }
 

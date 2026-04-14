@@ -15,7 +15,7 @@ const glyphModelPath = path.join(repoDir, 'data', 'glyph-model.yaml');
 const partsSvgPath = path.join(repoDir, 'data', 'glyphs', 'alevish.svg');
 const openBracketSvgPath = path.join(repoDir, 'data', 'glyphs', 'open_bracket.svg');
 const closeBracketSvgPath = path.join(repoDir, 'data', 'glyphs', 'close_bracket.svg');
-const outputPath = path.join(docsDir, 'lib', 'generated', 'alev-glyph-data.json');
+const outputPath = path.join(docsDir, 'lib', 'generated', 'alev-glyph-data.ts');
 
 async function main() {
   const glyphModelSource = await readFile(glyphModelPath, 'utf8');
@@ -60,7 +60,11 @@ async function main() {
   };
 
   await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, `${JSON.stringify(glyphData, null, 2)}\n`, 'utf8');
+  await writeFile(
+    outputPath,
+    `export default ${JSON.stringify(glyphData, null, 2)};\n`,
+    'utf8',
+  );
 
   console.log(`generated ${path.relative(docsDir, outputPath)}`);
 }

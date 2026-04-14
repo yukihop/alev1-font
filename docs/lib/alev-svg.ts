@@ -1,4 +1,4 @@
-import glyphData from "./generated/alev-glyph-data.json";
+import glyphData from "./generated/alev-glyph-data.ts";
 import { z } from "zod";
 
 type AlevSvgProps = {
@@ -64,29 +64,42 @@ const alevSvgPropsSchema = z.object({
     .string()
     .transform((value) => value.toLowerCase())
     .refine((value) => /^([0-9a-f]{2}|\[|\]| |\n)+$/.test(value), {
-      message: "Invalid text",
+      message: "テキストの形式が不正です",
     })
     .refine((value) => value.split("\n").length <= 5, {
-      message: "Too many lines",
+      message: "行数は5行以内にしてください",
     })
     .refine((value) => value.split("\n").every((line) => line.length <= 100), {
-      message: "Line too long",
+      message: "1行は100文字以内にしてください",
     }),
   fontSize: z.preprocess(
     (value) => (value === undefined || value === "" ? 36 : value),
-    z.coerce.number().finite().gte(9, "Invalid font size"),
+    z.coerce
+      .number()
+      .gte(9, "フォントサイズは9pt以上にしてください")
+      .lte(220, "フォントサイズは220pt以下にしてください"),
   ),
   letterSpacing: z.preprocess(
     (value) => (value === undefined || value === "" ? 0 : value),
-    z.coerce.number().finite().int("Invalid letter spacing"),
+    z.coerce
+      .number()
+      .int("レタースペーシングは整数で指定してください")
+      .gte(-200, "レタースペーシングは-200以上にしてください")
+      .lte(400, "レタースペーシングは400以下にしてください"),
   ),
   color: z.preprocess(
     (value) => (value === undefined || value === "" ? "#000000" : value),
-    z.string().regex(/^#[0-9a-f]{6}$/i, "Invalid color"),
+    z.string().regex(/^#[0-9a-f]{6}$/i, "文字色は #rrggbb 形式で指定してください"),
   ),
   shadowColor: z.preprocess(
-    (value) => (value === undefined || value === null || value === "" ? null : value),
-    z.union([z.null(), z.string().regex(/^#[0-9a-f]{6}$/i, "Invalid shadow color")]),
+    (value) =>
+      value === undefined || value === null || value === "" ? null : value,
+    z.union([
+      z.null(),
+      z
+        .string()
+        .regex(/^#[0-9a-f]{6}$/i, "影色は #rrggbb 形式で指定してください"),
+    ]),
   ),
 });
 
@@ -182,13 +195,8 @@ const parseCanonicalLine = (text: string): ParsedGlyph[] => {
 };
 
 export function generateAlevSvg(props: AlevSvgProps): string {
-  const {
-    text,
-    fontSize,
-    letterSpacing,
-    color,
-    shadowColor,
-  } = normalizeAlevSvgProps(props);
+  const { text, fontSize, letterSpacing, color, shadowColor } =
+    normalizeAlevSvgProps(props);
   const lines = text.split("\n").map((line) => parseCanonicalLine(line));
   const tracking = (letterSpacing / 1000) * glyphData.unitsPerEm;
   const nodes: string[] = [];
