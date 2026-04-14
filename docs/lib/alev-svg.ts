@@ -28,7 +28,7 @@ type GlyphShape = {
 
 type ParsedGlyph =
   | { kind: "space"; width: number }
-  | { kind: "shape"; width: number; shapes: GlyphShape[] };
+  | { kind: "shape"; width: number; shapes: GlyphShape[]; useGlyphScale: boolean };
 
 const partOrder = [
   { name: "part1", bit: 0x80 },
@@ -130,10 +130,25 @@ const renderElement = (element: GlyphElement, color: string): string => {
   return `<${element.tagName} ${attrPrefix}fill="${escapeXml(color)}"/>`;
 };
 
-const renderShape = (shape: GlyphShape, color: string): string => {
-  const scaleX = shape.width / shape.viewBox.width;
-  const scaleY = glyphData.unitsPerEm / shape.viewBox.height;
+const renderShape = (
+  shape: GlyphShape,
+  color: string,
+  useGlyphScale: boolean,
+): string => {
+  const targetWidth = shape.width;
+  const targetHeight = glyphData.unitsPerEm;
+  const glyphScale = useGlyphScale ? glyphData.glyphScale : 1;
+  const scaledWidth = targetWidth * glyphScale;
+  const scaledHeight = targetHeight * glyphScale;
+  const offsetX = (targetWidth - scaledWidth) / 2;
+  const offsetY = (targetHeight - scaledHeight) / 2;
+  const scaleX = scaledWidth / shape.viewBox.width;
+  const scaleY = scaledHeight / shape.viewBox.height;
   const transforms = [];
+
+  if (offsetX !== 0 || offsetY !== 0) {
+    transforms.push(`translate(${formatNumber(offsetX)} ${formatNumber(offsetY)})`);
+  }
 
   if (scaleX !== 1 || scaleY !== 1) {
     transforms.push(`scale(${formatNumber(scaleX)} ${formatNumber(scaleY)})`);
@@ -171,6 +186,7 @@ const parseCanonicalLine = (text: string): ParsedGlyph[] => {
         kind: "shape",
         width: glyphData.brackets.open.width,
         shapes: [glyphData.brackets.open],
+        useGlyphScale: false,
       });
       index += 1;
       continue;
@@ -181,6 +197,7 @@ const parseCanonicalLine = (text: string): ParsedGlyph[] => {
         kind: "shape",
         width: glyphData.brackets.close.width,
         shapes: [glyphData.brackets.close],
+        useGlyphScale: false,
       });
       index += 1;
       continue;
@@ -195,6 +212,7 @@ const parseCanonicalLine = (text: string): ParsedGlyph[] => {
     glyphs.push({
       kind: "shape",
       width: glyphData.advanceWidth,
+      useGlyphScale: true,
       shapes: partOrder
         .filter((part) => (mask & part.bit) !== 0)
         .map((part) => glyphData.parts[part.name]),
@@ -219,7 +237,7 @@ export function generateAlevSvg(props: AlevSvgProps): string {
     glyphs.forEach((glyph, index) => {
       if (glyph.kind === "shape") {
         const contents = glyph.shapes
-          .map((shape) => renderShape(shape, color))
+          .map((shape) => renderShape(shape, color, glyph.useGlyphScale))
           .join("");
         nodes.push(
           `<g transform="translate(${formatNumber(cursorX + padding)} ${formatNumber(padding + lineIndex * lineAdvance)})">${contents}</g>`,

@@ -33,6 +33,7 @@ async function main() {
     unitsPerEm: Number(glyphModel.font.unitsPerEm),
     ascender: Number(glyphModel.font.ascender),
     descender: Number(glyphModel.font.descender),
+    glyphScale: Number(glyphModel.font.glyphScale ?? 1),
     advanceWidth: Number(glyphModel.font.advanceWidth),
     spaceWidth: Number(glyphModel.font.spaceWidth),
     parts: Object.fromEntries(
