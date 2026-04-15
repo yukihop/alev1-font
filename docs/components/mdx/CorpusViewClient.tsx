@@ -198,17 +198,21 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
 
                 if (item.type === "paragraph") {
                   return (
-                    <RenderComment
+                    <div
                       key={`paragraph-${sectionIndex}-${itemIndex}`}
-                      comment={item.content}
-                      glyphMap={glyphMap}
-                      usageCounts={usageCounts}
-                      selectedHex={selection.hex}
-                      onGlyphPress={handleGlyphPress}
-                      keyPrefix={`paragraph-${sectionIndex}-${itemIndex}`}
                       className={`${styles.paragraph} ${itemSelected ? styles.paragraphSelected : ""}`.trim()}
-                      alevClassName={styles.paragraphAlev}
-                    />
+                    >
+                      <RenderComment
+                        comment={item.content}
+                        glyphMap={glyphMap}
+                        usageCounts={usageCounts}
+                        selectedHex={selection.hex}
+                        onGlyphPress={handleGlyphPress}
+                        keyPrefix={`paragraph-${sectionIndex}-${itemIndex}`}
+                        className={styles.paragraphText}
+                        alevClassName={styles.paragraphAlev}
+                      />
+                    </div>
                   );
                 }
 

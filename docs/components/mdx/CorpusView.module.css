@@ -35,11 +35,14 @@
 }
 
 .paragraph {
-  margin: 0;
   color: color-mix(in srgb, var(--text) 88%, var(--text-muted));
+  border-bottom-style: dashed;
+}
+
+.paragraphText {
+  margin: 0;
   font-size: 1rem;
   line-height: 1.85;
-  border-bottom-style: dashed;
 }
 
 .paragraphSelected {
