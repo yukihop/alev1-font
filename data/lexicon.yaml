@@ -21,19 +21,19 @@ entries:
     keywords:
       - not
       - without
-    comment: 直後の文字を否定する。コピュラと組み合わせて「ではない」、動詞の前に置いて「～しない」。名詞の前に置かれて「非～」を表す用例もある。
+    comment: 直後の文字を否定する。コピュラと組み合わせて「ではない」、動詞や助動詞の前に置いて「～ない」。名詞の前に置かれて「非～」を表す用例もある。
   - binary: "11001100"
     keywords:
       - love
   - binary: "11001000"
     keywords:
       - emotion
-    comment: ポッドに長時間表示されていたもの。
+    comment: ポッドがゲージを溜める間表示されていたもの。
   - binary: "01110101"
     keywords:
       - something
   - binary: "01110010"
-    comment: 候補は「言葉」「意図」「発言」「要求」あたり。品詞的にかなり抽象的な言葉。
+    comment: 候補は「意図」「発言」「概念」「要求」あたり。品詞的にかなり抽象的な言葉。
   - binary: "11010000"
     keywords:
       - perfect
