@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 
 import type { GlyphRecord } from '@/lib/alev';
 
+import alevTextStyles from './AlevText.module.css';
 import styles from './AlevSignalDemo.module.css';
 
 type AlevSignalDemoPanelProps = {
@@ -78,7 +79,7 @@ const AlevSignalDemoClient: FC<AlevSignalDemoPanelProps> = props => {
           {slots.map((slot, index) => (
             <span
               key={`${index}-${slot.hex}`}
-              className={`${styles.cell} ${slot.featured ? styles.featured : ''} ${slot.hex === focusHex ? styles.focus : ''}`.trim()}
+              className={`${styles.cell} ${alevTextStyles.glyphText} ${slot.featured ? styles.featured : ''} ${slot.hex === focusHex ? styles.focus : ''}`.trim()}
             >
               {slot.char}
             </span>

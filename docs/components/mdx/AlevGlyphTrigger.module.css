@@ -1,0 +1,27 @@
+.inlineGlyphTrigger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  vertical-align: baseline;
+  font: inherit;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.inlineGlyphTrigger:hover,
+.inlineGlyphTrigger:focus-visible {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 0 0.06em color-mix(in srgb, var(--accent) 42%, transparent));
+}
+
+.inlineGlyphTriggerSelected {
+  color: #ff8a1f;
+  filter: drop-shadow(0 0 0.12em rgba(255, 138, 31, 0.45));
+}
+
+.inlineGlyph {
+  font: inherit;
+}

@@ -127,8 +127,9 @@ entries:
     comment: 「誤り」「ノイズ」の両方の用例あり。
   - binary: "11010100"
     keywords:
+      - semantic
       - meaning
-    comment: 形容詞のような見た目だが「意味」らしい。
+    comment: 形容詞群だが「意味」という名詞のように使われている例しかない。
   - binary: "11101011"
     keywords:
       - word

@@ -7,6 +7,7 @@ import {
   KeywordSuggestionsPopover,
   useKeywordSuggestions,
 } from "./KeywordSuggestionsPopover";
+import alevTextStyles from "./AlevText.module.css";
 import {
   DEFAULT_EDITOR_VALUE,
   DEFAULT_FONT_SIZE,
@@ -51,7 +52,7 @@ const PresetButton: FC<PresetButtonProps> = (props) => {
       }}
     >
       <span className={styles.presetPreview} style={previewStyle}>
-        <span className={styles.presetGlyph}>
+        <span className={`${styles.presetGlyph} ${alevTextStyles.glyphText}`}>
           {normalizeEditorContent(preset.sample, keywordMap)}
         </span>
       </span>
@@ -221,7 +222,7 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = (props) => {
       <div className={styles.previewWrap}>
         <div className={styles.caption}>プレビュー</div>
         <div className={styles.previewFrame} style={frameStyle}>
-          <div className={styles.previewText} style={previewStyle}>
+          <div className={`${styles.previewText} ${alevTextStyles.glyphText}`} style={previewStyle}>
             {normalizeEditorContent(inputValue, keywordMap)}
           </div>
         </div>

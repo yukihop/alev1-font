@@ -12,6 +12,7 @@ import {
   normalizeEditorContent,
   type KeywordMap,
 } from './editor-utils';
+import alevTextStyles from './AlevText.module.css';
 import styles from './Editors.module.css';
 
 const caretStyleProps = [
@@ -249,7 +250,7 @@ export const KeywordSuggestionsPopover: FC<KeywordSuggestionsPopoverProps> = pro
             }}
           >
             <span className={styles.suggestionWord}>{suggestion}</span>
-            <span className={styles.suggestionGlyph} aria-hidden="true">
+            <span className={`${styles.suggestionGlyph} ${alevTextStyles.glyphText}`} aria-hidden="true">
               {normalizeEditorContent(suggestion, keywordMap)}
             </span>
           </button>

@@ -163,18 +163,6 @@
   color: #d84a5c;
 }
 
-.alevInline,
-.previewText,
-.suggestionGlyph,
-.presetGlyph {
-  font-family: var(--font-alev), var(--font-ui);
-  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
-  font-variant-ligatures: common-ligatures;
-  font-synthesis: none;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
 .presetGlyph {
   display: inline-block;
   color: var(--simple-editor-preset-color, #000);

@@ -81,42 +81,8 @@
 .alevLine {
   min-width: 0;
   white-space: pre-wrap;
-  font-family: var(--font-alev), var(--font-ui);
-  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
-  font-variant-ligatures: common-ligatures;
-  font-synthesis: none;
-  letter-spacing: 0;
-  text-transform: none;
   font-size: 2.32rem;
   line-height: 1.4;
-}
-
-.inlineGlyphTrigger {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  color: inherit;
-  cursor: pointer;
-  vertical-align: baseline;
-  font: inherit;
-  transition: filter 120ms ease, transform 120ms ease;
-}
-
-.inlineGlyphTrigger:hover,
-.inlineGlyphTrigger:focus-visible {
-  transform: translateY(-1px);
-  filter: drop-shadow(0 0 0.06em color-mix(in srgb, var(--accent) 42%, transparent));
-}
-
-.inlineGlyphTriggerSelected {
-  color: #ff8a1f;
-  filter: drop-shadow(0 0 0.12em rgba(255, 138, 31, 0.45));
-}
-
-.inlineGlyph {
-  font: inherit;
 }
 
 .commentBlock {
@@ -130,12 +96,6 @@
 }
 
 .commentAlev {
-  font-family: var(--font-alev), var(--font-ui);
-  font-feature-settings: "liga" 1, "clig" 1, "calt" 1;
-  font-variant-ligatures: common-ligatures;
-  font-synthesis: none;
-  letter-spacing: 0;
-  text-transform: none;
 }
 
 .unknown {

@@ -2,6 +2,7 @@ import { Children, type FC, type ReactNode } from 'react';
 
 import { renderAlevContent } from '@/lib/alev';
 
+import alevTextStyles from './AlevText.module.css';
 import styles from './AlevInline.module.css';
 
 type AlevInlineProps = {
@@ -24,7 +25,7 @@ const AlevInline: FC<AlevInlineProps> = props => {
   const text = source || textFromChildren(children);
 
   return (
-    <span className={styles.inline} title={text}>
+    <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>
       {renderAlevContent(text)}
     </span>
   );

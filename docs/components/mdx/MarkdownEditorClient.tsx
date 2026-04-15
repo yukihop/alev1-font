@@ -6,6 +6,7 @@ import { useId, useMemo, useRef, useState } from 'react';
 
 import RichText from '@/components/RichText';
 
+import alevTextStyles from './AlevText.module.css';
 import { KeywordSuggestionsPopover, useKeywordSuggestions } from './KeywordSuggestionsPopover';
 import styles from './Editors.module.css';
 import {
@@ -68,7 +69,10 @@ const MarkdownEditorClient: FC<MarkdownEditorPanelProps> = props => {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const keywordList = getKeywordList(keywordMap);
   const [inputValue, setInputValue] = useState(defaultValue);
-  const renderer = useMemo(() => createMarkdownRenderer(keywordMap, styles.alevInline), [keywordMap]);
+  const renderer = useMemo(
+    () => createMarkdownRenderer(keywordMap, `${styles.alevInline} ${alevTextStyles.glyphText}`),
+    [keywordMap],
+  );
   const previewHtml = useMemo(() => renderer.render(inputValue), [inputValue, renderer]);
   const {
     popoverRef,

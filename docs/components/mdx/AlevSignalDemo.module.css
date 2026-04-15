@@ -70,7 +70,6 @@
   justify-content: center;
   min-height: 3.8rem;
   color: rgba(225, 241, 255, 0.82);
-  font-family: var(--font-alev), var(--font-ui);
   font-size: clamp(1.8rem, 3vw, 3rem);
   line-height: 1;
   text-shadow: 0 0 0.18em rgba(115, 206, 255, 0.55), 0 0 0.45em rgba(63, 160, 255, 0.28);

@@ -5,10 +5,40 @@ import { getCorpusUsageCounts } from '@/lib/corpus';
 
 import GlyphMatrixClient from './GlyphMatrixClient';
 
-const GlyphMatrix: FC = () => {
+type GlyphMatrixProps = {
+  rowFilter?: string;
+};
+
+function normalizeRowFilter(value?: string): string[] | null {
+  if (value == null || value === '') {
+    return null;
+  }
+
+  const tokens = String(value)
+    .split(',')
+    .map((token) => token.trim().toUpperCase());
+
+  if (tokens.length === 0 || tokens.some((token) => !/^[0-9A-F]$/.test(token))) {
+    throw new Error(`GlyphMatrix rowFilter must be a comma-separated list of hex digits, received "${value}".`);
+  }
+
+  return [...new Set(tokens)];
+}
+
+const GlyphMatrix: FC<GlyphMatrixProps> = props => {
   const { glyphs, rows, cols } = getAlevData();
   const usageCounts = getCorpusUsageCounts();
-  return <GlyphMatrixClient glyphs={glyphs} rows={rows} cols={cols} usageCounts={usageCounts} />;
+  const rowFilter = normalizeRowFilter(props.rowFilter);
+  const visibleRows = rowFilter ?? rows;
+
+  return (
+    <GlyphMatrixClient
+      glyphs={glyphs}
+      rows={visibleRows}
+      cols={cols}
+      usageCounts={usageCounts}
+    />
+  );
 };
 
 export default GlyphMatrix;

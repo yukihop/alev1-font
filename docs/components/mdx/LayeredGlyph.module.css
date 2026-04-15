@@ -1,0 +1,46 @@
+.layeredGlyphFigure {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  min-width: 0;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-elevated) 92%, transparent),
+    var(--bg-soft)
+  );
+}
+
+.layeredGlyphStack {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+}
+
+.layeredGlyphBackdrop,
+.layeredGlyphForeground {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layeredGlyphBackdrop {
+  color: color-mix(in srgb, var(--text-muted) 50%, transparent);
+  opacity: 0.26;
+}
+
+.layeredGlyphForeground {
+  color: var(--text);
+}
+
+.layeredGlyphLabel {
+  margin: 0;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 80%;
+}

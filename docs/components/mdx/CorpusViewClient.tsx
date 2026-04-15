@@ -4,49 +4,24 @@ import { useMemo, useState, type FC } from 'react';
 
 import type { GlyphRecord } from '@/lib/alev';
 
-import GlyphPopoverTrigger from './GlyphPopoverTrigger';
+import alevTextStyles from './AlevText.module.css';
+import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
+import AlevRenderableFragments from './AlevRenderableFragments';
+import AlevLineClient from './AlevLineClient';
 import styles from './CorpusView.module.css';
-
-export type CorpusRenderableFragment =
-  | {
-      type: 'space';
-      value: string;
-    }
-  | {
-      type: 'bracket';
-      value: '[' | ']';
-    }
-  | {
-      type: 'text';
-      value: string;
-    }
-  | {
-      type: 'glyph';
-      value: string;
-      hex: string;
-    };
+import type { AlevRenderableCommentSegment, AlevRenderableFragment } from './alev-renderable';
 
 export type CorpusRenderableEntry = {
   position: string;
   japanese: string | null;
-  alevLines: CorpusRenderableFragment[][] | null;
-  comments: CorpusRenderableCommentSegment[][];
+  alevLines: AlevRenderableFragment[][] | null;
+  comments: AlevRenderableCommentSegment[][];
 };
 
 export type CorpusRenderableSection = {
   title: string | null;
   entries: CorpusRenderableEntry[];
 };
-
-export type CorpusRenderableCommentSegment =
-  | {
-      type: 'text';
-      value: string;
-    }
-  | {
-      type: 'alev';
-      fragments: CorpusRenderableFragment[];
-    };
 
 type CorpusViewClientProps = {
   glyphs: GlyphRecord[];
@@ -79,54 +54,6 @@ const entryContainsHex = (
   );
 };
 
-const renderRenderableFragments = ({
-  fragments,
-  glyphMap,
-  selectedHex,
-  usageCounts,
-  onGlyphPress,
-  triggerClassName,
-  contentClassName,
-  keyPrefix,
-}: {
-  fragments: CorpusRenderableFragment[];
-  glyphMap: Map<string, GlyphRecord>;
-  selectedHex: string | null;
-  usageCounts: Record<string, number>;
-  onGlyphPress: (hex: string) => void;
-  triggerClassName: string;
-  contentClassName?: string;
-  keyPrefix: string;
-}) =>
-  fragments.map((fragment, fragmentIndex) => {
-    if (fragment.type === 'space' || fragment.type === 'bracket' || fragment.type === 'text') {
-      return <span key={`${keyPrefix}-${fragmentIndex}`}>{fragment.value}</span>;
-    }
-
-    const glyph = glyphMap.get(fragment.hex);
-    if (!glyph) {
-      return <span key={`${keyPrefix}-${fragmentIndex}`}>{fragment.value}</span>;
-    }
-
-    const glyphSelected = selectedHex === fragment.hex;
-
-    return (
-      <GlyphPopoverTrigger
-        key={`${keyPrefix}-${fragmentIndex}-${glyph.hex}`}
-        glyph={glyph}
-        className={`${triggerClassName} ${glyphSelected ? styles.inlineGlyphTriggerSelected : ''}`.trim()}
-        contentClassName={contentClassName}
-        ariaLabel={`Show glyph ${glyph.hex}`}
-        pressed={glyphSelected}
-        usageCount={usageCounts[glyph.hex] ?? 0}
-        togglePopoverOnClick={false}
-        onPress={() => {
-          onGlyphPress(fragment.hex);
-        }}
-      />
-    );
-  });
-
 const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
   const { glyphs, sections, usageCounts } = props;
   const [selection, setSelection] = useState<SelectionState>({
@@ -137,6 +64,19 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
     () => new Map(glyphs.map((glyph) => [glyph.hex, glyph])),
     [glyphs],
   );
+  const handleGlyphPress = (hex: string) => {
+    setSelection((current) => {
+      if (current.hex !== hex) {
+        return { hex, mode: 'highlight' };
+      }
+
+      if (current.mode === 'highlight') {
+        return { hex, mode: 'focus' };
+      }
+
+      return { hex: null, mode: 'idle' };
+    });
+  };
 
   return (
     <div className={styles.root}>
@@ -189,37 +129,20 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                       {entry.alevLines === null ? (
                         <p className={styles.unknown}>公式原文不明</p>
                       ) : (
-                        <div className={styles.alevBlock}>
-                        {entry.alevLines.map((line, lineIndex) => (
-                          <div
-                            key={`${entry.position}-line-${lineIndex}`}
-                            className={styles.alevLine}
-                          >
-                            {renderRenderableFragments({
-                              fragments: line,
-                              glyphMap,
-                              selectedHex: selection.hex,
-                              usageCounts,
-                              triggerClassName: styles.inlineGlyphTrigger,
-                              contentClassName: styles.inlineGlyph,
-                              keyPrefix: `${entry.position}-line-${lineIndex}`,
-                              onGlyphPress: (hex) => {
-                                setSelection((current) => {
-                                  if (current.hex !== hex) {
-                                    return { hex, mode: 'highlight' };
-                                  }
-
-                                  if (current.mode === 'highlight') {
-                                    return { hex, mode: 'focus' };
-                                  }
-
-                                  return { hex: null, mode: 'idle' };
-                                });
-                              },
-                            })}
-                          </div>
-                        ))}
-                      </div>
+                        <AlevLineClient
+                          glyphs={glyphs}
+                          lines={entry.alevLines}
+                          usageCounts={usageCounts}
+                          selectedHex={selection.hex}
+                          onGlyphPress={handleGlyphPress}
+                          togglePopoverOnClick={false}
+                          className={styles.alevBlock}
+                          lineClassName={styles.alevLine}
+                          lineKeyPrefix={`${entry.position}-${entryIndex}`}
+                          glyphTriggerClassName={glyphTriggerStyles.inlineGlyphTrigger}
+                          selectedGlyphTriggerClassName={glyphTriggerStyles.inlineGlyphTriggerSelected}
+                          glyphContentClassName={glyphTriggerStyles.inlineGlyph}
+                        />
                       )}
                     </div>
 
@@ -236,28 +159,19 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                               }
 
                               return (
-                                <span key={segmentIndex} className={styles.commentAlev}>
-                                  {renderRenderableFragments({
-                                    fragments: segment.fragments,
-                                    glyphMap,
-                                    selectedHex: selection.hex,
-                                    usageCounts,
-                                    triggerClassName: styles.inlineGlyphTrigger,
-                                    keyPrefix: `${entry.position}-comment-${commentIndex}-${segmentIndex}`,
-                                    onGlyphPress: (hex) => {
-                                      setSelection((current) => {
-                                        if (current.hex !== hex) {
-                                          return { hex, mode: 'highlight' };
-                                        }
-
-                                        if (current.mode === 'highlight') {
-                                          return { hex, mode: 'focus' };
-                                        }
-
-                                        return { hex: null, mode: 'idle' };
-                                      });
-                                    },
-                                  })}
+                                <span key={segmentIndex} className={`${styles.commentAlev} ${alevTextStyles.glyphText}`}>
+                                  <AlevRenderableFragments
+                                    fragments={segment.fragments}
+                                    glyphMap={glyphMap}
+                                    selectedHex={selection.hex}
+                                    usageCounts={usageCounts}
+                                    onGlyphPress={handleGlyphPress}
+                                    togglePopoverOnClick={false}
+                                    triggerClassName={glyphTriggerStyles.inlineGlyphTrigger}
+                                    keyPrefix={`${entry.position}-comment-${commentIndex}-${segmentIndex}`}
+                                    selectedTriggerClassName={glyphTriggerStyles.inlineGlyphTriggerSelected}
+                                    contentClassName={glyphTriggerStyles.inlineGlyph}
+                                  />
                                 </span>
                               );
                             })}
