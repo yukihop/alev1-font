@@ -19,9 +19,27 @@ type Slot = {
 };
 
 const slotCount = 42;
+const initialFeaturedBias = 0.45;
 
-const createInitialSlots = (glyphs: GlyphRecord[]): Slot[] =>
-  Array.from({ length: slotCount }, () => createSlot(glyphs));
+const hashSeed = (value: string): number => {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+};
+
+const getDeterministicRatio = (
+  glyphs: GlyphRecord[],
+  slotIndex: number,
+  salt: string,
+): number => {
+  const seedSource = `${salt}:${slotIndex}:${glyphs.map((glyph) => glyph.hex).join(",")}`;
+  return hashSeed(seedSource) / 0x100000000;
+};
 
 const createSlot = (glyphs: GlyphRecord[]): Slot => {
   const glyph = pickGlyph(glyphs);
@@ -34,19 +52,43 @@ const createSlot = (glyphs: GlyphRecord[]): Slot => {
 
 const pickGlyph = (glyphs: GlyphRecord[]): GlyphRecord => {
   const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
-  const pool = featuredGlyphs.length > 0 && Math.random() < 0.45 ? featuredGlyphs : glyphs;
+  const pool = featuredGlyphs.length > 0 && Math.random() < initialFeaturedBias ? featuredGlyphs : glyphs;
   return pool[Math.floor(Math.random() * pool.length)] ?? glyphs[0];
 };
 
+const createStableSlot = (glyphs: GlyphRecord[], slotIndex: number): Slot => {
+  const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
+  const featuredRatio = getDeterministicRatio(glyphs, slotIndex, "featured");
+  const useFeaturedPool =
+    featuredGlyphs.length > 0 && featuredRatio < initialFeaturedBias;
+  const pool = useFeaturedPool ? featuredGlyphs : glyphs;
+  const glyph =
+    pool[Math.floor(getDeterministicRatio(glyphs, slotIndex, "glyph") * pool.length)] ??
+    glyphs[0];
+
+  return {
+    hex: glyph.hex,
+    char: glyph.char,
+    featured: glyph.keywords.length > 0,
+  };
+};
+
+const createStableSlots = (glyphs: GlyphRecord[]): Slot[] =>
+  Array.from({ length: slotCount }, (_, index) => createStableSlot(glyphs, index));
+
+const getStableFocusHex = (glyphs: GlyphRecord[]): string =>
+  createStableSlot(glyphs, slotCount).hex;
+
 const AlevSignalDemoClient: FC<AlevSignalDemoPanelProps> = props => {
   const { glyphs } = props;
-  const [slots, setSlots] = useState(() => createInitialSlots(glyphs));
-  const [focusHex, setFocusHex] = useState(() => pickGlyph(glyphs).hex);
+  const [slots, setSlots] = useState(() => createStableSlots(glyphs));
+  const [focusHex, setFocusHex] = useState(() => getStableFocusHex(glyphs));
   const [glitchPhase, setGlitchPhase] = useState(false);
 
   useEffect(() => {
-    setSlots(createInitialSlots(glyphs));
-    setFocusHex(pickGlyph(glyphs).hex);
+    setSlots(createStableSlots(glyphs));
+    setFocusHex(getStableFocusHex(glyphs));
+    setGlitchPhase(false);
   }, [glyphs]);
 
   useEffect(() => {
