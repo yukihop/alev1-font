@@ -1,10 +1,10 @@
-import type { FC, ReactNode } from 'react';
-import Link from 'next/link';
+import type { FC, ReactNode } from "react";
+import Link from "next/link";
 
-import type { ArticleEntry } from '@/lib/articles';
+import type { ArticleEntry } from "@/lib/articles";
 
-import styles from './DocsShell.module.css';
-import ThemeToggle from './ThemeToggle';
+import styles from "./DocsShell.module.css";
+import ThemeToggle from "./ThemeToggle";
 
 type DocsShellProps = {
   current: ArticleEntry;
@@ -14,7 +14,7 @@ type DocsShellProps = {
   next?: ArticleEntry | null;
 };
 
-const DocsShell: FC<DocsShellProps> = props => {
+const DocsShell: FC<DocsShellProps> = (props) => {
   const { current, entries, children, prev, next } = props;
 
   return (
@@ -28,7 +28,7 @@ const DocsShell: FC<DocsShellProps> = props => {
             {entries.map((entry) => (
               <Link
                 key={entry.slug}
-                className={`${styles.navLink} ${entry.slug === current.slug ? styles.navLinkActive : ''}`.trim()}
+                className={`${styles.navLink} ${entry.slug === current.slug ? styles.navLinkActive : ""}`.trim()}
                 href={entry.path}
               >
                 {entry.title}
@@ -40,7 +40,7 @@ const DocsShell: FC<DocsShellProps> = props => {
       <div className={styles.main}>
         <header className={styles.header}>
           <div>
-            <p className={styles.eyebrow}>ALEV-1 Font Documentation</p>
+            <p className={styles.eyebrow}>ALEV-1 Language & Font</p>
             <h1 className={styles.title}>{current.title}</h1>
           </div>
           <ThemeToggle />
@@ -49,8 +49,12 @@ const DocsShell: FC<DocsShellProps> = props => {
           {children}
           {prev || next ? (
             <nav className={styles.pagination} aria-label="Page navigation">
-              <div className={styles.paginationSlot}>{prev ? <Link href={prev.path}>前: {prev.title}</Link> : null}</div>
-              <div className={styles.paginationSlot}>{next ? <Link href={next.path}>次: {next.title}</Link> : null}</div>
+              <div className={styles.paginationSlot}>
+                {prev ? <Link href={prev.path}>前: {prev.title}</Link> : null}
+              </div>
+              <div className={styles.paginationSlot}>
+                {next ? <Link href={next.path}>次: {next.title}</Link> : null}
+              </div>
             </nav>
           ) : null}
         </main>

@@ -3,6 +3,7 @@ order:
   - index
   - intro
   - characters
+  - corpus
   - simple-editor
   - editor
   - install

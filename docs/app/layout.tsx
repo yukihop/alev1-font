@@ -1,8 +1,8 @@
-import './globals.css';
+import "./globals.css";
 
-import type { Metadata } from 'next';
-import Script from 'next/script';
-import type { ReactNode } from 'react';
+import type { Metadata } from "next";
+import Script from "next/script";
+import type { ReactNode } from "react";
 
 const themeBootScript = `(function () {
   var stored = localStorage.getItem('alev-docs-theme');
@@ -12,10 +12,10 @@ const themeBootScript = `(function () {
 
 export const metadata: Metadata = {
   title: {
-    default: 'ALEV-1 ドキュメント',
-    template: '%s | ALEV-1 ドキュメント',
+    default: "ALEV-1 ドキュメント",
+    template: "%s | ALEV-1 ドキュメント",
   },
-  description: 'ALEV-1 フォントの説明と検証用ドキュメントサイト',
+  description: "ALEV文字解析とフォント配布プロジェクト",
 };
 
 type RootLayoutProps = {

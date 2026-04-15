@@ -7,15 +7,23 @@ import { getKeywordMap } from './alev';
 import { tokenizeAlevLine } from './alev-tokens';
 
 export type CorpusEntry = {
+  type: 'entry';
   position: string;
   japanese: string | null;
   alevLines: string[] | null;
   comments: string[];
 };
 
+export type CorpusParagraph = {
+  type: 'paragraph';
+  text: string;
+};
+
+export type CorpusSectionItem = CorpusEntry | CorpusParagraph;
+
 export type CorpusSection = {
   title: string | null;
-  entries: CorpusEntry[];
+  items: CorpusSectionItem[];
 };
 
 export type CorpusDocument = {
@@ -44,7 +52,7 @@ const legacySectionPattern = /^\[(.+)\]\s*$/;
 function createSection(title: string | null): CorpusSection {
   return {
     title,
-    entries: [],
+    items: [],
   };
 }
 
@@ -63,6 +71,9 @@ export function parseCorpusSource(source: string): CorpusDocument {
     return currentSection;
   };
 
+  const isSectionLine = (line: string) =>
+    line.match(sectionPattern) ?? line.match(legacySectionPattern);
+
   const flushBlock = () => {
     if (blockLines.length === 0) {
       return;
@@ -70,8 +81,15 @@ export function parseCorpusSource(source: string): CorpusDocument {
 
     const [positionLine, japaneseLine = '-', ...rest] = blockLines;
     blockLines = [];
+    const trimmedPositionLine = positionLine.trim();
 
-    if (!positionLine.startsWith('@')) {
+    if (!trimmedPositionLine.startsWith('@')) {
+      if (blockLines.length === 0 && rest.length === 0 && !isSectionLine(trimmedPositionLine)) {
+        ensureSection().items.push({
+          type: 'paragraph',
+          text: positionLine,
+        });
+      }
       return;
     }
 
@@ -108,8 +126,9 @@ export function parseCorpusSource(source: string): CorpusDocument {
     const resolvedAlevLines =
       normalizedAlevLines.length === 1 && normalizedAlevLines[0] === '-' ? null : normalizedAlevLines;
 
-    ensureSection().entries.push({
-      position: positionLine.slice(1).trim(),
+    ensureSection().items.push({
+      type: 'entry',
+      position: trimmedPositionLine.slice(1).trim(),
       japanese,
       alevLines: resolvedAlevLines,
       comments,
@@ -133,22 +152,20 @@ export function parseCorpusSource(source: string): CorpusDocument {
       continue;
     }
 
-    const sectionMatch = trimmed.match(sectionPattern) ?? trimmed.match(legacySectionPattern);
+    const sectionMatch = isSectionLine(trimmed);
     if (sectionMatch) {
       currentSection = createSection(sectionMatch[1].trim());
       sections.push(currentSection);
       continue;
     }
 
-    if (trimmed.startsWith('@')) {
-      blockLines = [trimmed];
-    }
+    blockLines = [rawLine];
   }
 
   flushBlock();
 
   return {
-    sections: sections.filter((section) => section.entries.length > 0),
+    sections: sections.filter((section) => section.items.length > 0),
   };
 }
 
@@ -163,12 +180,12 @@ export const getCorpusUsageCounts = cache((): Record<string, number> => {
   const keywordMap = getKeywordMap();
 
   for (const section of document.sections) {
-    for (const entry of section.entries) {
-      if (entry.alevLines === null) {
+    for (const item of section.items) {
+      if (item.type !== 'entry' || item.alevLines === null) {
         continue;
       }
 
-      for (const line of entry.alevLines) {
+      for (const line of item.alevLines) {
         for (const fragment of tokenizeAlevLine(line, keywordMap)) {
           if (fragment.type !== 'token' || !fragment.resolvedHex) {
             continue;
