@@ -362,7 +362,7 @@ singularity
 @1:41:21
 このライブは…愛。ラブパフォーマンス！
 love performance
-! ":love: LOVE PERFORMANCE :performance:" のような形で画面に提示。この :performance: はこれ以前にはパンフレットで1度のみ登場する文字だった。すなわちこの瞬間についに全文か解読可能になるという構成になっている。
+! ":love: LOVE PERFORMANCE :performance:" のような形で画面に提示。この :performance: はこれ以前にはパンフレットで1度のみ登場する文字だった。すなわちこの瞬間についに全文が解読可能になるという構成になっている。
 
 @1:51:34
 EXIST ERROR ALIVE
