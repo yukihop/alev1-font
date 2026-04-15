@@ -28,19 +28,12 @@ export type GlyphRecord = ManifestGlyphRecord & {
   comment?: string | null;
 };
 
-export type DictionaryEntry = {
-  keyword: string;
-  glyph: GlyphRecord;
-  synonyms: string[];
-};
-
 export type AlevData = {
   familyName: string;
   glyphCount: number;
   glyphs: GlyphRecord[];
   rows: string[];
   cols: string[];
-  dictionaryEntries: DictionaryEntry[];
 };
 
 type Manifest = {
@@ -154,15 +147,6 @@ export const getAlevData = cache((): AlevData => {
       comment: null,
     }),
   }));
-  const dictionaryEntries = glyphs
-    .flatMap((glyph) =>
-      glyph.keywords.map((keyword) => ({
-        keyword,
-        glyph,
-        synonyms: glyph.keywords.filter((entry) => entry !== keyword),
-      })),
-    )
-    .sort((left, right) => left.keyword.localeCompare(right.keyword));
 
   return {
     familyName: manifest.familyName,
@@ -170,6 +154,5 @@ export const getAlevData = cache((): AlevData => {
     glyphs,
     rows: '0123456789ABCDEF'.split(''),
     cols: '0123456789ABCDEF'.split(''),
-    dictionaryEntries,
   };
 });
