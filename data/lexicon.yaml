@@ -136,6 +136,7 @@ entries:
     comment: 「言葉の意味」の文脈で出てくる文字。
   - binary: "10100101"
     keywords:
+      - receive
       - accept
     comment: 「(要求を)受領する」と「(愛を)受け取る」の2用例。
   - binary: "10110110"
