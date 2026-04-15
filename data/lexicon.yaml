@@ -54,15 +54,19 @@ entries:
   - binary: "01001110"
     keywords:
       - asahi
+    comment: 「芹沢あさひ」とフルネームで呼ばれたことしかない。
   - binary: "01001111"
     keywords:
       - mei
+    comment: 「和泉愛依」とフルネームで呼ばれたことしかない。
   - binary: "01000000"
     keywords:
       - robot
+    comment: 「ロボット」。
   - binary: "01001000"
     keywords:
       - human
+    comment: 「人間」。
   - binary: "11111100"
     keywords:
       - singularity
@@ -82,11 +86,11 @@ entries:
       - cause
       - let
       - run
-    comment: 「実行する」の訳が充てられている2文字のうちの1つ。だだし見た目からも「する」「やる」程度の弱い意味しかない可能性があり、明示的に訳出されていないらしき用例がある。一方で他の動詞に前置して使役表現 ("let/make") として使われている形跡もある。
+    comment: 「実行する」の訳が充てられている2文字のうちの1つ。だだし明示的に訳出されていない用例もあり、その見た目からも「する」「やる」程度の弱い意味しかないのかもしれない。一方で他の動詞に前置して使役表現 ("let/make") として使われている形跡もある。
   - binary: "10101010"
     keywords:
       - perform
-    comment: 「実行する」の訳が充てられている2文字のうちの1つだが、こちらはその狭い意味のみ使われる。
+    comment: 「実行する」の訳が充てられている2文字のうちの1つ。こちらはその狭い意味でのみ使われる。ライブ本編など後期に使用例が集中している。
   - binary: "10100010"
     keywords:
       - learn
@@ -209,7 +213,8 @@ entries:
   - binary: "01100010"
     keywords:
       - it
-    comment: 「これ」「それ」のような指示代名詞。
+      - this
+    comment: 「これ」「それ」のような指示代名詞。「この」のように名詞を修飾している用例もある。
   - binary: "10000010"
     keywords:
       - can
