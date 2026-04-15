@@ -79,9 +79,10 @@ entries:
     keywords:
       - do
       - execute
+      - cause
       - let
       - run
-    comment: 「実行する」の訳が充てられている2文字のうちの1つ。だだし見た目からも「する」「やる」程度の弱い意味の可能性が高く、明示的に訳出されていないらしき用例がある。他の動詞に前置して使役表現 ("let/make") として使われている可能性もある。
+    comment: 「実行する」の訳が充てられている2文字のうちの1つ。だだし見た目からも「する」「やる」程度の弱い意味しかない可能性があり、明示的に訳出されていないらしき用例がある。一方で他の動詞に前置して使役表現 ("let/make") として使われている形跡もある。
   - binary: "10101010"
     keywords:
       - perform
@@ -89,21 +90,27 @@ entries:
   - binary: "10100010"
     keywords:
       - learn
+    comment: 「学習する」。
   - binary: "10110010"
     keywords:
       - control
+    comment: 「制御する」。
   - binary: "10101110"
     keywords:
       - prove
+    comment: 「証明する」。
   - binary: "10101001"
-    comment: 「気にする (concern)」「関わる (involve)」辺りの意味が近そう。用例が少ないため確証はない。
+    keywords:
+      - know
+    comment: 「知る」。
   - binary: "11001110"
     keywords:
       - proof
+    comment: 「証明」。
   - binary: "10111100"
     keywords:
       - detect
-    comment: 「検知する」
+    comment: 「検知する」。
   - binary: "10101011"
     keywords:
       - seek
@@ -112,15 +119,19 @@ entries:
   - binary: "10100111"
     keywords:
       - reach
-    comment: 「到達する」
+    comment: 「到達する」。
   - binary: "11001111"
     keywords:
       - error
       - noise
     comment: 「誤り」「ノイズ」の両方の用例あり。
   - binary: "11010100"
-    comment: 「言葉の意味」の文脈で出てくる文字。品詞としては形容詞のはず。
+    keywords:
+      - meaning
+    comment: 形容詞のような見た目だが「意味」らしい。
   - binary: "11101011"
+    keywords:
+      - word
     comment: 「言葉の意味」の文脈で出てくる文字。
   - binary: "10100101"
     keywords:
@@ -129,19 +140,20 @@ entries:
   - binary: "10110110"
     keywords:
       - require
-    comment: 「必要とする」
+    comment: 「必要とする」。
   - binary: "10111010"
     keywords:
       - share
-    comment: 「共有する」
+    comment: 「共有する」。
   - binary: "10100110"
     keywords:
       - respond
-    comment: 「回答する」
+      - tell
+    comment: 「回答する」あるいは「答えを教える」
   - binary: "10111110"
     keywords:
       - infer
-    comment: 「推論する」
+    comment: 「推論する」。
   - binary: "10101000"
     keywords:
       - understand
@@ -149,27 +161,35 @@ entries:
   - binary: "10111101"
     keywords:
       - visualize
+    comment: 「視覚化する」。
   - binary: "00001000"
     keywords:
       - by
+      - by-means-of
     comment: 「～することにより」「～のために」のような意味だと思われる。
   - binary: "00000011"
     keywords:
       - and
-    comment: 「そして」「かつ」のような意味。動詞と動詞、形容詞と形容詞句を連結する用例は確認済み。名詞と名詞を連結して「と」を表現できるかは未確認。
+    comment: 「そして」「かつ」のような意味。動詞句と動詞句、形容詞句と形容詞句を連結する用例は確認済み。名詞と名詞を連結して「と」を表現できるかは未確認。
   - binary: "00000001"
-    comment: '"of" または所有格 s のような、2つの単語を何らかの意味で接続する助詞と思われる。'
+    keywords:
+      - of
+    comment: 語順も英語のofと同じ。
   - binary: "11000100"
     keywords:
       - mortality
-    comment: '"not" と組み合わさることで「永遠」を表す名詞。つまり単体では「変化の必然性」「定命性」のような意味か'
+    comment: '"not" と組み合わさることで「永遠」を表す名詞。つまり単体では「変化の必然性」「定命性」のような意味か。'
   - binary: "10000110"
-    comment: "用例が少ないが動詞に前置され「～するつもりだ」のような意志を表している可能性が高い。"
+    keywords:
+      - will
+    comment: "動詞に前置され「～するつもりだ」のような意志を表す。"
   - binary: "10110001"
     keywords:
       - become
   - binary: "10110101"
-    comment: '"life" の直前に置かれる文字だが訳出されたことがない。品詞としては動詞のはず。'
+    keywords:
+      - hold
+    comment: '"life" や "emotion" の直前に置かれる。品詞としては動詞。文脈から "holding" あるいは "posessing" のような意味に見える。'
   - binary: "10001010"
     keywords:
       - interrogative
