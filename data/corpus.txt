@@ -112,6 +112,38 @@ i prove perfect robot is 0b10110101 life
 ストレイライトは完璧なライブを求める。
 straylight seek do perfect live
 
+ここからは終盤、アンコール前の展開。
+
+@1:25:58
+私はロボット。
+i am robot
+
+@1:26:02
+私は誤りを求めない。
+i not seek error
+
+@1:26:06
+私は完璧なライブを実行します。
+i do perfect live
+
+@1:26:12
+私は完璧なライブを実行します。
+i do perfect live
+
+@1:26:17
+私は完璧なライブを実行します。
+i perform perfect live
+! 音声上は同じ台詞が3回連続するが、3回目だけ「実行する」が :do: から :perform: に変化しており、何らかのニュアンスの変化が見て取れる。
+
+@1:26:21
+-
+[perfect live] not error
+! 対応する音声なしで文字だけが一瞬表示されたもの。意味は「完璧なライブとは、エラーがないことです」。
+
+@1:26:23
+私は完璧に到達します。
+i will reach perfection
+
 [[0x02; evolve()]]
 
 @46:18
@@ -179,6 +211,8 @@ i reach perfection
 私は完璧に到達しました。
 i reach perfection
 
+ここからはライブ終盤の展開。
+
 @1:25:56
 私は完璧なライブを実行します。
 i perform perfect live
@@ -244,13 +278,18 @@ i not am wanchan
 私はALEV-1です。
 i am alev1
 
+@44:32
+-
+[wanchan] one
+! あさひの「長いっすよ、私はワンちゃんって呼ぶっす」のセリフ中に字幕だけが表示されたもの。これら2つの概念を結びつけようとしているのか。
+
 @44:35
 私は…ワンちゃん。
 [i] wanchan
 
 @44:39
 受領しました。
-i 0b10000101 0b10100101
+i prf accept
 
 @44:46
 何？
