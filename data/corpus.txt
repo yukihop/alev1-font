@@ -39,23 +39,55 @@ i am straylight
 
 [[Xポスト]]
 
+時系列順。
+
+@https://x.com/shinyc_official/status/1997969401555923092
+MYSELF
+:myself:
+! 2025年12月8日の [SYSTEM INIT] v0.9.7-beta。
+
+@https://x.com/shinyc_official/status/1998361999571329395
+MYSELF
+:myself:
+! 2025年12月9日の [#001 Learning Log]。画面の片隅に :myself: と "MYSELF" の文字。
+
+@https://x.com/shinyc_official/status/1998724382504456639
+THEY
+straylight
+! 2025年12月10日の [#002 Simulation Result] 。画面の片隅に :straylight: と "THEY" の文字。とはいえ :straylight: は "THEY" という意味ではなかった（正しくは「ストレイライト」だった）ので、これは意図的なミスリード。
+
+@https://x.com/shinyc_official/status/1999086768923296199
+THEY
+straylight
+! 2025年12月11日の [#003 Data Visualization]。#002 と同様に :straylight: と "THEY" の文字。
+
 @https://x.com/shinyc_official/status/1999449155635413226
 -
 emotion
-! 2025年12月12日のポスト。「人間が持つ、S/N-GUL4L1TYに不可欠な、不可視で計測不能な要素」として提示された文字。この文字が二進数で 11001000 であることも明示された。
+! 2025年12月12日の [#004 Essential Factor]。「人間が持つ、S/N-GUL4L1TYに不可欠な、不可視で計測不能な要素」として提示された文字。ALEV文字がデカデカとフィーチャーされた初期の例。二進数で 11001000 であることも明示された。
+
+@https://x.com/shinyc_official/status/1999811541730984262
+RUN
+do
+! 2025年12月13日の [#005 Audio Message Log]。:run: が二進数で 10100000 であることが明示。その上に "RUN" の文字。
+
+@https://x.com/shinyc_official/status/1999814056106967417
+-
+i
+! 2025年12月13日の [#006 Final Report]。背景に :i: が多数。ALEV-1が「自分自身がライブステージに出演する」と宣言。
 
 @https://x.com/shinyc_official/status/2012872730392383936
 #control-emotion-x
 -
 i will become perfect existence by learn human and control emotion
 and i do perfect live
-! 2026年1月28日のALEV-1からのメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。
+! 2026年1月18日のポスト。ALEV-1からのメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。
 
 @https://x.com/shinyc_official/status/2038221068117446667
 #one-live-one-love
 One Live One Love
 one live one love
-! 2026年3月29日のポスト。ライブの2週間ほど前に発表された曲名。これの読み方は[0x01; initialize() セトリ発表ポスト](https://x.com/shinyc_official/status/2042921950784426469)で発表され、この時点で :one: と :love: の意味が判明する。
+! 2026年3月29日のポスト。ライブの2週間ほど前に発表された曲名。[4月5日のMV内で曲名が示唆](https://x.com/shinyc_official/status/2040746274731757792)され、この時点で :one: と :love: の意味がなんとなく判明。正式には[0x01; initialize() セトリ発表ポスト](https://x.com/shinyc_official/status/2042921950784426469)で発表。
 
 
 [[0x01; initialize()]]
@@ -352,12 +384,12 @@ receive
 @1:16:32
 応援、期待、信頼、祈り、愛。そのすべてが、重い。
 love
-! この1文字と対応する英語 "LOVE" が明示。[0x01; initialize() セトリ発表ポスト](https://x.com/shinyc_official/status/2042921950784426469)で新曲の曲名が発表され、その時点で :love: = "LOVE" であることは判明していたが、よりはっきりと意味が確定。この数十秒で、公演サブタイトル :i receive straylight love: の意味が一気に確定する。
+! この1文字と対応する英語 "LOVE" が明示。[新曲タイトル](#one-live-one-love)の一部なので4月5日頃には :love: = "LOVE" であることがなんとなく判明していたが、ここで完全に確定。
 
 @1:16:57
 …私と、ストレイライトと共に過ごした時間、それは…
 i straylight
-! この2文字と対応する英語 "I" および "STRAYLIGHT" が明示。もちろんこれは今更。
+! この2文字と対応する英語 "I" および "STRAYLIGHT" が明示。もちろんこれは今更ではあるが、この数十秒で、公演サブタイトル :i receive straylight love: の4文字の意味が完全に開示されるという意味では象徴的。
 
 @1:17:02
 …それは、エラーではない。
