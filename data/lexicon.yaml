@@ -102,7 +102,7 @@ entries:
       - is
       - are
       - exist
-    comment: いわゆるコピュラ（be動詞）、つまり「だ・です」。省略されることも多く、その場合やや強調的・感情的文になる傾向がある。英語と同様にexistの意味もある（EDロールで明示）。
+    comment: いわゆるコピュラ（be動詞）、つまり「だ・です」。省略されることも多く、その場合やや強調的・感情的文になる傾向がある。英語と同様に "exist"の意味もある（EDロールで明示）。
   - binary: "10100010"
     keywords:
       - learn
@@ -116,7 +116,7 @@ entries:
     keywords:
       - respond
       - tell
-    comment: 「回答する」あるいは「答えを教える」
+    comment: 「回答する」あるいは「答えを教える」。目的語の部位には伝える相手が来る用例と、何に対する答えなのかが来る用例の両方がある。
   - binary: "10100111"
     keywords:
       - reach
@@ -125,7 +125,7 @@ entries:
     keywords:
       - feel
       - emote
-    comment: 0xC8の「感情」に対応する動詞なので「感じる」ないし「感情を表現する」のような意味だと推測される。
+    comment: ":emotion: (=感情) に対応する動詞なので「感じる」「感動する」「感情を表現する」のような意味だと推測される。"
   - binary: "10101001"
     keywords:
       - know
@@ -153,7 +153,7 @@ entries:
   - binary: "10110101"
     keywords:
       - hold
-    comment: '"life" や "emotion" の直前に置かれる動詞。文脈から "holding" あるいは "possessing" のような意味に見える。'
+    comment: ':life: (= "life") や :emotion: (= "emotion") の直前に置かれる動詞。文脈から "holding" あるいは "possessing" のような意味に見える。'
   - binary: "10110110"
     keywords:
       - require
