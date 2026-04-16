@@ -214,7 +214,6 @@ entries:
     comment: 「完璧な」あるいは「完璧さ」。
   - binary: "11010100"
     keywords:
-      - semantic
       - meaning
     comment: 「意味」。
   - binary: "11101011"
