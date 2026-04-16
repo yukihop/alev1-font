@@ -30,6 +30,11 @@
   color: var(--text);
 }
 
+.richText :is(p, li, blockquote, th, td, a) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .richText ul,
 .richText ol {
   padding-left: 1.4rem;
