@@ -27,7 +27,9 @@
   padding: 10px 12px 24px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   border-radius: 14px;
-  transition: background-color 120ms ease, box-shadow 120ms ease;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .entrySelected {
@@ -94,6 +96,10 @@
 .comment {
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+.comment strong {
+  color: #ffcfdc;
 }
 
 .unknown {
