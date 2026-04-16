@@ -5,6 +5,7 @@ import { getCorpusUsageCounts } from '@/lib/corpus';
 
 import AlevLineClient from './AlevLineClient';
 import { buildRenderableSource } from './alev-renderable';
+import { buildRenderableGlyphs } from './glyph-renderable';
 
 type AlevLineProps = {
   source: string;
@@ -40,6 +41,7 @@ function normalizeSelectedHex(
 
 const AlevLine: FC<AlevLineProps> = props => {
   const { glyphs } = getAlevData();
+  const renderableGlyphs = buildRenderableGlyphs(glyphs);
   const keywordMap = getKeywordMap();
   const usageCounts = getCorpusUsageCounts();
   const glyphHexSet = new Set(glyphs.map((glyph) => glyph.hex));
@@ -48,7 +50,7 @@ const AlevLine: FC<AlevLineProps> = props => {
 
   return (
     <AlevLineClient
-      glyphs={glyphs}
+      glyphs={renderableGlyphs}
       lines={lines}
       usageCounts={usageCounts}
       selectedHex={selectedHex}

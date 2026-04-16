@@ -2,14 +2,13 @@
 
 import type { FC } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import alevTextStyles from './AlevText.module.css';
 import AlevGlyphTrigger from './AlevGlyphTrigger';
+import type { GlyphRenderableRecord } from './glyph-renderable';
 import styles from './Glyphs.module.css';
 
 type GlyphMatrixPanelProps = {
-  glyphs: GlyphRecord[];
+  glyphs: GlyphRenderableRecord[];
   rows: string[];
   cols: string[];
   usageCounts: Record<string, number>;

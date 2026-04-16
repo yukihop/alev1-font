@@ -2,16 +2,15 @@
 
 import { useMemo, type FC } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import alevTextStyles from './AlevText.module.css';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import AlevRenderableFragments from './AlevRenderableFragments';
 import styles from './AlevLine.module.css';
 import type { AlevRenderableFragment } from './alev-renderable';
+import type { GlyphRenderableRecord } from './glyph-renderable';
 
 type AlevLineClientProps = {
-  glyphs: GlyphRecord[];
+  glyphs: GlyphRenderableRecord[];
   lines: AlevRenderableFragment[][];
   usageCounts: Record<string, number>;
   selectedHex?: string | null;

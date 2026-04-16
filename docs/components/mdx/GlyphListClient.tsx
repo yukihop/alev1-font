@@ -2,14 +2,13 @@
 
 import type { FC } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import alevTextStyles from './AlevText.module.css';
 import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
+import type { GlyphRenderableRecord } from './glyph-renderable';
 import styles from './Glyphs.module.css';
 
 type GlyphListPanelProps = {
-  glyphs: GlyphRecord[];
+  glyphs: GlyphRenderableRecord[];
   usageCounts: Record<string, number>;
 };
 
@@ -55,7 +54,11 @@ const GlyphListClient: FC<GlyphListPanelProps> = props => {
               <span className={styles.glyphPopoverBadge}>
                 {copiedId === glyph.hex ? 'Copied' : `出現数: ${usageCounts[glyph.hex] ?? 0}`}
               </span>
-              {glyph.comment ? <span className={styles.glyphComment}>{glyph.comment}</span> : null}
+              {glyph.commentContent ? (
+                <div className={styles.glyphComment}>{glyph.commentContent}</div>
+              ) : glyph.comment ? (
+                <div className={styles.glyphComment}>{glyph.comment}</div>
+              ) : null}
             </div>
           </div>
         </li>

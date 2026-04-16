@@ -2,14 +2,13 @@
 
 import type { FC } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import AlevGlyphTrigger from './AlevGlyphTrigger';
 import type { AlevRenderableFragment } from './alev-renderable';
+import type { GlyphRenderableRecord } from './glyph-renderable';
 
 type AlevRenderableFragmentsProps = {
   fragments: AlevRenderableFragment[];
-  glyphMap: Map<string, GlyphRecord>;
+  glyphMap: Map<string, GlyphRenderableRecord>;
   usageCounts: Record<string, number>;
   selectedHex?: string | null;
   onGlyphPress?: (hex: string) => void;

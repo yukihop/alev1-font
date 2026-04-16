@@ -1,3 +1,4 @@
+import { Fragment, cache } from 'react';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 
@@ -27,6 +28,11 @@ const components = {
   LigatureTester: SimpleEditor,
 };
 
+const inlineComponents = {
+  AlevInline,
+  p: Fragment,
+};
+
 export async function renderMdx(source: string) {
   const { content } = await compileMDX({
     source,
@@ -41,3 +47,23 @@ export async function renderMdx(source: string) {
 
   return content;
 }
+
+export const renderInlineMdx = cache(async (source: string) => {
+  const normalizedSource = String(source ?? '').trim();
+  if (!normalizedSource) {
+    return null;
+  }
+
+  const { content } = await compileMDX({
+    source: normalizedSource,
+    components: inlineComponents,
+    options: {
+      parseFrontmatter: false,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm, remarkAlevInline],
+      },
+    },
+  });
+
+  return content;
+});

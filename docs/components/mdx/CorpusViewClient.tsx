@@ -1,30 +1,28 @@
 "use client";
 
-import { useMemo, useState, type FC } from "react";
+import { useState, type FC, type ReactNode } from "react";
 
-import type { GlyphRecord } from "@/lib/alev";
-
-import alevTextStyles from "./AlevText.module.css";
 import glyphTriggerStyles from "./AlevGlyphTrigger.module.css";
-import AlevRenderableFragments from "./AlevRenderableFragments";
 import AlevLineClient from "./AlevLineClient";
 import styles from "./CorpusView.module.css";
-import type {
-  AlevRenderableCommentSegment,
-  AlevRenderableFragment,
-} from "./alev-renderable";
+import type { AlevRenderableFragment } from "./alev-renderable";
+import type { GlyphRenderableRecord } from "./glyph-renderable";
 
 export type CorpusRenderableEntry = {
   type: "entry";
   position: string;
+  anchor: string | null;
   japanese: string | null;
   alevLines: AlevRenderableFragment[][] | null;
-  comments: AlevRenderableCommentSegment[][];
+  comments: Array<{
+    key: string;
+    content: ReactNode;
+  }>;
 };
 
 export type CorpusRenderableParagraph = {
   type: "paragraph";
-  content: AlevRenderableCommentSegment[];
+  content: ReactNode;
 };
 
 export type CorpusRenderableItem =
@@ -37,7 +35,7 @@ export type CorpusRenderableSection = {
 };
 
 type CorpusViewClientProps = {
-  glyphs: GlyphRecord[];
+  glyphs: GlyphRenderableRecord[];
   sections: CorpusRenderableSection[];
   usageCounts: Record<string, number>;
 };
@@ -54,23 +52,6 @@ type SelectionState =
 
 const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//.test(value);
 
-const commentContainsHex = (
-  comment: AlevRenderableCommentSegment[],
-  selectedHex: string | null,
-): boolean => {
-  if (!selectedHex) {
-    return false;
-  }
-
-  return comment.some(
-    (segment) =>
-      segment.type === "alev" &&
-      segment.fragments.some(
-        (fragment) => fragment.type === "glyph" && fragment.hex === selectedHex,
-      ),
-  );
-};
-
 const itemContainsHex = (
   item: CorpusRenderableItem,
   selectedHex: string | null,
@@ -80,7 +61,7 @@ const itemContainsHex = (
   }
 
   if (item.type === "paragraph") {
-    return commentContainsHex(item.content, selectedHex);
+    return false;
   }
 
   if (item.alevLines === null) {
@@ -94,68 +75,12 @@ const itemContainsHex = (
   );
 };
 
-type RenderCommentProps = {
-  comment: AlevRenderableCommentSegment[];
-  glyphMap: Map<string, GlyphRecord>;
-  usageCounts: Record<string, number>;
-  selectedHex: string | null;
-  onGlyphPress: (hex: string) => void;
-  keyPrefix: string;
-  className: string;
-  alevClassName?: string;
-};
-
-const RenderComment: FC<RenderCommentProps> = ({
-  comment,
-  glyphMap,
-  usageCounts,
-  selectedHex,
-  onGlyphPress,
-  keyPrefix,
-  className,
-  alevClassName,
-}) => (
-  <p className={className}>
-    {comment.map((segment, segmentIndex) => {
-      if (segment.type === "text") {
-        return <span key={segmentIndex}>{segment.value}</span>;
-      }
-
-      return (
-        <span
-          key={segmentIndex}
-          className={`${alevClassName ?? ""} ${alevTextStyles.glyphText}`.trim()}
-        >
-          <AlevRenderableFragments
-            fragments={segment.fragments}
-            glyphMap={glyphMap}
-            selectedHex={selectedHex}
-            usageCounts={usageCounts}
-            onGlyphPress={onGlyphPress}
-            togglePopoverOnClick={false}
-            triggerClassName={glyphTriggerStyles.inlineGlyphTrigger}
-            keyPrefix={`${keyPrefix}-${segmentIndex}`}
-            selectedTriggerClassName={
-              glyphTriggerStyles.inlineGlyphTriggerSelected
-            }
-            contentClassName={glyphTriggerStyles.inlineGlyph}
-          />
-        </span>
-      );
-    })}
-  </p>
-);
-
 const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
   const { glyphs, sections, usageCounts } = props;
   const [selection, setSelection] = useState<SelectionState>({
     hex: null,
     mode: "idle",
   });
-  const glyphMap = useMemo(
-    () => new Map(glyphs.map((glyph) => [glyph.hex, glyph])),
-    [glyphs],
-  );
   const handleGlyphPress = (hex: string) => {
     setSelection((current) => {
       if (current.hex !== hex) {
@@ -202,16 +127,7 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                       key={`paragraph-${sectionIndex}-${itemIndex}`}
                       className={`${styles.paragraph} ${itemSelected ? styles.paragraphSelected : ""}`.trim()}
                     >
-                      <RenderComment
-                        comment={item.content}
-                        glyphMap={glyphMap}
-                        usageCounts={usageCounts}
-                        selectedHex={selection.hex}
-                        onGlyphPress={handleGlyphPress}
-                        keyPrefix={`paragraph-${sectionIndex}-${itemIndex}`}
-                        className={styles.paragraphText}
-                        alevClassName={styles.paragraphAlev}
-                      />
+                      <div className={styles.paragraphText}>{item.content}</div>
                     </div>
                   );
                 }
@@ -221,6 +137,10 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                     key={`${item.position}-${itemIndex}`}
                     className={`${styles.entry} ${itemSelected ? styles.entrySelected : ""}`.trim()}
                   >
+                    {item.anchor ? (
+                      <a id={item.anchor} aria-hidden="true"></a>
+                    ) : null}
+
                     <div className={styles.positionRow}>
                       {isAbsoluteUrl(item.position) ? (
                         <a href={item.position} className={styles.positionLink}>
@@ -266,18 +186,13 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
 
                     {item.comments.length > 0 ? (
                       <div className={styles.commentBlock}>
-                        {item.comments.map((comment, commentIndex) => (
-                          <RenderComment
-                            key={`${item.position}-comment-${commentIndex}`}
-                            comment={comment}
-                            glyphMap={glyphMap}
-                            usageCounts={usageCounts}
-                            selectedHex={selection.hex}
-                            onGlyphPress={handleGlyphPress}
-                            keyPrefix={`${item.position}-comment-${commentIndex}`}
+                        {item.comments.map((comment) => (
+                          <div
+                            key={comment.key}
                             className={styles.comment}
-                            alevClassName={styles.commentAlev}
-                          />
+                          >
+                            {comment.content}
+                          </div>
                         ))}
                       </div>
                     ) : null}

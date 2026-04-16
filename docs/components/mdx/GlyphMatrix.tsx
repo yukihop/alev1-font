@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { getAlevData } from '@/lib/alev';
 import { getCorpusUsageCounts } from '@/lib/corpus';
 
+import { buildRenderableGlyphs } from './glyph-renderable';
 import GlyphMatrixClient from './GlyphMatrixClient';
 
 type GlyphMatrixProps = {
@@ -33,7 +34,7 @@ const GlyphMatrix: FC<GlyphMatrixProps> = props => {
 
   return (
     <GlyphMatrixClient
-      glyphs={glyphs}
+      glyphs={buildRenderableGlyphs(glyphs)}
       rows={visibleRows}
       cols={cols}
       usageCounts={usageCounts}

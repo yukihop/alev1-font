@@ -41,7 +41,6 @@
 }
 
 .paragraphText {
-  margin: 0;
   font-size: 1rem;
   line-height: 1.85;
 }
@@ -95,12 +94,6 @@
 .comment {
   color: var(--text-muted);
   font-size: 0.95rem;
-}
-
-.commentAlev {
-}
-
-.paragraphAlev {
 }
 
 .unknown {

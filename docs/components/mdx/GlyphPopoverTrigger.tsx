@@ -4,13 +4,12 @@ import type { FC, ReactNode } from "react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import type { GlyphRecord } from "@/lib/alev";
-
 import CopyPillButton, { useCopyFeedback } from "./CopyPillButton";
+import type { GlyphRenderableRecord } from "./glyph-renderable";
 import styles from "./Glyphs.module.css";
 
 type GlyphPopoverTriggerProps = {
-  glyph: GlyphRecord;
+  glyph: GlyphRenderableRecord;
   className: string;
   contentClassName?: string;
   ariaLabel?: string;
@@ -237,17 +236,22 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                   ))}
                 </div>
               ) : null}
-              {glyph.comment ||
+              {glyph.commentContent ||
+              glyph.comment ||
               copiedId === copyId ||
               usageCount !== undefined ? (
                 <div className={styles.glyphPopoverFooter} aria-live="polite">
                   <span className={styles.glyphPopoverBadge}>
                     {copiedId === copyId ? "Copied" : `出現数: ${usageCount}`}
                   </span>
-                  {glyph.comment ? (
-                    <span className={styles.glyphPopoverComment}>
+                  {glyph.commentContent ? (
+                    <div className={styles.glyphPopoverComment}>
+                      {glyph.commentContent}
+                    </div>
+                  ) : glyph.comment ? (
+                    <div className={styles.glyphPopoverComment}>
                       {glyph.comment}
-                    </span>
+                    </div>
                   ) : null}
                 </div>
               ) : null}

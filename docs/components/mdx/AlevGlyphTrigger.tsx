@@ -2,12 +2,11 @@
 
 import type { FC } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import GlyphPopoverTrigger from './GlyphPopoverTrigger';
+import type { GlyphRenderableRecord } from './glyph-renderable';
 
 type AlevGlyphTriggerProps = {
-  glyph: GlyphRecord;
+  glyph: GlyphRenderableRecord;
   usageCount?: number;
   selected?: boolean;
   onPress?: () => void;

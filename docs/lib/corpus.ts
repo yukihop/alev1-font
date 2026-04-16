@@ -9,6 +9,7 @@ import { tokenizeAlevLine } from './alev-tokens';
 export type CorpusEntry = {
   type: 'entry';
   position: string;
+  anchor: string | null;
   japanese: string | null;
   alevLines: string[] | null;
   comments: string[];
@@ -79,12 +80,17 @@ export function parseCorpusSource(source: string): CorpusDocument {
       return;
     }
 
-    const [positionLine, japaneseLine = '-', ...rest] = blockLines;
+    const lines = blockLines;
     blockLines = [];
+    const [positionLine, ...bodyLines] = lines;
     const trimmedPositionLine = positionLine.trim();
 
     if (!trimmedPositionLine.startsWith('@')) {
-      if (blockLines.length === 0 && rest.length === 0 && !isSectionLine(trimmedPositionLine)) {
+      if (trimmedPositionLine.startsWith('#')) {
+        throw new Error(`Anchor line must appear immediately after an @ line: ${trimmedPositionLine}`);
+      }
+
+      if (bodyLines.length === 0 && !isSectionLine(trimmedPositionLine)) {
         ensureSection().items.push({
           type: 'paragraph',
           text: positionLine,
@@ -93,14 +99,35 @@ export function parseCorpusSource(source: string): CorpusDocument {
       return;
     }
 
+    let bodyIndex = 0;
+    let anchor: string | null = null;
+    const anchorLine = bodyLines[bodyIndex]?.trim();
+    if (anchorLine?.startsWith('#')) {
+      anchor = anchorLine.slice(1).trim();
+      if (!anchor) {
+        throw new Error(`Anchor id must not be empty for entry: ${trimmedPositionLine}`);
+      }
+      bodyIndex += 1;
+    }
+
+    while (bodyLines[bodyIndex]?.trim().startsWith('//')) {
+      bodyIndex += 1;
+    }
+
+    const japaneseLine = bodyLines[bodyIndex] ?? '-';
+    const rest = bodyLines.slice(bodyIndex + 1);
     const alevLines: string[] = [];
     const comments: string[] = [];
     let commentMode = false;
 
     for (const rawLine of rest) {
       const line = rawLine.trim();
-      if (!line || line.startsWith('#')) {
+      if (!line || line.startsWith('//')) {
         continue;
+      }
+
+      if (line.startsWith('#')) {
+        throw new Error(`Anchor line must appear immediately after an @ line: ${line}`);
       }
 
       if (line.startsWith('!')) {
@@ -129,6 +156,7 @@ export function parseCorpusSource(source: string): CorpusDocument {
     ensureSection().items.push({
       type: 'entry',
       position: trimmedPositionLine.slice(1).trim(),
+      anchor,
       japanese,
       alevLines: resolvedAlevLines,
       comments,
@@ -138,7 +166,7 @@ export function parseCorpusSource(source: string): CorpusDocument {
   for (const rawLine of source.replace(/\r\n?/g, '\n').split('\n')) {
     const trimmed = rawLine.trim();
 
-    if (trimmed.startsWith('#')) {
+    if (trimmed.startsWith('//')) {
       continue;
     }
 
