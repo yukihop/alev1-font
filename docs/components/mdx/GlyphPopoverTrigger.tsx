@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import type { FC, ReactNode } from 'react';
-import { useEffect, useId, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import type { FC, ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-import type { GlyphRecord } from '@/lib/alev';
+import type { GlyphRecord } from "@/lib/alev";
 
-import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
-import styles from './Glyphs.module.css';
+import CopyPillButton, { useCopyFeedback } from "./CopyPillButton";
+import styles from "./Glyphs.module.css";
 
 type GlyphPopoverTriggerProps = {
   glyph: GlyphRecord;
@@ -21,7 +21,7 @@ type GlyphPopoverTriggerProps = {
   children?: ReactNode;
 };
 
-const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
+const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const {
     glyph,
     className,
@@ -68,6 +68,31 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
     });
   };
 
+  // ポップオーバーが描画された後にビューポート端からはみ出していれば位置を補正する
+  useLayoutEffect(() => {
+    if (!open || !popoverRef.current) {
+      return;
+    }
+
+    const popover = popoverRef.current;
+    const popRect = popover.getBoundingClientRect();
+    const margin = 12;
+    const vw = window.innerWidth;
+    const halfW = popRect.width / 2;
+
+    let adjustedLeft = position.left;
+
+    if (adjustedLeft - halfW < margin) {
+      adjustedLeft = halfW + margin;
+    } else if (adjustedLeft + halfW > vw - margin) {
+      adjustedLeft = vw - margin - halfW;
+    }
+
+    if (adjustedLeft !== position.left) {
+      setPosition((prev) => ({ ...prev, left: adjustedLeft }));
+    }
+  }, [open, position.left]);
+
   const showPopover = () => {
     clearHideTimer();
     positionPopover();
@@ -103,7 +128,10 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
         return;
       }
 
-      if (triggerRef.current?.contains(target) || popoverRef.current?.contains(target)) {
+      if (
+        triggerRef.current?.contains(target) ||
+        popoverRef.current?.contains(target)
+      ) {
         return;
       }
 
@@ -111,21 +139,21 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         hidePopover();
       }
     };
 
-    window.addEventListener('resize', handleReposition);
-    window.addEventListener('scroll', handleReposition, true);
-    document.addEventListener('pointerdown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("resize", handleReposition);
+    window.addEventListener("scroll", handleReposition, true);
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener('resize', handleReposition);
-      window.removeEventListener('scroll', handleReposition, true);
-      document.removeEventListener('pointerdown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("resize", handleReposition);
+      window.removeEventListener("scroll", handleReposition, true);
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [open]);
 
@@ -137,8 +165,14 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
         className={className}
         aria-label={ariaLabel ?? `Show glyph ${glyph.hex}`}
         aria-pressed={pressed}
-        onMouseEnter={showPopover}
-        onMouseLeave={scheduleHide}
+        onPointerEnter={(e) => {
+          if (e.pointerType === "touch") return;
+          showPopover();
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "touch") return;
+          scheduleHide();
+        }}
         onFocus={showPopover}
         onBlur={scheduleHide}
         onClick={() => {
@@ -164,8 +198,14 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
               ref={popoverRef}
               className={styles.glyphPopover}
               style={{ top: `${position.top}px`, left: `${position.left}px` }}
-              onMouseEnter={clearHideTimer}
-              onMouseLeave={scheduleHide}
+              onPointerEnter={(e) => {
+                if (e.pointerType === "touch") return;
+                clearHideTimer();
+              }}
+              onPointerLeave={(e) => {
+                if (e.pointerType === "touch") return;
+                scheduleHide();
+              }}
             >
               <div className={styles.glyphPopoverMeta}>
                 <CopyPillButton
@@ -197,12 +237,18 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = props => {
                   ))}
                 </div>
               ) : null}
-              {glyph.comment || copiedId === copyId || usageCount !== undefined ? (
+              {glyph.comment ||
+              copiedId === copyId ||
+              usageCount !== undefined ? (
                 <div className={styles.glyphPopoverFooter} aria-live="polite">
                   <span className={styles.glyphPopoverBadge}>
-                    {copiedId === copyId ? 'Copied' : `出現数: ${usageCount}`}
+                    {copiedId === copyId ? "Copied" : `出現数: ${usageCount}`}
                   </span>
-                  {glyph.comment ? <span className={styles.glyphPopoverComment}>{glyph.comment}</span> : null}
+                  {glyph.comment ? (
+                    <span className={styles.glyphPopoverComment}>
+                      {glyph.comment}
+                    </span>
+                  ) : null}
                 </div>
               ) : null}
             </div>,
