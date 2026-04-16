@@ -122,8 +122,8 @@ entries:
     comment: 「到達する」。
   - binary: "10101000"
     keywords:
-      - understand
-    comment: 「理解・納得する」のような意味だと思われるが、用例が少ないため確証はない。
+      - emote
+    comment: 0xC8の「感情」に対応する動詞なので「感情を表現する」のような意味のはず。
   - binary: "10101001"
     keywords:
       - know
