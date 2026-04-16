@@ -123,8 +123,9 @@ entries:
     comment: 「到達する」。
   - binary: "10101000"
     keywords:
+      - feel
       - emote
-    comment: 0xC8の「感情」に対応する動詞なので「感情を表現する」のような意味のはず。
+    comment: 0xC8の「感情」に対応する動詞なので「感じる」ないし「感情を表現する」のような意味だと推測される。
   - binary: "10101001"
     keywords:
       - know
@@ -181,7 +182,8 @@ entries:
   - binary: "11000100"
     keywords:
       - mortality
-    comment: '"not" と組み合わさることで「永遠」を表す名詞。つまり単体では「変化の必然性」「定命性」のような意味か。'
+      - death
+    comment: '"not" と組み合わさることで「永遠」を表す名詞。つまり単体では「変化の必然性」「死」のような意味か。'
   - binary: "11001000"
     keywords:
       - emotion
