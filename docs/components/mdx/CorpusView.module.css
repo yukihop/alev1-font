@@ -68,6 +68,8 @@
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.86rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .positionLink {
