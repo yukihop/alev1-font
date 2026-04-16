@@ -6,41 +6,16 @@ title: ALEV文字・言語について
 
 ALEV文字は以下の8つの部品で構成されています。
 
-<div
-  style={{
-    display: "flex",
-    flexFlow: "row",
-    gap: "0.85rem",
-  }}
->
-  <LayeredGlyph glyph="10000000" />
-  <LayeredGlyph glyph="01000000" />
-  <LayeredGlyph glyph="00100000" />
-  <LayeredGlyph glyph="00010000" />
-  <LayeredGlyph glyph="00001000" />
-  <LayeredGlyph glyph="00000100" />
-  <LayeredGlyph glyph="00000010" />
-  <LayeredGlyph glyph="00000001" />
-</div>
+<LayeredGlyphSequence
+  items={["10000000", "01000000", "00100000", "00010000", "00001000", "00000100", "00000010", "00000001"]}
+/>
 
 これをビットAND演算の要領で合成することで1つの文字が作れます。例えば「ストレイライト」を表す文字 :straylight: は、以下のようにして作成されます。
 
-<div
-  style={{
-    display: "flex",
-    flexFlow: "row",
-    gap: "0.85rem",
-    alignItems: "center",
-  }}
->
-  <LayeredGlyph glyph="01001100" />
-  <span>=</span>
-  <LayeredGlyph glyph="01000000" />
-  <span>+</span>
-  <LayeredGlyph glyph="00001000" />
-  <span>+</span>
-  <LayeredGlyph glyph="00000100" />
-</div>
+<LayeredGlyphSequence
+  layout="equation"
+  items={["01001100", "=", "01000000", "+", "00001000", "+", "00000100"]}
+/>
 
 部品の順番を覚えて慣れることで、意味は分からなくとも字形を見れば「この文字は `01001100` だな」とビット表現を組み立てることができるようになります。なおこのビット記法は[こちらのXポスト](https://x.com/shinyc_official/status/1999449155635413226)に用例がある公式のものです。
 

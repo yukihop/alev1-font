@@ -8,6 +8,7 @@ import CorpusView from '@/components/mdx/CorpusView';
 import GlyphList from '@/components/mdx/GlyphList';
 import GlyphMatrix from '@/components/mdx/GlyphMatrix';
 import LayeredGlyph from '@/components/mdx/LayeredGlyph';
+import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
 import MarkdownEditor from '@/components/mdx/MarkdownEditor';
 import SimpleEditor from '@/components/mdx/SimpleEditor';
 import { remarkAlevInline } from '@/lib/remark-alev-inline';
@@ -19,6 +20,7 @@ const components = {
   GlyphMatrix,
   GlyphList,
   LayeredGlyph,
+  LayeredGlyphSequence,
   CorpusView,
   MarkdownEditor,
   SimpleEditor,

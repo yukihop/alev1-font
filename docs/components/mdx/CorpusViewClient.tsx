@@ -252,8 +252,6 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                           selectedHex={selection.hex}
                           onGlyphPress={handleGlyphPress}
                           togglePopoverOnClick={false}
-                          className={styles.alevBlock}
-                          lineClassName={styles.alevLine}
                           lineKeyPrefix={`${item.position}-${itemIndex}`}
                           glyphTriggerClassName={
                             glyphTriggerStyles.inlineGlyphTrigger

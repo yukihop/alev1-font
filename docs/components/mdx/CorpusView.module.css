@@ -22,6 +22,7 @@
 .entry {
   display: grid;
   gap: 14px;
+  min-width: 0;
   margin-inline: -12px;
   padding: 10px 12px 24px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
@@ -58,6 +59,7 @@
 .textBlock,
 .commentBlock {
   display: grid;
+  min-width: 0;
   gap: 8px;
 }
 
@@ -83,18 +85,6 @@
 .unknown {
   margin: 0;
   line-height: 1.7;
-}
-
-.alevBlock {
-  display: grid;
-  gap: 4px;
-}
-
-.alevLine {
-  min-width: 0;
-  white-space: pre-wrap;
-  font-size: 2.32rem;
-  line-height: 1.4;
 }
 
 .commentBlock {
