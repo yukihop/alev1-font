@@ -52,12 +52,12 @@ entries:
   - binary: "01100000"
     keywords:
       - they
-    comment: 用例が少ないが「彼ら」のような指示代名詞の可能性あり。
+    comment: 用例が少ないが「彼ら」のような指示代名詞のよう。
   - binary: "01100010"
     keywords:
       - it
       - this
-    comment: 「これ」「それ」のような指示代名詞。「この」のように名詞を修飾している用例もある。
+    comment: 「これ」「それ」のような指示代名詞。「この」のように名詞を修飾も可能。
   - binary: "01110010"
     comment: 候補は「意図」「発言」「概念」「要求」あたり。品詞的にかなり抽象的な言葉。
   - binary: "01110101"
@@ -66,6 +66,7 @@ entries:
   - binary: "10000001"
     keywords:
       - not
+      - non
       - without
     comment: 直後の文字を否定する。コピュラと組み合わせて「ではない」、動詞や助動詞の前に置いて「～ない」。名詞の前に置かれて「非～」を表す用例もある。
   - binary: "10000010"
@@ -80,7 +81,7 @@ entries:
   - binary: "10000110"
     keywords:
       - will
-    comment: "動詞に前置され「～するつもりだ」のような意志を表す。"
+    comment: 動詞に前置され「～するつもりだ」のような意志を表す。
   - binary: "10001010"
     keywords:
       - interrogative
@@ -101,7 +102,7 @@ entries:
       - is
       - are
       - exist
-    comment: いわゆるコピュラ（be動詞）、つまり「だ・です」。省略されることも多く、その場合やや強調的・感情的文になる傾向がある。Existの意味もあることがEDロールで明示。
+    comment: いわゆるコピュラ（be動詞）、つまり「だ・です」。省略されることも多く、その場合やや強調的・感情的文になる傾向がある。英語と同様にexistの意味もある（EDロールで明示）。
   - binary: "10100010"
     keywords:
       - learn
@@ -110,7 +111,7 @@ entries:
     keywords:
       - receive
       - accept
-    comment: 「(要求を)受領する」と「(愛を)受け取る」の2用例。
+    comment: 「（要求を）受領する」と「（愛を）受け取る」の2用例。
   - binary: "10100110"
     keywords:
       - respond
@@ -151,7 +152,7 @@ entries:
   - binary: "10110101"
     keywords:
       - hold
-    comment: '"life" や "emotion" の直前に置かれる。品詞としては動詞。文脈から "holding" あるいは "posessing" のような意味に見える。'
+    comment: '"life" や "emotion" の直前に置かれる動詞。文脈から "holding" あるいは "possessing" のような意味に見える。'
   - binary: "10110110"
     keywords:
       - require
@@ -208,14 +209,14 @@ entries:
     comment: 「誤り」「ノイズ」の両方の用例あり。
   - binary: "11010000"
     keywords:
-      - perfect
       - perfection
-    comment: 「完璧な」という形容詞用法と「完璧さ」という名詞用法がある。
+      - perfect
+    comment: 「完璧な」あるいは「完璧さ」。
   - binary: "11010100"
     keywords:
       - semantic
       - meaning
-    comment: 形容詞群だが「意味」という名詞のように使われている例しかない。
+    comment: 「意味」。
   - binary: "11101011"
     keywords:
       - word
