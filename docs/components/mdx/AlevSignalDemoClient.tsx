@@ -19,7 +19,7 @@ type Slot = {
   featured: boolean;
 };
 
-const slotCount = 42;
+const slotCount = 21;
 const initialFeaturedBias = 0.45;
 
 const hashSeed = (value: string): number => {

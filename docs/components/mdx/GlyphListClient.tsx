@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import type { FC } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
@@ -36,6 +37,12 @@ const GlyphListClient: FC = () => {
               ) : glyph.comment ? (
                 <div className={styles.glyphComment}>{glyph.comment}</div>
               ) : null}
+              <Link
+                href={`/character/${glyph.binary}`}
+                className={styles.glyphPopoverLink}
+              >
+                全用例を見る
+              </Link>
             </div>
           </div>
         </li>

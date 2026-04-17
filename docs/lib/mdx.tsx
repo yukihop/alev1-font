@@ -8,6 +8,10 @@ import AlevSignalDemo from '@/components/mdx/AlevSignalDemo';
 import CorpusView from '@/components/mdx/CorpusView';
 import GlyphList from '@/components/mdx/GlyphList';
 import GlyphMatrix from '@/components/mdx/GlyphMatrix';
+import HomeMenu, {
+  HomeMenuCard,
+  HomeMenuSection,
+} from '@/components/mdx/HomeMenu';
 import LayeredGlyph from '@/components/mdx/LayeredGlyph';
 import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
 import SimpleEditor from '@/components/mdx/SimpleEditor';
@@ -20,6 +24,9 @@ const components = {
   AlevSignalDemo,
   GlyphMatrix,
   GlyphList,
+  HomeMenu,
+  HomeMenuCard,
+  HomeMenuSection,
   LayeredGlyph,
   LayeredGlyphSequence,
   CorpusView,
