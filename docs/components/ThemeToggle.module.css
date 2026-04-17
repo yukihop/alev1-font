@@ -1,8 +1,103 @@
-.button {
+.root {
+  position: relative;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.9rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bg-soft);
   color: var(--text);
-  padding: 0.6rem 0.95rem;
   cursor: pointer;
+}
+
+.triggerText {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 12rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-elevated) 94%, transparent);
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+.popoverHeader {
+  margin-bottom: 0.7rem;
+}
+
+.popoverTitle {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  cursor: pointer;
+}
+
+.switchLabel {
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.switchWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.switchInput {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.switchTrack {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 2.9rem;
+  height: 1.7rem;
+  padding: 0.16rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-muted) 34%, transparent);
+  transition: background-color 120ms ease;
+}
+
+.switchThumb {
+  width: 1.38rem;
+  height: 1.38rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 120ms ease;
+}
+
+.switchInput:checked + .switchTrack .switchThumb {
+  transform: translateX(1.2rem);
+}
+
+.switchInput:focus-visible + .switchTrack {
+  outline: 2px solid color-mix(in srgb, var(--accent) 78%, white 22%);
+  outline-offset: 2px;
 }
