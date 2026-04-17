@@ -26,32 +26,35 @@ const GlyphListClient: FC = () => {
             <div className={styles.glyphMeta}>
               <CopyPillButton
                 className={`${styles.hexPill} ${styles.copyButton}`}
-                copyId={glyph.hex}
+                copyId={`${glyph.hex}-hex`}
                 copyValue={`0x${glyph.hex}`}
                 text={`0x${glyph.hex}`}
+                copied={copiedId === `${glyph.hex}-hex`}
                 onCopy={copyText}
               />
               <CopyPillButton
                 className={`${styles.binaryPill} ${styles.copyButton}`}
-                copyId={glyph.hex}
+                copyId={`${glyph.hex}-binary`}
                 copyValue={`0b${glyph.binary}`}
                 text={`0b${glyph.binary}`}
+                copied={copiedId === `${glyph.hex}-binary`}
                 onCopy={copyText}
               />
               {glyph.keywords.map(keyword => (
                 <CopyPillButton
                   key={keyword}
                   className={`${styles.keywordPill} ${styles.copyButton}`}
-                  copyId={glyph.hex}
+                  copyId={`${glyph.hex}-keyword-${keyword}`}
                   copyValue={keyword}
                   text={keyword}
+                  copied={copiedId === `${glyph.hex}-keyword-${keyword}`}
                   onCopy={copyText}
                 />
               ))}
             </div>
             <div className={styles.glyphCopyStatus}>
               <span className={styles.glyphPopoverBadge}>
-                {copiedId === glyph.hex ? 'Copied' : `出現数: ${usageCounts[glyph.hex] ?? 0}`}
+                {`出現数: ${usageCounts[glyph.hex] ?? 0}`}
               </span>
               {glyph.commentContent ? (
                 <div className={styles.glyphComment}>{glyph.commentContent}</div>

@@ -138,17 +138,17 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                       <a id={item.anchor} aria-hidden="true"></a>
                     ) : null}
 
-                    <div className={styles.positionRow}>
-                      {isAbsoluteUrl(item.position) ? (
-                        <a href={item.position} className={styles.positionLink}>
-                          {item.position}
-                        </a>
-                      ) : (
-                        <span className={styles.position}>{item.position}</span>
-                      )}
-                    </div>
+                    <div className={styles.bodyBlock}>
+                      <div className={styles.positionRow}>
+                        {isAbsoluteUrl(item.position) ? (
+                          <a href={item.position} className={styles.positionLink}>
+                            {item.position}
+                          </a>
+                        ) : (
+                          <span className={styles.position}>{item.position}</span>
+                        )}
+                      </div>
 
-                    <div className={styles.textBlock}>
                       {item.japanese === null ? (
                         <p className={styles.unknown}>公式訳不明</p>
                       ) : (
@@ -156,26 +156,26 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                           <strong>公式訳：</strong> {item.japanese}
                         </p>
                       )}
-                    </div>
 
-                    <div className={styles.textBlock}>
                       {item.alevLines === null ? (
                         <p className={styles.unknown}>公式原文不明</p>
                       ) : (
-                        <AlevLineClient
-                          lines={item.alevLines}
-                          selectedHex={selection.hex}
-                          onGlyphPress={handleGlyphPress}
-                          togglePopoverOnClick={false}
-                          lineKeyPrefix={`${item.position}-${itemIndex}`}
-                          glyphTriggerClassName={
-                            glyphTriggerStyles.inlineGlyphTrigger
-                          }
-                          selectedGlyphTriggerClassName={
-                            glyphTriggerStyles.inlineGlyphTriggerSelected
-                          }
-                          glyphContentClassName={glyphTriggerStyles.inlineGlyph}
-                        />
+                        <div className={styles.exampleBlock}>
+                          <AlevLineClient
+                            lines={item.alevLines}
+                            selectedHex={selection.hex}
+                            onGlyphPress={handleGlyphPress}
+                            togglePopoverOnClick={false}
+                            lineKeyPrefix={`${item.position}-${itemIndex}`}
+                            glyphTriggerClassName={
+                              glyphTriggerStyles.inlineGlyphTrigger
+                            }
+                            selectedGlyphTriggerClassName={
+                              glyphTriggerStyles.inlineGlyphTriggerSelected
+                            }
+                            glyphContentClassName={glyphTriggerStyles.inlineGlyph}
+                          />
+                        </div>
                       )}
                     </div>
 

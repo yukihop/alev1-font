@@ -1,6 +1,14 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 100%;
+}
+
 .block {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
 .line {
@@ -8,4 +16,54 @@
   white-space: pre-wrap;
   font-size: clamp(1.4rem, 5.2vw, 1.9rem);
   line-height: 1.4;
+}
+
+.copyActions {
+  display: inline-flex;
+  flex-direction: column;
+  align-self: center;
+  gap: 0.16rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.wrap:hover .copyActions,
+.wrap:has(.copyButton:focus-visible) .copyActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.copyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.18rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copyButton:hover,
+.copyButton:focus-visible {
+  color: var(--text);
+}
+
+.copyIcon {
+  width: 0.82rem;
+  height: 0.82rem;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  .copyActions {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }

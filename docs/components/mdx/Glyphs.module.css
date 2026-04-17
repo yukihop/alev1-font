@@ -193,6 +193,23 @@
   font: inherit;
 }
 
+.copyPillContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.copyPillIcon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+  opacity: 0.78;
+}
+
+.copyPillIconCopied {
+  opacity: 1;
+}
+
 .binaryPill,
 .hexPill {
   background: var(--accent-soft);

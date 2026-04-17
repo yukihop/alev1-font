@@ -209,16 +209,18 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
               <div className={styles.glyphPopoverMeta}>
                 <CopyPillButton
                   className={`${styles.hexPill} ${styles.copyButton}`}
-                  copyId={copyId}
+                  copyId={`${copyId}-hex`}
                   copyValue={`0x${glyph.hex}`}
                   text={`0x${glyph.hex}`}
+                  copied={copiedId === `${copyId}-hex`}
                   onCopy={copyText}
                 />
                 <CopyPillButton
                   className={`${styles.binaryPill} ${styles.copyButton}`}
-                  copyId={copyId}
+                  copyId={`${copyId}-binary`}
                   copyValue={`0b${glyph.binary}`}
                   text={`0b${glyph.binary}`}
+                  copied={copiedId === `${copyId}-binary`}
                   onCopy={copyText}
                 />
               </div>
@@ -228,9 +230,10 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                     <CopyPillButton
                       key={keyword}
                       className={`${styles.keywordPill} ${styles.copyButton}`}
-                      copyId={copyId}
+                      copyId={`${copyId}-keyword-${keyword}`}
                       copyValue={keyword}
                       text={keyword}
+                      copied={copiedId === `${copyId}-keyword-${keyword}`}
                       onCopy={copyText}
                     />
                   ))}
@@ -238,11 +241,10 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
               ) : null}
               {glyph.commentContent ||
               glyph.comment ||
-              copiedId === copyId ||
               usageCount !== undefined ? (
                 <div className={styles.glyphPopoverFooter} aria-live="polite">
                   <span className={styles.glyphPopoverBadge}>
-                    {copiedId === copyId ? "Copied" : `出現数: ${usageCount}`}
+                    {`出現数: ${usageCount}`}
                   </span>
                   {glyph.commentContent ? (
                     <div className={styles.glyphPopoverComment}>
