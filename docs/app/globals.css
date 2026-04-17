@@ -2,6 +2,7 @@
   --font-ui: "IBM Plex Sans", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
   --font-alev: "Alevish";
+  --alev-glyph-size: clamp(1.4rem, 3.9vw, 1.9rem);
   --bg: #09111f;
   --bg-elevated: rgba(12, 20, 36, 0.92);
   --bg-soft: rgba(21, 31, 54, 0.72);

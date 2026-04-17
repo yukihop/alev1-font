@@ -14,7 +14,7 @@
 .line {
   min-width: 0;
   white-space: pre-wrap;
-  font-size: clamp(1.4rem, 5.2vw, 1.9rem);
+  font-size: var(--alev-glyph-size);
   line-height: 1.4;
 }
 
