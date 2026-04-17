@@ -1,11 +1,9 @@
 import type { FC } from 'react';
 
-import { getAlevData, getKeywordMap, resolveAlevTokenHex } from '@/lib/alev';
-import { getCorpusUsageCounts } from '@/lib/corpus';
+import { getGlyphHexSet, getKeywordMap, resolveAlevTokenHex } from '@/lib/alev';
 
 import AlevLineClient from './AlevLineClient';
 import { buildRenderableSource } from './alev-renderable';
-import { buildRenderableGlyphs } from './glyph-renderable';
 
 type AlevLineProps = {
   source: string;
@@ -40,19 +38,14 @@ function normalizeSelectedHex(
 }
 
 const AlevLine: FC<AlevLineProps> = props => {
-  const { glyphs } = getAlevData();
-  const renderableGlyphs = buildRenderableGlyphs(glyphs);
   const keywordMap = getKeywordMap();
-  const usageCounts = getCorpusUsageCounts();
-  const glyphHexSet = new Set(glyphs.map((glyph) => glyph.hex));
+  const glyphHexSet = getGlyphHexSet();
   const lines = buildRenderableSource(props.source, keywordMap, glyphHexSet);
   const selectedHex = normalizeSelectedHex(props.selected, keywordMap, glyphHexSet);
 
   return (
     <AlevLineClient
-      glyphs={renderableGlyphs}
       lines={lines}
-      usageCounts={usageCounts}
       selectedHex={selectedHex}
       className={props.className}
     />

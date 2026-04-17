@@ -6,7 +6,6 @@ import glyphTriggerStyles from "./AlevGlyphTrigger.module.css";
 import AlevLineClient from "./AlevLineClient";
 import styles from "./CorpusView.module.css";
 import type { AlevRenderableFragment } from "./alev-renderable";
-import type { GlyphRenderableRecord } from "./glyph-renderable";
 
 export type CorpusRenderableEntry = {
   type: "entry";
@@ -35,9 +34,7 @@ export type CorpusRenderableSection = {
 };
 
 type CorpusViewClientProps = {
-  glyphs: GlyphRenderableRecord[];
   sections: CorpusRenderableSection[];
-  usageCounts: Record<string, number>;
 };
 
 type SelectionState =
@@ -76,7 +73,7 @@ const itemContainsHex = (
 };
 
 const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
-  const { glyphs, sections, usageCounts } = props;
+  const { sections } = props;
   const [selection, setSelection] = useState<SelectionState>({
     hex: null,
     mode: "idle",
@@ -166,9 +163,7 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                         <p className={styles.unknown}>公式原文不明</p>
                       ) : (
                         <AlevLineClient
-                          glyphs={glyphs}
                           lines={item.alevLines}
-                          usageCounts={usageCounts}
                           selectedHex={selection.hex}
                           onGlyphPress={handleGlyphPress}
                           togglePopoverOnClick={false}

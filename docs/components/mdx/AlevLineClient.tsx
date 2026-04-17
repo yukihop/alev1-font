@@ -1,18 +1,15 @@
 'use client';
 
-import { useMemo, type FC } from 'react';
+import type { FC } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import AlevRenderableFragments from './AlevRenderableFragments';
 import styles from './AlevLine.module.css';
 import type { AlevRenderableFragment } from './alev-renderable';
-import type { GlyphRenderableRecord } from './glyph-renderable';
 
 type AlevLineClientProps = {
-  glyphs: GlyphRenderableRecord[];
   lines: AlevRenderableFragment[][];
-  usageCounts: Record<string, number>;
   selectedHex?: string | null;
   onGlyphPress?: (hex: string) => void;
   togglePopoverOnClick?: boolean;
@@ -30,9 +27,7 @@ function joinClassNames(...values: Array<string | undefined | false | null>): st
 
 const AlevLineClient: FC<AlevLineClientProps> = props => {
   const {
-    glyphs,
     lines,
-    usageCounts,
     selectedHex,
     onGlyphPress,
     togglePopoverOnClick = true,
@@ -43,10 +38,6 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
     selectedGlyphTriggerClassName,
     glyphContentClassName,
   } = props;
-  const glyphMap = useMemo(
-    () => new Map(glyphs.map((glyph) => [glyph.hex, glyph])),
-    [glyphs],
-  );
 
   if (lines.length === 0) {
     return null;
@@ -61,8 +52,6 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
         >
           <AlevRenderableFragments
             fragments={line}
-            glyphMap={glyphMap}
-            usageCounts={usageCounts}
             selectedHex={selectedHex}
             onGlyphPress={onGlyphPress}
             togglePopoverOnClick={togglePopoverOnClick}

@@ -156,3 +156,7 @@ export const getAlevData = cache((): AlevData => {
     cols: '0123456789ABCDEF'.split(''),
   };
 });
+
+export const getGlyphHexSet = cache((): Set<string> => {
+  return new Set(getAlevData().glyphs.map((glyph) => glyph.hex));
+});

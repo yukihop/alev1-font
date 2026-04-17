@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import DocsShell from '@/components/DocsShell';
 import RichText from '@/components/RichText';
+import AlevGlyphDataBoundary from '@/components/mdx/AlevGlyphDataBoundary';
 import { getAdjacentArticles, getArticleEntry, loadArticleSource, scanArticles } from '@/lib/articles';
 import { renderMdx } from '@/lib/mdx';
 
@@ -27,7 +28,9 @@ const HomePage = async () => {
 
   return (
     <DocsShell current={entry} entries={entries} prev={prev} next={next}>
-      <RichText>{content}</RichText>
+      <AlevGlyphDataBoundary>
+        <RichText>{content}</RichText>
+      </AlevGlyphDataBoundary>
     </DocsShell>
   );
 };

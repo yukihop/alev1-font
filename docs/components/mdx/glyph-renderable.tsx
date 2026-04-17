@@ -11,6 +11,6 @@ export type GlyphRenderableRecord = GlyphRecord & {
 export function buildRenderableGlyphs(glyphs: GlyphRecord[]): GlyphRenderableRecord[] {
   return glyphs.map((glyph) => ({
     ...glyph,
-    commentContent: glyph.comment ? <InlineMdx source={glyph.comment} /> : null,
+    commentContent: glyph.comment ? <InlineMdx source={glyph.comment} staticAlev /> : null,
   }));
 }

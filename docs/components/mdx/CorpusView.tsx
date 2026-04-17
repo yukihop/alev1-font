@@ -1,5 +1,5 @@
-import { getAlevData, getKeywordMap } from '@/lib/alev';
-import { getCorpusUsageCounts, loadCorpusDocument } from '@/lib/corpus';
+import { getGlyphHexSet, getKeywordMap } from '@/lib/alev';
+import { loadCorpusDocument } from '@/lib/corpus';
 
 import CorpusViewClient, {
   type CorpusRenderableItem,
@@ -7,13 +7,11 @@ import CorpusViewClient, {
 } from './CorpusViewClient';
 import InlineMdx from './InlineMdx';
 import { buildRenderableLine } from './alev-renderable';
-import { buildRenderableGlyphs } from './glyph-renderable';
 
 const buildRenderableSections = (): CorpusRenderableSection[] => {
   const document = loadCorpusDocument();
-  const { glyphs } = getAlevData();
   const keywordMap = getKeywordMap();
-  const glyphHexSet = new Set(glyphs.map((glyph) => glyph.hex));
+  const glyphHexSet = getGlyphHexSet();
 
   return document.sections.map((section): CorpusRenderableSection => ({
       title: section.title,
@@ -46,11 +44,9 @@ const buildRenderableSections = (): CorpusRenderableSection[] => {
 };
 
 async function CorpusView() {
-  const { glyphs } = getAlevData();
-  const usageCounts = getCorpusUsageCounts();
   const sections = buildRenderableSections();
 
-  return <CorpusViewClient glyphs={buildRenderableGlyphs(glyphs)} sections={sections} usageCounts={usageCounts} />;
+  return <CorpusViewClient sections={sections} />;
 }
 
 export default CorpusView;

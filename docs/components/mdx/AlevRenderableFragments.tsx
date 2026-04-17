@@ -2,14 +2,12 @@
 
 import type { FC } from 'react';
 
+import { useAlevGlyphData } from './AlevGlyphDataProvider';
 import AlevGlyphTrigger from './AlevGlyphTrigger';
 import type { AlevRenderableFragment } from './alev-renderable';
-import type { GlyphRenderableRecord } from './glyph-renderable';
 
 type AlevRenderableFragmentsProps = {
   fragments: AlevRenderableFragment[];
-  glyphMap: Map<string, GlyphRenderableRecord>;
-  usageCounts: Record<string, number>;
   selectedHex?: string | null;
   onGlyphPress?: (hex: string) => void;
   togglePopoverOnClick?: boolean;
@@ -22,8 +20,6 @@ type AlevRenderableFragmentsProps = {
 const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
   const {
     fragments,
-    glyphMap,
-    usageCounts,
     selectedHex,
     onGlyphPress,
     togglePopoverOnClick = true,
@@ -32,6 +28,7 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
     contentClassName,
     keyPrefix,
   } = props;
+  const { glyphMap, usageCounts } = useAlevGlyphData();
 
   return fragments.map((fragment, fragmentIndex) => {
     if (fragment.type === 'space' || fragment.type === 'bracket' || fragment.type === 'text') {

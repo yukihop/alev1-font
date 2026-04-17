@@ -12,6 +12,7 @@ import LayeredGlyph from '@/components/mdx/LayeredGlyph';
 import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
 import MarkdownEditor from '@/components/mdx/MarkdownEditor';
 import SimpleEditor from '@/components/mdx/SimpleEditor';
+import StaticAlevInline from '@/components/mdx/StaticAlevInline';
 import { remarkAlevInline } from '@/lib/remark-alev-inline';
 
 const components = {
@@ -33,6 +34,11 @@ const inlineComponents = {
   p: Fragment,
 };
 
+const staticInlineComponents = {
+  AlevInline: StaticAlevInline,
+  p: Fragment,
+};
+
 export async function renderMdx(source: string) {
   const { content } = await compileMDX({
     source,
@@ -48,7 +54,10 @@ export async function renderMdx(source: string) {
   return content;
 }
 
-export const renderInlineMdx = cache(async (source: string) => {
+async function compileInlineMdx(
+  source: string,
+  componentsMap: typeof inlineComponents,
+) {
   const normalizedSource = String(source ?? '').trim();
   if (!normalizedSource) {
     return null;
@@ -56,7 +65,7 @@ export const renderInlineMdx = cache(async (source: string) => {
 
   const { content } = await compileMDX({
     source: normalizedSource,
-    components: inlineComponents,
+    components: componentsMap,
     options: {
       parseFrontmatter: false,
       mdxOptions: {
@@ -66,4 +75,12 @@ export const renderInlineMdx = cache(async (source: string) => {
   });
 
   return content;
+}
+
+export const renderInlineMdx = cache(async (source: string) => {
+  return compileInlineMdx(source, inlineComponents);
+});
+
+export const renderStaticInlineMdx = cache(async (source: string) => {
+  return compileInlineMdx(source, staticInlineComponents);
 });

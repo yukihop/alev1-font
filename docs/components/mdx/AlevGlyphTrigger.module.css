@@ -4,16 +4,15 @@
   background: transparent;
   padding: 0;
   margin: 0;
-  color: inherit;
+  color: color-mix(in srgb, var(--text) 76%, #bfefff 24%);
   cursor: pointer;
   vertical-align: baseline;
   font: inherit;
-  transition: filter 120ms ease, transform 120ms ease;
+  transition: color 120ms ease, filter 120ms ease;
 }
 
 .inlineGlyphTrigger:hover,
 .inlineGlyphTrigger:focus-visible {
-  transform: translateY(-1px);
   filter: drop-shadow(0 0 0.06em color-mix(in srgb, var(--accent) 42%, transparent));
 }
 
