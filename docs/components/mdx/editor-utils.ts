@@ -3,7 +3,7 @@ import {
   glyphCharForHex,
   normalizeAlevToken,
   resolveAlevTokenHex,
-} from '@/lib/alev-tokens';
+} from '@alev/data/client';
 
 export type KeywordMap = Record<string, string>;
 

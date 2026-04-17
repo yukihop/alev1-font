@@ -2,6 +2,7 @@ import { readdir, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { loadLexiconData } from '@alev/data';
 import YAML from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -166,68 +167,7 @@ export async function loadBracketGlyphs(model = null) {
 }
 
 export async function loadLexicon() {
-  const raw = await loadYaml(path.join(DATA_DIR, 'lexicon.yaml'));
-  const entries = Array.isArray(raw?.entries) ? raw.entries : [];
-  const allEntries = new Map(
-    binaryValues().map((binary) => {
-      const hex = hexForBinary(binary);
-      return [hex, { binary, hex, keywords: [], label: null, description: null, notes: null, comment: null }];
-    }),
-  );
-  const seenBinary = new Set();
-  const seenKeywords = new Map();
-
-  for (const entry of entries) {
-    if (!entry || typeof entry !== 'object') {
-      throw new Error('Each lexicon entry must be an object.');
-    }
-
-    const originalBinary = String(entry.binary ?? '');
-    const binary = originalBinary.trim();
-    if (!/^[01]{8}$/.test(binary)) {
-      throw new Error(`Invalid binary code in lexicon: ${originalBinary}`);
-    }
-
-    if (seenBinary.has(binary)) {
-      throw new Error(`Duplicate lexicon entry for ${binary}`);
-    }
-
-    seenBinary.add(binary);
-    const hex = hexForBinary(binary);
-
-    const keywords = Array.isArray(entry.keywords) ? entry.keywords : [];
-    const normalizedKeywords = keywords.map((keyword) => String(keyword).trim()).filter(Boolean);
-    const uniqueKeywords = new Set();
-
-    for (const keyword of normalizedKeywords) {
-      if (!/^[a-z0-9-]+$/.test(keyword)) {
-        throw new Error(`Keyword "${keyword}" for ${binary} must be lowercase ASCII letters, digits, and hyphen only.`);
-      }
-
-      if (uniqueKeywords.has(keyword)) {
-        throw new Error(`Duplicate keyword "${keyword}" inside lexicon entry ${binary}`);
-      }
-
-      if (seenKeywords.has(keyword)) {
-        throw new Error(`Keyword "${keyword}" is already assigned to ${seenKeywords.get(keyword)}`);
-      }
-
-      uniqueKeywords.add(keyword);
-      seenKeywords.set(keyword, binary);
-    }
-
-    allEntries.set(hex, {
-      binary,
-      hex,
-      keywords: normalizedKeywords,
-      label: entry.label ? String(entry.label) : null,
-      description: entry.description ? String(entry.description) : null,
-      notes: entry.notes ? String(entry.notes) : null,
-      comment: entry.comment ? String(entry.comment) : null,
-    });
-  }
-
-  return allEntries;
+  return loadLexiconData();
 }
 
 export function collectInputChars(lexicon) {

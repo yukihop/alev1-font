@@ -3,13 +3,14 @@
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
-import type { GlyphRecord } from '@/lib/alev';
-
 import alevTextStyles from './AlevText.module.css';
+import { useSourceData } from './SourceDataProvider';
 import styles from './AlevSignalDemo.module.css';
 
-type AlevSignalDemoPanelProps = {
-  glyphs: GlyphRecord[];
+type DemoGlyph = {
+  hex: string;
+  char: string;
+  keywords: string[];
 };
 
 type Slot = {
@@ -33,7 +34,7 @@ const hashSeed = (value: string): number => {
 };
 
 const getDeterministicRatio = (
-  glyphs: GlyphRecord[],
+  glyphs: DemoGlyph[],
   slotIndex: number,
   salt: string,
 ): number => {
@@ -41,7 +42,7 @@ const getDeterministicRatio = (
   return hashSeed(seedSource) / 0x100000000;
 };
 
-const createSlot = (glyphs: GlyphRecord[]): Slot => {
+const createSlot = (glyphs: DemoGlyph[]): Slot => {
   const glyph = pickGlyph(glyphs);
   return {
     hex: glyph.hex,
@@ -50,13 +51,13 @@ const createSlot = (glyphs: GlyphRecord[]): Slot => {
   };
 };
 
-const pickGlyph = (glyphs: GlyphRecord[]): GlyphRecord => {
+const pickGlyph = (glyphs: DemoGlyph[]): DemoGlyph => {
   const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
   const pool = featuredGlyphs.length > 0 && Math.random() < initialFeaturedBias ? featuredGlyphs : glyphs;
   return pool[Math.floor(Math.random() * pool.length)] ?? glyphs[0];
 };
 
-const createStableSlot = (glyphs: GlyphRecord[], slotIndex: number): Slot => {
+const createStableSlot = (glyphs: DemoGlyph[], slotIndex: number): Slot => {
   const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
   const featuredRatio = getDeterministicRatio(glyphs, slotIndex, "featured");
   const useFeaturedPool =
@@ -73,14 +74,16 @@ const createStableSlot = (glyphs: GlyphRecord[], slotIndex: number): Slot => {
   };
 };
 
-const createStableSlots = (glyphs: GlyphRecord[]): Slot[] =>
+const createStableSlots = (glyphs: DemoGlyph[]): Slot[] =>
   Array.from({ length: slotCount }, (_, index) => createStableSlot(glyphs, index));
 
-const getStableFocusHex = (glyphs: GlyphRecord[]): string =>
+const getStableFocusHex = (glyphs: DemoGlyph[]): string =>
   createStableSlot(glyphs, slotCount).hex;
 
-const AlevSignalDemoClient: FC<AlevSignalDemoPanelProps> = props => {
-  const { glyphs } = props;
+const AlevSignalDemoClient: FC = () => {
+  const {
+    sourceData: { glyphs },
+  } = useSourceData();
   const [slots, setSlots] = useState(() => createStableSlots(glyphs));
   const [focusHex, setFocusHex] = useState(() => getStableFocusHex(glyphs));
   const [glitchPhase, setGlitchPhase] = useState(false);

@@ -10,36 +10,17 @@ i receive straylight love
 #exist-error-alive
 EXIST ERROR ALIVE (=S/N-GUL4R1TY)
 is error life
-! 公式訳は初出時点ではもちろん示されず長らく謎だった。[0x03; overflow() スタッフロール](#error-exist-alive-overflow)で "ERROR EXIST ALIVE" だと示される…が、これは普通の英文としては成立していない。文として読みたいところだが、文頭に :be: という動詞が来るのはALEV-1言語として非常に珍しい形（事実上ここだけ）。一見英語の疑問文に語順が似ており、そう読む場合は「誤りこそが生命なのか」「エラーがライブか」のような意味深な解釈をしたくなる。しかし「AはBですか」は ":interrogative: A :be: B" のはずなのでこの説は採用しがたい。文頭に動詞がくることを命令文として解釈すると「過ちの生命あれ」「エラーライブよ存在しろ」となりこれも魅力的な解釈だが、命令文の実例がほかにないため当て推量の域を出ない。
+! 公式訳は初出時点ではもちろん示されず長らく謎だった。[0x03; overflow() スタッフロール](#error-exist-alive-overflow)で "EXIST ERROR ALIVE" だと示される…が、これは普通の英文としては成立していない。文として読みたいところだが、文頭に :be: という動詞が来るのはALEV-1言語として非常に珍しい形（事実上ここだけ）。一見英語の疑問文に語順が似ており、そう読む場合は「誤りこそが生命なのか」「エラーがライブか」のような意味深な解釈をしたくなる。しかし「AはBですか」は ":interrogative: A :be: B" のはずなのでこの説は採用しがたい。文頭に動詞がくることを命令文として解釈すると「過ちの生命あれ」「エラーライブよ存在しろ」となりこれも魅力的な解釈だが、命令文の実例がほかにないため当て推量の域を出ない。全体としてまだ謎が多い。
 
 @トップページ
 -
 i let be perfect live
 ! ALEV-1からのメッセージとしてスクロールしながら表示されるもの。これと類似で4文字の :i do perfect live:（私は完璧なライブを実行します）は頻出パターンだが、これは3文字目に :be: (= "be/exist") という動詞が挟まる珍しい形。「私は完璧なライブを存在せしめる ("I let there be a perfect live")」ということか。
 
-[[初期PV]]
 
-2025年12月28日の https://x.com/shinyc_official/status/2005231658677727582 より。今となっては語彙も文法も基本的なので迷うところは何もない。「これは読める言語なんだよ」ということを誰にもわかりやすく示す目的があると思われる。
+[[初期Xポスト]]
 
-@0:28
-私はロボット。
-i am robot
-
-@0:30
-私は、完璧なライブを実行します。
-i do perfect live
-
-@0:32
-私はストレイライトを学習しました。
-i learn straylight
-
-@0:33
-私はストレイライト
-i am straylight
-
-[[Xポスト]]
-
-時系列順。
+2025年12月上旬に投稿された一連のXポスト。この時点ではまだ「なんかの記号かアイコンなのかな」止まりであり、文が作れることまでは判明しない。
 
 @https://x.com/shinyc_official/status/1997969401555923092
 MYSELF
@@ -76,12 +57,36 @@ do
 i
 ! 2025年12月13日の [#006 Final Report]。背景に :i: が多数。ALEV-1が「自分自身がライブステージに出演する」と宣言。
 
+
+[[初期PV]]
+
+2025年12月28日の https://x.com/shinyc_official/status/2005231658677727582 より。語彙も文法も初歩的で迷うところはなく、文字の同定と解読は容易。ここで「これは読める言語なのだ」と、誰の目にも分かりやすく示される。
+
+@0:28
+私はロボット。
+i am robot
+
+@0:30
+私は、完璧なライブを実行します。
+i do perfect live
+
+@0:32
+私はストレイライトを学習しました。
+i learn straylight
+
+@0:33
+私はストレイライト
+i am straylight
+
+
+[[2026年のXポスト]]
+
 @https://x.com/shinyc_official/status/2012872730392383936
 #control-emotion-x
 -
 i will become perfect existence by learn human and control emotion
 and i do perfect live
-! 2026年1月18日のポスト。ALEV-1からのメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。
+! 2026年1月18日のポスト。ALEV-1からの、いきなり長文のメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。なおこのポストの時点ではせいぜい半分程度しか解読できない。
 
 @https://x.com/shinyc_official/status/2038221068117446667
 #one-live-one-love
@@ -184,6 +189,7 @@ i perform perfect live
 私は…完璧に到達します！
 i will reach perfection
 ! 突然現れる :will: の文字。強い意志を示しているのか。
+
 
 [[0x02; evolve()]]
 

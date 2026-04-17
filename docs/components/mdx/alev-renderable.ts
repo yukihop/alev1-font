@@ -1,4 +1,4 @@
-import { type KeywordLookup, tokenizeAlevLine } from '@/lib/alev-tokens';
+import { type KeywordLookup, tokenizeAlevLine } from '@alev/data/client';
 
 export type AlevRenderableFragment =
   | {

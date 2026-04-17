@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 
 import DocsShell from '@/components/DocsShell';
 import RichText from '@/components/RichText';
-import AlevGlyphDataBoundary from '@/components/mdx/AlevGlyphDataBoundary';
+import SourceDataBoundary from '@/components/mdx/SourceDataBoundary';
 import { getAdjacentArticles, getArticleEntry, loadArticleSource, scanArticles } from '@/lib/articles';
 import { renderMdx } from '@/lib/mdx';
 
@@ -37,9 +37,9 @@ const ArticlePage = async (props: { params: Promise<{ slug: string }> }) => {
 
   return (
     <DocsShell current={entry} entries={entries} prev={prev} next={next}>
-      <AlevGlyphDataBoundary>
+      <SourceDataBoundary>
         <RichText>{content}</RichText>
-      </AlevGlyphDataBoundary>
+      </SourceDataBoundary>
     </DocsShell>
   );
 };

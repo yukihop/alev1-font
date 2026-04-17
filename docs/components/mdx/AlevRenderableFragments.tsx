@@ -2,8 +2,8 @@
 
 import type { FC } from 'react';
 
-import { useAlevGlyphData } from './AlevGlyphDataProvider';
 import AlevGlyphTrigger from './AlevGlyphTrigger';
+import { useSourceData } from './SourceDataProvider';
 import type { AlevRenderableFragment } from './alev-renderable';
 
 type AlevRenderableFragmentsProps = {
@@ -28,7 +28,10 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
     contentClassName,
     keyPrefix,
   } = props;
-  const { glyphMap, usageCounts } = useAlevGlyphData();
+  const {
+    glyphMap,
+    sourceData: { usageCounts },
+  } = useSourceData();
 
   return fragments.map((fragment, fragmentIndex) => {
     if (fragment.type === 'space' || fragment.type === 'bracket' || fragment.type === 'text') {

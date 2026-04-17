@@ -1,5 +1,4 @@
-import { getGlyphHexSet, getKeywordMap } from '@/lib/alev';
-import { loadCorpusDocument } from '@/lib/corpus';
+import { loadSourceData } from '@/lib/source-data';
 
 import CorpusViewClient, {
   type CorpusRenderableItem,
@@ -9,11 +8,10 @@ import InlineMdx from './InlineMdx';
 import { buildRenderableLine } from './alev-renderable';
 
 const buildRenderableSections = (): CorpusRenderableSection[] => {
-  const document = loadCorpusDocument();
-  const keywordMap = getKeywordMap();
-  const glyphHexSet = getGlyphHexSet();
+  const sourceData = loadSourceData();
+  const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
 
-  return document.sections.map((section): CorpusRenderableSection => ({
+  return sourceData.corpus.sections.map((section): CorpusRenderableSection => ({
       title: section.title,
       items: section.items.map((item): CorpusRenderableItem => {
           if (item.type === 'paragraph') {
@@ -32,7 +30,7 @@ const buildRenderableSections = (): CorpusRenderableSection[] => {
               item.alevLines === null
                 ? null
                 : item.alevLines.map((line) =>
-                    buildRenderableLine(line, keywordMap, glyphHexSet),
+                    buildRenderableLine(line, sourceData.keywordMap, glyphHexSet),
                   ),
             comments: item.comments.map((comment, commentIndex) => ({
                 key: `${item.position}-comment-${commentIndex}`,

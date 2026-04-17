@@ -1,15 +1,10 @@
 import {
   getActiveTokenPrefixFromFragment,
   replaceActiveTokenWithSuggestion,
-  type KeywordMap,
 } from './editor-utils';
 
 export type MarkdownEditorProps = {
   defaultValue?: string;
-};
-
-export type MarkdownEditorPanelProps = MarkdownEditorProps & {
-  keywordMap: KeywordMap;
 };
 
 export const getMarkdownTokenPrefix = (value: string, selectionStart: number): string => {

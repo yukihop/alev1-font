@@ -1,15 +1,33 @@
-import type { FC, ReactNode } from 'react';
+import { Children, type FC, type ReactNode } from 'react';
 
-import { getGlyphHexSet, getKeywordMap } from '@/lib/alev';
+import { normalizeAlevToken } from '@alev/data';
 
-import AlevInlineClient from './AlevInlineClient';
+import { loadSourceData } from '@/lib/source-data';
+
+import alevTextStyles from './AlevText.module.css';
+import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import { buildRenderableLine } from './alev-renderable';
-import { resolveAlevInlineSource } from './alev-inline-source';
+import AlevRenderableFragments from './AlevRenderableFragments';
+import styles from './AlevInline.module.css';
 
 type AlevInlineProps = {
   source?: string;
   children?: ReactNode;
 };
+
+function resolveAlevInlineSource(source?: string, children?: ReactNode): string {
+  const text =
+    source ??
+    Children.toArray(children)
+      .map((child) => {
+        if (typeof child === 'string') return child;
+        if (typeof child === 'number') return String(child);
+        return '';
+      })
+      .join(' ');
+
+  return String(text ?? '').replace(/\s+/g, ' ').trim();
+}
 
 const AlevInline: FC<AlevInlineProps> = props => {
   const text = resolveAlevInlineSource(props.source, props.children);
@@ -17,16 +35,37 @@ const AlevInline: FC<AlevInlineProps> = props => {
     return null;
   }
 
-  const keywordMap = getKeywordMap();
-  const glyphHexSet = getGlyphHexSet();
-  const fragments = buildRenderableLine(text, keywordMap, glyphHexSet);
+  const sourceData = loadSourceData();
+  const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
+  const fragments = buildRenderableLine(text, sourceData.keywordMap, glyphHexSet);
 
   return (
-    <AlevInlineClient
-      fragments={fragments}
-      title={text}
-      keyPrefix={`alev-inline-${text}`}
-    />
+    <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>
+      <AlevRenderableFragments
+        fragments={fragments}
+        triggerClassName={glyphTriggerStyles.inlineGlyphTrigger}
+        contentClassName={glyphTriggerStyles.inlineGlyph}
+        keyPrefix={`alev-inline-${text}`}
+      />
+    </span>
+  );
+};
+
+export const StaticAlevInline: FC<AlevInlineProps> = props => {
+  const text = resolveAlevInlineSource(props.source, props.children);
+  if (!text) {
+    return null;
+  }
+
+  const { keywordMap } = loadSourceData();
+
+  return (
+    <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>
+      {text
+        .split(/\s+/)
+        .map((token) => normalizeAlevToken(token, keywordMap))
+        .join(' ')}
+    </span>
   );
 };
 

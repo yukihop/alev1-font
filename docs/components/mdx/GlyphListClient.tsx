@@ -4,21 +4,20 @@ import type { FC } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
 import CopyPillButton, { useCopyFeedback } from './CopyPillButton';
-import type { GlyphRenderableRecord } from './glyph-renderable';
+import { useSourceData } from './SourceDataProvider';
 import styles from './Glyphs.module.css';
 
-type GlyphListPanelProps = {
-  glyphs: GlyphRenderableRecord[];
-  usageCounts: Record<string, number>;
-};
-
-const GlyphListClient: FC<GlyphListPanelProps> = props => {
-  const { glyphs, usageCounts } = props;
+const GlyphListClient: FC = () => {
+  const {
+    glyphs,
+    sourceData: { usageCounts },
+  } = useSourceData();
+  const visibleGlyphs = glyphs.filter((glyph) => (usageCounts[glyph.hex] ?? 0) > 0);
   const { copiedId, copyText } = useCopyFeedback();
 
   return (
     <ol className={styles.list}>
-      {glyphs.map(glyph => (
+      {visibleGlyphs.map(glyph => (
         <li key={glyph.hex} id={`glyph-${glyph.hex}`} className={styles.glyphRow}>
           <div className={`${styles.glyphCell} ${alevTextStyles.glyphText}`} title={glyph.codepoint}>
             {glyph.char}

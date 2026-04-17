@@ -4,19 +4,20 @@ import type { FC } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
 import AlevGlyphTrigger from './AlevGlyphTrigger';
-import type { GlyphRenderableRecord } from './glyph-renderable';
+import { useSourceData } from './SourceDataProvider';
 import styles from './Glyphs.module.css';
 
 type GlyphMatrixPanelProps = {
-  glyphs: GlyphRenderableRecord[];
   rows: string[];
   cols: string[];
-  usageCounts: Record<string, number>;
 };
 
 const GlyphMatrixClient: FC<GlyphMatrixPanelProps> = props => {
-  const { glyphs, rows, cols, usageCounts } = props;
-  const glyphMap = new Map(glyphs.map(glyph => [glyph.hex, glyph]));
+  const { rows, cols } = props;
+  const {
+    glyphMap,
+    sourceData: { usageCounts },
+  } = useSourceData();
 
   return (
     <div className={styles.matrixWrap}>

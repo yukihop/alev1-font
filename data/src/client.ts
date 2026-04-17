@@ -1,4 +1,4 @@
-export type KeywordLookup = Map<string, string> | Record<string, string>;
+export type KeywordLookup = Record<string, string>;
 
 export type AlevLineFragment =
   | {
@@ -15,26 +15,24 @@ export type AlevLineFragment =
       resolvedHex: string | null;
     };
 
-const alevCodepointBase = 0xe000;
-const tokenPattern = /(\s+|\[|\])/;
-
-const getKeywordHex = (token: string, keywordLookup: KeywordLookup): string | null => {
-  if (keywordLookup instanceof Map) {
-    return keywordLookup.get(token) ?? null;
-  }
-
-  return keywordLookup[token] ?? null;
-};
+const ALEV_CODEPOINT_BASE = 0xe000;
+const TOKEN_PATTERN = /(\s+|\[|\])/;
 
 export function binaryToHex(binary: string): string {
-  return Number.parseInt(binary, 2).toString(16).toUpperCase().padStart(2, '0');
+  return Number.parseInt(binary, 2)
+    .toString(16)
+    .toUpperCase()
+    .padStart(2, '0');
 }
 
 export function glyphCharForHex(hex: string): string {
-  return String.fromCodePoint(alevCodepointBase + Number.parseInt(hex, 16));
+  return String.fromCodePoint(ALEV_CODEPOINT_BASE + Number.parseInt(hex, 16));
 }
 
-export function resolveAlevTokenHex(token: string, keywordLookup: KeywordLookup): string | null {
+export function resolveAlevTokenHex(
+  token: string,
+  keywordLookup: KeywordLookup,
+): string | null {
   const normalized = String(token ?? '').trim();
   if (!normalized) {
     return null;
@@ -48,17 +46,23 @@ export function resolveAlevTokenHex(token: string, keywordLookup: KeywordLookup)
     return binaryToHex(normalized.slice(2));
   }
 
-  return getKeywordHex(normalized, keywordLookup);
+  return keywordLookup[normalized] ?? null;
 }
 
-export function normalizeAlevToken(token: string, keywordLookup: KeywordLookup): string {
+export function normalizeAlevToken(
+  token: string,
+  keywordLookup: KeywordLookup,
+): string {
   const resolvedHex = resolveAlevTokenHex(token, keywordLookup);
   return resolvedHex ? glyphCharForHex(resolvedHex) : token;
 }
 
-export function tokenizeAlevLine(line: string, keywordLookup: KeywordLookup): AlevLineFragment[] {
+export function tokenizeAlevLine(
+  line: string,
+  keywordLookup: KeywordLookup,
+): AlevLineFragment[] {
   return String(line ?? '')
-    .split(tokenPattern)
+    .split(TOKEN_PATTERN)
     .filter((fragment) => fragment.length > 0)
     .map((fragment) => {
       if (fragment.trim().length === 0) {

@@ -28,7 +28,7 @@ If `uv` is not on `PATH`, you can point the build at a specific binary:
 UV_BIN=/path/to/uv pnpm --filter font build
 ```
 
-The build reads `../data/glyph-model.yaml` and `../data/lexicon.yaml`, then writes:
+The build reads `../data/glyph-model.yaml` and the `@alev/data` package data sources (including `../data/lexicon.txt`), then writes:
 
 - `font/dist/alevish.ttf`
 - `font/dist/alevish.woff2`

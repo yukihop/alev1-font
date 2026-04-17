@@ -9,13 +9,18 @@ import RichText from '@/components/RichText';
 import alevTextStyles from './AlevText.module.css';
 import { KeywordSuggestionsPopover, useKeywordSuggestions } from './KeywordSuggestionsPopover';
 import styles from './Editors.module.css';
+import { useSourceData } from './SourceDataProvider';
 import {
   DEFAULT_MARKDOWN_VALUE,
   applyMarkdownSuggestion,
   getMarkdownTokenPrefix,
-  type MarkdownEditorPanelProps,
+  type MarkdownEditorProps,
 } from './markdown-editor-utils';
-import { getKeywordList, normalizeEditorContent } from './editor-utils';
+import {
+  getKeywordList,
+  normalizeEditorContent,
+  type KeywordMap,
+} from './editor-utils';
 
 const createMarkdownRenderer = (keywordMap: Record<string, string>, alevInlineClassName: string): MarkdownIt => {
   const renderer = new MarkdownIt({
@@ -63,8 +68,20 @@ const createMarkdownRenderer = (keywordMap: Record<string, string>, alevInlineCl
   return renderer;
 };
 
-const MarkdownEditorClient: FC<MarkdownEditorPanelProps> = props => {
-  const { defaultValue = DEFAULT_MARKDOWN_VALUE, keywordMap } = props;
+const MarkdownEditorClient: FC<MarkdownEditorProps> = props => {
+  const { defaultValue = DEFAULT_MARKDOWN_VALUE } = props;
+  const {
+    sourceData: { keywordMap: sourceKeywordMap },
+  } = useSourceData();
+  const keywordMap = useMemo(
+    (): KeywordMap =>
+      Object.fromEntries(
+        Object.entries(sourceKeywordMap).sort(([left], [right]) =>
+          left.localeCompare(right),
+        ),
+      ) as KeywordMap,
+    [sourceKeywordMap],
+  );
   const inputId = useId();
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const keywordList = getKeywordList(keywordMap);

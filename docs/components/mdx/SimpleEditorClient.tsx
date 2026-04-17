@@ -8,6 +8,7 @@ import {
   useKeywordSuggestions,
 } from "./KeywordSuggestionsPopover";
 import alevTextStyles from "./AlevText.module.css";
+import { useSourceData } from "./SourceDataProvider";
 import {
   DEFAULT_EDITOR_VALUE,
   DEFAULT_FONT_SIZE,
@@ -20,14 +21,15 @@ import {
   getActiveTokenPrefix,
   getKeywordList,
   normalizeEditorContent,
-  type SimpleEditorPanelProps,
+  type KeywordMap,
+  type SimpleEditorProps,
   type VisualPreset,
   visualPresets,
 } from "./editor-utils";
 import styles from "./Editors.module.css";
 
 type PresetButtonProps = {
-  keywordMap: SimpleEditorPanelProps["keywordMap"];
+  keywordMap: Record<string, string>;
   preset: VisualPreset;
   selected: boolean;
   onSelect: (value: string) => void;
@@ -60,13 +62,20 @@ const PresetButton: FC<PresetButtonProps> = (props) => {
   );
 };
 
-const SimpleEditorClient: FC<SimpleEditorPanelProps> = (props) => {
+const SimpleEditorClient: FC<SimpleEditorProps> = (props) => {
   const {
     defaultValue = DEFAULT_EDITOR_VALUE,
     defaultFontSize = DEFAULT_FONT_SIZE,
     defaultLetterSpacing = DEFAULT_LETTER_SPACING,
-    keywordMap,
   } = props;
+  const {
+    sourceData: { keywordMap: sourceKeywordMap },
+  } = useSourceData();
+  const keywordMap = Object.fromEntries(
+    Object.entries(sourceKeywordMap).sort(([left], [right]) =>
+      left.localeCompare(right),
+    ),
+  ) as KeywordMap;
   const inputId = useId();
   const fontSizeId = useId();
   const letterSpacingId = useId();

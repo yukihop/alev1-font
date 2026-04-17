@@ -5,11 +5,11 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import CopyPillButton, { useCopyFeedback } from "./CopyPillButton";
-import type { GlyphRenderableRecord } from "./glyph-renderable";
+import type { RenderableGlyphRecord } from "./SourceDataProvider";
 import styles from "./Glyphs.module.css";
 
 type GlyphPopoverTriggerProps = {
-  glyph: GlyphRenderableRecord;
+  glyph: RenderableGlyphRecord;
   className: string;
   contentClassName?: string;
   ariaLabel?: string;

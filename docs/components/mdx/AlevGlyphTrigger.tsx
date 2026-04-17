@@ -3,10 +3,10 @@
 import type { FC } from 'react';
 
 import GlyphPopoverTrigger from './GlyphPopoverTrigger';
-import type { GlyphRenderableRecord } from './glyph-renderable';
+import type { RenderableGlyphRecord } from './SourceDataProvider';
 
 type AlevGlyphTriggerProps = {
-  glyph: GlyphRenderableRecord;
+  glyph: RenderableGlyphRecord;
   usageCount?: number;
   selected?: boolean;
   onPress?: () => void;

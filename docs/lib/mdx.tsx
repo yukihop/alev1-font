@@ -12,7 +12,7 @@ import LayeredGlyph from '@/components/mdx/LayeredGlyph';
 import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
 import MarkdownEditor from '@/components/mdx/MarkdownEditor';
 import SimpleEditor from '@/components/mdx/SimpleEditor';
-import StaticAlevInline from '@/components/mdx/StaticAlevInline';
+import { StaticAlevInline } from '@/components/mdx/AlevInline';
 import { remarkAlevInline } from '@/lib/remark-alev-inline';
 
 const components = {

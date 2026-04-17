@@ -13,6 +13,7 @@
     "clean": "node src/clean.ts"
   },
   "dependencies": {
+    "@alev/data": "workspace:*",
     "yaml": "^2.8.1"
   }
 }

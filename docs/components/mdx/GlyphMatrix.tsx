@@ -1,9 +1,7 @@
 import type { FC } from 'react';
 
-import { getAlevData } from '@/lib/alev';
-import { getCorpusUsageCounts } from '@/lib/corpus';
+import { loadSourceData } from '@/lib/source-data';
 
-import { buildRenderableGlyphs } from './glyph-renderable';
 import GlyphMatrixClient from './GlyphMatrixClient';
 
 type GlyphMatrixProps = {
@@ -28,21 +26,13 @@ function normalizeNibbleFilter(kind: 'rowFilter' | 'columnFilter', value?: strin
 }
 
 const GlyphMatrix: FC<GlyphMatrixProps> = props => {
-  const { glyphs, rows, cols } = getAlevData();
-  const usageCounts = getCorpusUsageCounts();
+  const { rows, cols } = loadSourceData();
   const rowFilter = normalizeNibbleFilter('rowFilter', props.rowFilter);
   const columnFilter = normalizeNibbleFilter('columnFilter', props.columnFilter);
   const visibleRows = rowFilter ?? rows;
   const visibleCols = columnFilter ?? cols;
 
-  return (
-    <GlyphMatrixClient
-      glyphs={buildRenderableGlyphs(glyphs)}
-      rows={visibleRows}
-      cols={visibleCols}
-      usageCounts={usageCounts}
-    />
-  );
+  return <GlyphMatrixClient rows={visibleRows} cols={visibleCols} />;
 };
 
 export default GlyphMatrix;

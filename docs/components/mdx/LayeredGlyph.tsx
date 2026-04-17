@@ -1,6 +1,8 @@
 import type { FC } from "react";
 
-import { renderAlevContent } from "@/lib/alev";
+import { normalizeAlevToken } from "@alev/data";
+
+import { loadSourceData } from "@/lib/source-data";
 
 import alevTextStyles from "./AlevText.module.css";
 import styles from "./LayeredGlyph.module.css";
@@ -25,6 +27,9 @@ function normalizeGlyph(value: string): string {
 
 const LayeredGlyph: FC<LayeredGlyphProps> = (props) => {
   const binary = normalizeGlyph(props.glyph);
+  const {
+    keywordMap,
+  } = loadSourceData();
 
   return (
     <figure className={styles.layeredGlyphFigure}>
@@ -33,10 +38,10 @@ const LayeredGlyph: FC<LayeredGlyphProps> = (props) => {
         aria-hidden="true"
       >
         <span className={styles.layeredGlyphBackdrop}>
-          {renderAlevContent("0xFF")}
+          {normalizeAlevToken("0xFF", keywordMap)}
         </span>
         <span className={styles.layeredGlyphForeground}>
-          {renderAlevContent(`0b${binary}`)}
+          {normalizeAlevToken(`0b${binary}`, keywordMap)}
         </span>
       </div>
       <figcaption className={styles.layeredGlyphLabel}>{binary}</figcaption>
