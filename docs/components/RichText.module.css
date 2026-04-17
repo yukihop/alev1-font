@@ -88,6 +88,60 @@
   background: var(--bg-soft);
 }
 
+.richText details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  overflow: hidden;
+}
+
+.richText details > * + * {
+  margin: 0.85rem 1rem 0;
+}
+
+.richText summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  list-style: none;
+  padding: 0.95rem 1rem;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 600;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.richText summary::-webkit-details-marker {
+  display: none;
+}
+
+.richText summary::before {
+  content: "▸";
+  color: var(--accent);
+  flex: none;
+  transition: transform 160ms ease;
+}
+
+.richText details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.richText summary:hover,
+.richText summary:focus-visible {
+  background: var(--accent-soft);
+}
+
+.richText details[open] {
+  border-color: var(--accent);
+  padding-bottom: 1rem;
+}
+
+.richText details[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
 .richText :global(.docs-panel) + h2,
 .richText h2 + :global(.docs-panel) {
   margin-top: 0;

@@ -3,6 +3,8 @@
 }
 
 .matrixWrap {
+  --matrix-glyph-size: clamp(1.4rem, 5.2vw, 1.9rem);
+  --matrix-cell-size: clamp(2.1rem, 7.8vw, 2.9rem);
   overflow-x: auto;
 }
 
@@ -13,8 +15,8 @@
 
 .matrix th,
 .matrix td {
-  width: 3.25rem;
-  height: 3.25rem;
+  width: var(--matrix-cell-size);
+  height: var(--matrix-cell-size);
   border: 1px solid var(--border);
   text-align: center;
 }
@@ -75,7 +77,11 @@
   color: var(--text-muted);
 }
 
-.glyphMark,
+.glyphMark {
+  font-size: var(--matrix-glyph-size);
+  line-height: 1;
+}
+
 .glyphCell {
   font-size: 1.9rem;
   line-height: 1;
