@@ -16,9 +16,13 @@ function lineContainsHex(
 
 export const buildCorpusRenderableSections = (
   filterHex?: string,
+  options?: {
+    hashLinkBase?: string;
+  },
 ): CorpusRenderableSection[] => {
   const sourceData = loadSourceData();
   const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
+  const { hashLinkBase } = options ?? {};
 
   return sourceData.corpus.sections.flatMap((section): CorpusRenderableSection[] => {
     const items: CorpusRenderableItem[] = [];
@@ -28,7 +32,7 @@ export const buildCorpusRenderableSections = (
         if (!filterHex) {
           items.push({
             type: 'paragraph',
-            content: <InlineMdx source={item.text} />,
+            content: <InlineMdx source={item.text} hashLinkBase={hashLinkBase} />,
           });
         }
         continue;
@@ -59,7 +63,7 @@ export const buildCorpusRenderableSections = (
         alevLines,
         comments: item.comments.map((comment, commentIndex) => ({
           key: `${item.position}-comment-${commentIndex}`,
-          content: <InlineMdx source={comment} />,
+          content: <InlineMdx source={comment} hashLinkBase={hashLinkBase} />,
         })),
       });
     }

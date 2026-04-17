@@ -69,7 +69,9 @@ const CharacterPage = async (props: CharacterPageProps) => {
     notFound();
   }
 
-  const sections = buildCorpusRenderableSections(hex);
+  const sections = buildCorpusRenderableSections(hex, {
+    hashLinkBase: '/corpus',
+  });
   const { entries } = await scanArticles();
   const current = createCharacterEntry(binary);
 

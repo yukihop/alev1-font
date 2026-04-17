@@ -1,4 +1,9 @@
-import { Fragment, cache } from 'react';
+import {
+  Fragment,
+  cache,
+  type ComponentPropsWithoutRef,
+  type ReactElement,
+} from 'react';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 
@@ -44,6 +49,33 @@ const staticInlineComponents = {
   p: Fragment,
 };
 
+type InlineMdxComponents = typeof inlineComponents & {
+  a: (props: ComponentPropsWithoutRef<'a'>) => ReactElement;
+};
+
+function resolveHashHref(
+  href: string | undefined,
+  hashLinkBase: string | undefined,
+): string | undefined {
+  if (!href || !hashLinkBase || !href.startsWith('#')) {
+    return href;
+  }
+
+  return `${hashLinkBase}${href}`;
+}
+
+function createInlineComponents(
+  baseComponents: typeof inlineComponents | typeof staticInlineComponents,
+  hashLinkBase?: string,
+): InlineMdxComponents {
+  return {
+    ...baseComponents,
+    a: ({ href, ...props }) => (
+      <a {...props} href={resolveHashHref(href, hashLinkBase)} />
+    ),
+  };
+}
+
 export async function renderMdx(source: string) {
   const { content } = await compileMDX({
     source,
@@ -61,7 +93,7 @@ export async function renderMdx(source: string) {
 
 async function compileInlineMdx(
   source: string,
-  componentsMap: typeof inlineComponents,
+  componentsMap: InlineMdxComponents,
 ) {
   const normalizedSource = String(source ?? '').trim();
   if (!normalizedSource) {
@@ -82,10 +114,20 @@ async function compileInlineMdx(
   return content;
 }
 
-export const renderInlineMdx = cache(async (source: string) => {
-  return compileInlineMdx(source, inlineComponents);
-});
+export const renderInlineMdx = cache(
+  async (source: string, hashLinkBase?: string) => {
+    return compileInlineMdx(
+      source,
+      createInlineComponents(inlineComponents, hashLinkBase),
+    );
+  },
+);
 
-export const renderStaticInlineMdx = cache(async (source: string) => {
-  return compileInlineMdx(source, staticInlineComponents);
-});
+export const renderStaticInlineMdx = cache(
+  async (source: string, hashLinkBase?: string) => {
+    return compileInlineMdx(
+      source,
+      createInlineComponents(staticInlineComponents, hashLinkBase),
+    );
+  },
+);
