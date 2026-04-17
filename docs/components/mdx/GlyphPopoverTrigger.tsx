@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { FC, ReactNode } from "react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -14,9 +15,7 @@ type GlyphPopoverTriggerProps = {
   contentClassName?: string;
   ariaLabel?: string;
   pressed?: boolean;
-  onPress?: () => void;
   usageCount?: number;
-  togglePopoverOnClick?: boolean;
   children?: ReactNode;
 };
 
@@ -27,9 +26,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
     contentClassName,
     ariaLabel,
     pressed,
-    onPress,
     usageCount,
-    togglePopoverOnClick = true,
     children,
   } = props;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -40,6 +37,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const instanceId = useId();
   const { copiedId, copyText } = useCopyFeedback();
+  const hasExamples = (usageCount ?? 0) > 0;
 
   useEffect(() => {
     setMounted(true);
@@ -175,12 +173,6 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
         onFocus={showPopover}
         onBlur={scheduleHide}
         onClick={() => {
-          onPress?.();
-
-          if (!togglePopoverOnClick) {
-            return;
-          }
-
           if (open) {
             hidePopover();
             return;
@@ -239,13 +231,13 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                   ))}
                 </div>
               ) : null}
-              {glyph.commentContent ||
-              glyph.comment ||
-              usageCount !== undefined ? (
+              {glyph.commentContent || glyph.comment || usageCount !== undefined || hasExamples ? (
                 <div className={styles.glyphPopoverFooter} aria-live="polite">
-                  <span className={styles.glyphPopoverBadge}>
-                    {`出現数: ${usageCount}`}
-                  </span>
+                  {usageCount !== undefined ? (
+                    <span className={styles.glyphPopoverBadge}>
+                      {`出現数: ${usageCount}`}
+                    </span>
+                  ) : null}
                   {glyph.commentContent ? (
                     <div className={styles.glyphPopoverComment}>
                       {glyph.commentContent}
@@ -254,6 +246,14 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                     <div className={styles.glyphPopoverComment}>
                       {glyph.comment}
                     </div>
+                  ) : null}
+                  {hasExamples ? (
+                    <Link
+                      href={`/character/${glyph.binary}`}
+                      className={styles.glyphPopoverLink}
+                    >
+                      全用例を見る
+                    </Link>
                   ) : null}
                 </div>
               ) : null}

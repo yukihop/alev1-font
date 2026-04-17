@@ -9,8 +9,6 @@ import type { AlevRenderableFragment } from './alev-renderable';
 type AlevRenderableFragmentsProps = {
   fragments: AlevRenderableFragment[];
   selectedHex?: string | null;
-  onGlyphPress?: (hex: string) => void;
-  togglePopoverOnClick?: boolean;
   triggerClassName: string;
   selectedTriggerClassName?: string;
   contentClassName?: string;
@@ -21,8 +19,6 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
   const {
     fragments,
     selectedHex,
-    onGlyphPress,
-    togglePopoverOnClick = true,
     triggerClassName,
     selectedTriggerClassName,
     contentClassName,
@@ -51,10 +47,6 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
         glyph={glyph}
         usageCount={usageCounts[glyph.hex] ?? 0}
         selected={glyphSelected}
-        onPress={() => {
-          onGlyphPress?.(fragment.hex);
-        }}
-        togglePopoverOnClick={togglePopoverOnClick}
         triggerClassName={triggerClassName}
         selectedTriggerClassName={selectedTriggerClassName}
         contentClassName={contentClassName}

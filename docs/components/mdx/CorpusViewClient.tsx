@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, type FC, type ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 
 import glyphTriggerStyles from "./AlevGlyphTrigger.module.css";
 import AlevLineClient from "./AlevLineClient";
@@ -35,77 +33,17 @@ export type CorpusRenderableSection = {
 
 type CorpusViewClientProps = {
   sections: CorpusRenderableSection[];
+  selectedHex?: string | null;
 };
-
-type SelectionState =
-  | {
-      hex: null;
-      mode: "idle";
-    }
-  | {
-      hex: string;
-      mode: "highlight" | "focus";
-    };
 
 const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//.test(value);
 
-const itemContainsHex = (
-  item: CorpusRenderableItem,
-  selectedHex: string | null,
-): boolean => {
-  if (!selectedHex) {
-    return false;
-  }
-
-  if (item.type === "paragraph") {
-    return false;
-  }
-
-  if (item.alevLines === null) {
-    return false;
-  }
-
-  return item.alevLines.some((line) =>
-    line.some(
-      (fragment) => fragment.type === "glyph" && fragment.hex === selectedHex,
-    ),
-  );
-};
-
 const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
-  const { sections } = props;
-  const [selection, setSelection] = useState<SelectionState>({
-    hex: null,
-    mode: "idle",
-  });
-  const handleGlyphPress = (hex: string) => {
-    setSelection((current) => {
-      if (current.hex !== hex) {
-        return { hex, mode: "highlight" };
-      }
-
-      if (current.mode === "highlight") {
-        return { hex, mode: "focus" };
-      }
-
-      return { hex: null, mode: "idle" };
-    });
-  };
+  const { sections, selectedHex = null } = props;
 
   return (
     <div className={styles.root}>
       {sections.map((section, sectionIndex) => {
-        const visibleItems =
-          selection.mode === "focus" && selection.hex
-            ? section.items.filter((item) =>
-                itemContainsHex(item, selection.hex),
-              )
-            : section.items;
-
-        if (visibleItems.length === 0) {
-          return null;
-        }
-
         return (
           <section
             key={section.title ?? `section-${sectionIndex}`}
@@ -115,14 +53,12 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
               <h2>{section.title}</h2>
             ) : null}
             <div className={styles.entries}>
-              {visibleItems.map((item, itemIndex) => {
-                const itemSelected = itemContainsHex(item, selection.hex);
-
+              {section.items.map((item, itemIndex) => {
                 if (item.type === "paragraph") {
                   return (
                     <div
                       key={`paragraph-${sectionIndex}-${itemIndex}`}
-                      className={`${styles.paragraph} ${itemSelected ? styles.paragraphSelected : ""}`.trim()}
+                      className={styles.paragraph}
                     >
                       <div className={styles.paragraphText}>{item.content}</div>
                     </div>
@@ -132,7 +68,7 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                 return (
                   <article
                     key={`${item.position}-${itemIndex}`}
-                    className={`${styles.entry} ${itemSelected ? styles.entrySelected : ""}`.trim()}
+                    className={styles.entry}
                   >
                     {item.anchor ? (
                       <a id={item.anchor} aria-hidden="true"></a>
@@ -163,9 +99,7 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                         <div className={styles.exampleBlock}>
                           <AlevLineClient
                             lines={item.alevLines}
-                            selectedHex={selection.hex}
-                            onGlyphPress={handleGlyphPress}
-                            togglePopoverOnClick={false}
+                            selectedHex={selectedHex}
                             lineKeyPrefix={`${item.position}-${itemIndex}`}
                             glyphTriggerClassName={
                               glyphTriggerStyles.inlineGlyphTrigger

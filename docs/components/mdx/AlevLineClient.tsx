@@ -12,8 +12,6 @@ import type { AlevRenderableFragment } from './alev-renderable';
 type AlevLineClientProps = {
   lines: AlevRenderableFragment[][];
   selectedHex?: string | null;
-  onGlyphPress?: (hex: string) => void;
-  togglePopoverOnClick?: boolean;
   className?: string;
   lineClassName?: string;
   lineKeyPrefix?: string;
@@ -56,8 +54,6 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
   const {
     lines,
     selectedHex,
-    onGlyphPress,
-    togglePopoverOnClick = true,
     className,
     lineClassName,
     lineKeyPrefix = 'alev-line',
@@ -86,8 +82,6 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
             <AlevRenderableFragments
               fragments={line}
               selectedHex={selectedHex}
-              onGlyphPress={onGlyphPress}
-              togglePopoverOnClick={togglePopoverOnClick}
               triggerClassName={glyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTrigger}
               selectedTriggerClassName={selectedGlyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTriggerSelected}
               contentClassName={glyphContentClassName ?? glyphTriggerStyles.inlineGlyph}

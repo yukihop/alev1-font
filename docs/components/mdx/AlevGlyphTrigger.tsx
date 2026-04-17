@@ -9,8 +9,6 @@ type AlevGlyphTriggerProps = {
   glyph: RenderableGlyphRecord;
   usageCount?: number;
   selected?: boolean;
-  onPress?: () => void;
-  togglePopoverOnClick?: boolean;
   triggerClassName: string;
   selectedTriggerClassName?: string;
   contentClassName?: string;
@@ -26,8 +24,6 @@ const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
     glyph,
     usageCount,
     selected = false,
-    onPress,
-    togglePopoverOnClick = true,
     triggerClassName,
     selectedTriggerClassName,
     contentClassName,
@@ -42,8 +38,6 @@ const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
       ariaLabel={ariaLabel ?? `Show glyph ${glyph.hex}`}
       pressed={selected}
       usageCount={usageCount}
-      togglePopoverOnClick={togglePopoverOnClick}
-      onPress={onPress}
     />
   );
 };

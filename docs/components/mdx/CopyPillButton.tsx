@@ -1,3 +1,5 @@
+'use client';
+
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
@@ -10,6 +12,12 @@ type CopyPillButtonProps = {
   text: string;
   copied: boolean;
   onCopy: (copyId: string, copyValue: string) => void;
+};
+
+type GlyphMetaCopyPillsProps = {
+  hex: string;
+  binary: string;
+  keywords: string[];
 };
 
 export const useCopyFeedback = () => {
@@ -87,6 +95,43 @@ const CopyPillButton: FC<CopyPillButtonProps> = props => {
         {copied ? <CheckIcon /> : <CopyIcon />}
       </span>
     </button>
+  );
+};
+
+export const GlyphMetaCopyPills: FC<GlyphMetaCopyPillsProps> = (props) => {
+  const { hex, binary, keywords } = props;
+  const { copiedId, copyText } = useCopyFeedback();
+
+  return (
+    <div className={styles.glyphMeta}>
+      <CopyPillButton
+        className={`${styles.hexPill} ${styles.copyButton}`}
+        copyId={`${hex}-meta-hex`}
+        copyValue={`0x${hex}`}
+        text={`0x${hex}`}
+        copied={copiedId === `${hex}-meta-hex`}
+        onCopy={copyText}
+      />
+      <CopyPillButton
+        className={`${styles.binaryPill} ${styles.copyButton}`}
+        copyId={`${hex}-meta-binary`}
+        copyValue={`0b${binary}`}
+        text={`0b${binary}`}
+        copied={copiedId === `${hex}-meta-binary`}
+        onCopy={copyText}
+      />
+      {keywords.map((keyword) => (
+        <CopyPillButton
+          key={keyword}
+          className={`${styles.keywordPill} ${styles.copyButton}`}
+          copyId={`${hex}-meta-keyword-${keyword}`}
+          copyValue={keyword}
+          text={keyword}
+          copied={copiedId === `${hex}-meta-keyword-${keyword}`}
+          onCopy={copyText}
+        />
+      ))}
+    </div>
   );
 };
 
