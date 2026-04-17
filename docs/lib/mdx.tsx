@@ -10,7 +10,6 @@ import GlyphList from '@/components/mdx/GlyphList';
 import GlyphMatrix from '@/components/mdx/GlyphMatrix';
 import LayeredGlyph from '@/components/mdx/LayeredGlyph';
 import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
-import MarkdownEditor from '@/components/mdx/MarkdownEditor';
 import SimpleEditor from '@/components/mdx/SimpleEditor';
 import { StaticAlevInline } from '@/components/mdx/AlevInline';
 import { remarkAlevInline } from '@/lib/remark-alev-inline';
@@ -24,7 +23,6 @@ const components = {
   LayeredGlyph,
   LayeredGlyphSequence,
   CorpusView,
-  MarkdownEditor,
   SimpleEditor,
   LigatureTester: SimpleEditor,
 };
