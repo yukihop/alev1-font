@@ -61,9 +61,10 @@
 }
 
 .richText table {
-  width: 100%;
+  width: auto;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
+  justify-self: start;
 }
 
 .richText th,

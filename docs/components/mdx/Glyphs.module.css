@@ -7,10 +7,8 @@
 }
 
 .matrix {
-  width: 100%;
-  min-width: 720px;
+  width: auto;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
 .matrix th,

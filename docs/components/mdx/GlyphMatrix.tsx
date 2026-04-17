@@ -8,9 +8,10 @@ import GlyphMatrixClient from './GlyphMatrixClient';
 
 type GlyphMatrixProps = {
   rowFilter?: string;
+  columnFilter?: string;
 };
 
-function normalizeRowFilter(value?: string): string[] | null {
+function normalizeNibbleFilter(kind: 'rowFilter' | 'columnFilter', value?: string): string[] | null {
   if (value == null || value === '') {
     return null;
   }
@@ -20,7 +21,7 @@ function normalizeRowFilter(value?: string): string[] | null {
     .map((token) => token.trim().toUpperCase());
 
   if (tokens.length === 0 || tokens.some((token) => !/^[0-9A-F]$/.test(token))) {
-    throw new Error(`GlyphMatrix rowFilter must be a comma-separated list of hex digits, received "${value}".`);
+    throw new Error(`GlyphMatrix ${kind} must be a comma-separated list of hex digits, received "${value}".`);
   }
 
   return [...new Set(tokens)];
@@ -29,14 +30,16 @@ function normalizeRowFilter(value?: string): string[] | null {
 const GlyphMatrix: FC<GlyphMatrixProps> = props => {
   const { glyphs, rows, cols } = getAlevData();
   const usageCounts = getCorpusUsageCounts();
-  const rowFilter = normalizeRowFilter(props.rowFilter);
+  const rowFilter = normalizeNibbleFilter('rowFilter', props.rowFilter);
+  const columnFilter = normalizeNibbleFilter('columnFilter', props.columnFilter);
   const visibleRows = rowFilter ?? rows;
+  const visibleCols = columnFilter ?? cols;
 
   return (
     <GlyphMatrixClient
       glyphs={buildRenderableGlyphs(glyphs)}
       rows={visibleRows}
-      cols={cols}
+      cols={visibleCols}
       usageCounts={usageCounts}
     />
   );
