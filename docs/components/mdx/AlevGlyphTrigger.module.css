@@ -4,7 +4,7 @@
   background: transparent;
   padding: 0;
   margin: 0;
-  color: color-mix(in srgb, var(--text) 76%, #bfefff 24%);
+  color: color-mix(in srgb, var(--text) 76%, #94e1fa 24%);
   cursor: pointer;
   vertical-align: baseline;
   font: inherit;
@@ -17,8 +17,7 @@
 }
 
 .inlineGlyphTriggerSelected {
-  color: #ff8a1f;
-  filter: drop-shadow(0 0 0.12em rgba(255, 138, 31, 0.45));
+  color: #faa04d;
 }
 
 .inlineGlyph {
