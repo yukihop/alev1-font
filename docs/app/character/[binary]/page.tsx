@@ -11,6 +11,7 @@ import InlineMdx from "@/components/mdx/InlineMdx";
 import glyphStyles from "@/components/mdx/Glyphs.module.css";
 import { loadLexicon, loadUsageCounts } from "@/lib/alev";
 import { type ArticleEntry, scanArticles } from "@/lib/articles";
+import { createPageMetadata } from "@/lib/site";
 
 type CharacterPageProps = {
   params: Promise<{
@@ -46,7 +47,9 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { binary } = await props.params;
 
-  return isBinaryGlyphSlug(binary) ? { title: `${binary}の使用例` } : {};
+  return isBinaryGlyphSlug(binary)
+    ? createPageMetadata(`${binary}の使用例`, `/character/${binary}`)
+    : {};
 }
 
 const CharacterPage = async (props: CharacterPageProps) => {

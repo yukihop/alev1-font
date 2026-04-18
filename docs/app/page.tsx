@@ -5,10 +5,11 @@ import DocsShell from '@/components/DocsShell';
 import RichText from '@/components/RichText';
 import { getAdjacentArticles, getArticleEntry, loadArticleSource, scanArticles } from '@/lib/articles';
 import { renderMdx } from '@/lib/mdx';
+import { createPageMetadata } from '@/lib/site';
 
 export async function generateMetadata(): Promise<Metadata> {
   const entry = await getArticleEntry('index');
-  return entry ? { title: entry.title } : {};
+  return entry ? createPageMetadata(entry.title, entry.path) : {};
 }
 
 const HomePage = async () => {
