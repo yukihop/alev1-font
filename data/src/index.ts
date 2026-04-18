@@ -132,13 +132,22 @@ export function parseLexiconSource(
 
     seenBinaries.add(rawBinary);
     const hex = binaryToHex(rawBinary);
-    const normalizedKeywords = current.keywords
-      .split(',')
-      .map((keyword) => keyword.trim())
-      .filter(Boolean);
+    const normalizedKeywords =
+      current.keywords === '-'
+        ? []
+        : current.keywords
+            .split(',')
+            .map((keyword) => keyword.trim())
+            .filter(Boolean);
     const uniqueKeywords = new Set<string>();
 
     for (const keyword of normalizedKeywords) {
+      if (keyword === '-') {
+        throw new Error(
+          `Keyword "-" for ${rawBinary} is reserved as the no-keyword marker.`,
+        );
+      }
+
       if (!/^[a-z0-9-]+$/.test(keyword)) {
         throw new Error(
           `Keyword "${keyword}" for ${rawBinary} must use lowercase ASCII letters, digits, and hyphen only.`,
@@ -202,8 +211,9 @@ export function parseLexiconSource(
 
     if (current.keywords === null) {
       if (!trimmed) {
-        current.keywords = '';
-        continue;
+        throw new Error(
+          `Missing keyword marker for lexicon entry ${current.header.slice(1).trim()}; use "-" when no keywords are assigned.`,
+        );
       }
 
       current.keywords = trimmed;

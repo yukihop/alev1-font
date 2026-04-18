@@ -1,12 +1,15 @@
-# Alevish: ALEV-1 フォント
+# ALEV-1言語解析 & ALEV文字フォント
 
-ALEV-1 フォント本体と、Next.js ベースの静的ドキュメントサイトを管理するリポジトリです。
+ALEV-1フォント本体のビルドと、Next.jsベースの静的ドキュメントサイトを管理するリポジトリです。
 
 ## 構成
 
-- `data/`: 共有の正本データとパーサを持つワークスペースパッケージ。概念語辞書は `lexicon.txt`。
-- `font/`: フォント生成パッケージ。`UFO` と OpenType feature を中間モデルとして生成し、`TTF` / `WOFF2` を出力。
-- `docs/`: Next.js App Router + MDX ベースの静的ドキュメントサイト。
+3つのワークスペースパッケージで構成される。
+
+- `data/`: 共有の正本データとパーサー。`lexicon.txt` は概念語辞書。`corpus.txt` はコーパスデータ。`glyphs` はフォントグリフの元となるSVGファイル。
+- `font/`: フォント生成パッケージ。`UFO` と OpenType featureを中間モデルとして生成し、`TTF` / `WOFF2` を出力。
+- `docs/`: Next.js App Router + MDXベースの静的ドキュメントサイト。
+- `functions`: Cloudflare Pages Function用のSVG生成API。
 
 ## 前提ツール
 
@@ -57,10 +60,3 @@ pnpm --filter docs dev
 pnpm --filter font build
 pnpm --filter docs build
 ```
-
-## 合字（リガチャ）入力ルール
-
-- 概念語は `:love:` のように前後を `:` で囲む。概念語本体は原則小文字。
-- 16進指定は `0xFF` のように `0x` + 大文字 2 桁
-- 2進指定は `0b11111111` のように `0b` + 8 桁
-- 概念語辞書は `data/lexicon.txt` を共有正本として管理。
