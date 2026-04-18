@@ -45,6 +45,10 @@
   min-width: 0;
 }
 
+.positionRow {
+  margin-bottom: 0.25rem;
+}
+
 .exampleBlock {
   margin-top: 0;
 }

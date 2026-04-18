@@ -72,6 +72,10 @@ export function resolveAlevTokenBinary(
     return null;
   }
 
+  if (/^[01]{8}$/.test(normalized)) {
+    return normalized;
+  }
+
   if (/^0x[0-9a-f]{2}$/i.test(normalized)) {
     return hexToBinary(normalized.slice(2));
   }

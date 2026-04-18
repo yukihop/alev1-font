@@ -3,19 +3,21 @@
 import type { FC } from 'react';
 
 import { binaryToHex } from '@/lib/alev-shared';
+import { useAlevClientData } from '@/lib/alev-data-context';
 
 import alevTextStyles from './AlevText.module.css';
 import { CheckIcon, CopyIcon, useCopyFeedback } from './CopyPillButton';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import AlevRenderableFragments from './AlevRenderableFragments';
 import styles from './AlevLine.module.css';
-import type { AlevRenderableFragment } from './alev-renderable';
-import type { RenderableGlyphMap } from './glyph-record';
+import {
+  buildRenderableSource,
+  type AlevRenderableFragment,
+} from './alev-renderable';
 
 type AlevLineClientProps = {
-  lines: AlevRenderableFragment[][];
-  glyphByBinary: RenderableGlyphMap;
-  selectedBinary?: string | null;
+  source: string;
+  selectedCharacterId?: string | null;
   className?: string;
   lineClassName?: string;
   lineKeyPrefix?: string;
@@ -52,9 +54,8 @@ function buildCopySequence(
 
 const AlevLineClient: FC<AlevLineClientProps> = props => {
   const {
-    lines,
-    glyphByBinary,
-    selectedBinary,
+    source,
+    selectedCharacterId,
     className,
     lineClassName,
     lineKeyPrefix = 'alev-line',
@@ -63,7 +64,9 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
     glyphContentClassName,
     showCopyActions = true,
   } = props;
+  const { keywordMap } = useAlevClientData();
   const { copiedId, copyText } = useCopyFeedback();
+  const lines = buildRenderableSource(source, keywordMap);
 
   if (lines.length === 0) {
     return null;
@@ -82,8 +85,7 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
           >
             <AlevRenderableFragments
               fragments={line}
-              glyphByBinary={glyphByBinary}
-              selectedBinary={selectedBinary}
+              selectedCharacterId={selectedCharacterId}
               triggerClassName={glyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTrigger}
               selectedTriggerClassName={selectedGlyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTriggerSelected}
               contentClassName={glyphContentClassName ?? glyphTriggerStyles.inlineGlyph}

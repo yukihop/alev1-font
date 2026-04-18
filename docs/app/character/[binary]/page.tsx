@@ -4,12 +4,11 @@ import { notFound } from "next/navigation";
 import DocsShell from "@/components/DocsShell";
 import RichText from "@/components/RichText";
 import alevTextStyles from "@/components/mdx/AlevText.module.css";
+import CorpusView from "@/components/mdx/CorpusView";
 import { GlyphMetaCopyPills } from "@/components/mdx/CopyPillButton";
-import CorpusViewClient from "@/components/mdx/CorpusViewClient";
 import { createRenderableGlyphRecord } from "@/components/mdx/glyph-record";
 import InlineMdx from "@/components/mdx/InlineMdx";
 import glyphStyles from "@/components/mdx/Glyphs.module.css";
-import { buildCorpusRenderableSections } from "@/components/mdx/corpus-renderable";
 import { loadLexicon, loadUsageCounts } from "@/lib/alev";
 import { type ArticleEntry, scanArticles } from "@/lib/articles";
 
@@ -70,9 +69,6 @@ const CharacterPage = async (props: CharacterPageProps) => {
     notFound();
   }
 
-  const { sections, glyphByBinary } = buildCorpusRenderableSections(binary, {
-    hashLinkBase: '/corpus',
-  });
   const { entries } = await scanArticles();
   const current = createCharacterEntry(binary);
 
@@ -106,10 +102,10 @@ const CharacterPage = async (props: CharacterPageProps) => {
             </div>
           </div>
         </section>
-        <CorpusViewClient
-          sections={sections}
-          glyphByBinary={glyphByBinary}
-          selectedBinary={binary}
+        <CorpusView
+          filterCharacterId={binary}
+          selectedCharacterId={binary}
+          hashLinkBase="/corpus"
         />
       </RichText>
     </DocsShell>

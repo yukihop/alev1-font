@@ -1,16 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import type { FC, ReactNode } from "react";
+import { Fragment, type FC, type ReactNode } from "react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import {
+  binaryToHex,
+  codepointLabelForBinary,
+  glyphCharForBinary,
+  normalizeAlevToken,
+} from "@/lib/alev-shared";
+import { useAlevClientData } from "@/lib/alev-data-context";
+
+import alevTextStyles from "./AlevText.module.css";
 import CopyPillButton, { useCopyFeedback } from "./CopyPillButton";
-import type { RenderableGlyphRecord } from "./glyph-record";
 import styles from "./Glyphs.module.css";
 
 type GlyphPopoverTriggerProps = {
-  glyph: RenderableGlyphRecord;
+  characterId: string;
   className: string;
   contentClassName?: string;
   ariaLabel?: string;
@@ -18,9 +26,64 @@ type GlyphPopoverTriggerProps = {
   children?: ReactNode;
 };
 
+function renderPopoverComment(
+  comment: string,
+  keywordMap: Record<string, string>,
+): ReactNode {
+  return String(comment ?? '')
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line, lineIndex) => {
+      const parts: ReactNode[] = [];
+      const pattern = /:([^:\n]+):/g;
+      let cursor = 0;
+      let match: RegExpExecArray | null;
+
+      while ((match = pattern.exec(line)) !== null) {
+        const [raw, inner] = match;
+
+        if (match.index > cursor) {
+          parts.push(line.slice(cursor, match.index));
+        }
+
+        const normalized = inner
+          .trim()
+          .split(/\s+/)
+          .map((token) => normalizeAlevToken(token, keywordMap))
+          .join(" ");
+
+        parts.push(
+          <span
+            key={`alev-${lineIndex}-${match.index}`}
+            className={alevTextStyles.glyphText}
+          >
+            {normalized}
+          </span>,
+        );
+
+        cursor = match.index + raw.length;
+      }
+
+      if (cursor < line.length) {
+        parts.push(line.slice(cursor));
+      }
+
+      if (parts.length === 0) {
+        parts.push("");
+      }
+
+      return (
+        <Fragment key={`line-${lineIndex}`}>
+          {parts}
+          {lineIndex < comment.split(/\r\n?|\n/).length - 1 ? <br /> : null}
+        </Fragment>
+      );
+    });
+}
+
 const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const {
-    glyph,
+    characterId,
     className,
     contentClassName,
     ariaLabel,
@@ -33,9 +96,16 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0 });
+  const { keywordMap, lexiconMap, usageCounts } = useAlevClientData();
   const instanceId = useId();
   const { copiedId, copyText } = useCopyFeedback();
-  const usageCount = glyph.usageCount ?? 0;
+  const lexiconEntry = lexiconMap.get(characterId);
+  const hex = binaryToHex(characterId);
+  const codepoint = codepointLabelForBinary(characterId);
+  const char = glyphCharForBinary(characterId);
+  const keywords = lexiconEntry?.keywords ?? [];
+  const comment = lexiconEntry?.comment ?? null;
+  const usageCount = usageCounts[characterId] ?? 0;
   const hasExamples = usageCount > 0;
 
   useEffect(() => {
@@ -107,7 +177,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
     }, 90);
   };
 
-  const copyId = `${instanceId}-${glyph.hex}`;
+  const copyId = `${instanceId}-${hex}`;
 
   useEffect(() => {
     if (!open) {
@@ -159,7 +229,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
         ref={triggerRef}
         type="button"
         className={className}
-        aria-label={ariaLabel ?? `Show glyph ${glyph.hex}`}
+        aria-label={ariaLabel ?? `Show character ${characterId}`}
         aria-pressed={pressed}
         onPointerEnter={(e) => {
           if (e.pointerType === "touch") return;
@@ -180,7 +250,9 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
           showPopover();
         }}
       >
-        <span className={contentClassName}>{children ?? glyph.char}</span>
+        <span className={contentClassName} title={codepoint}>
+          {children ?? char}
+        </span>
       </button>
       {mounted && open
         ? createPortal(
@@ -201,23 +273,23 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                 <CopyPillButton
                   className={`${styles.hexPill} ${styles.copyButton}`}
                   copyId={`${copyId}-hex`}
-                  copyValue={`0x${glyph.hex}`}
-                  text={`0x${glyph.hex}`}
+                  copyValue={`0x${hex}`}
+                  text={`0x${hex}`}
                   copied={copiedId === `${copyId}-hex`}
                   onCopy={copyText}
                 />
                 <CopyPillButton
                   className={`${styles.binaryPill} ${styles.copyButton}`}
                   copyId={`${copyId}-binary`}
-                  copyValue={`0b${glyph.binary}`}
-                  text={`0b${glyph.binary}`}
+                  copyValue={`0b${characterId}`}
+                  text={`0b${characterId}`}
                   copied={copiedId === `${copyId}-binary`}
                   onCopy={copyText}
                 />
               </div>
-              {glyph.keywords.length > 0 ? (
+              {keywords.length > 0 ? (
                 <div className={styles.glyphPopoverKeywords}>
-                  {glyph.keywords.map((keyword) => (
+                  {keywords.map((keyword) => (
                     <CopyPillButton
                       key={keyword}
                       className={`${styles.keywordPill} ${styles.copyButton}`}
@@ -230,25 +302,21 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
                   ))}
                 </div>
               ) : null}
-              {glyph.commentContent || glyph.comment || usageCount !== undefined || hasExamples ? (
+              {comment || hasExamples || usageCount >= 0 ? (
                 <div className={styles.glyphPopoverFooter} aria-live="polite">
-                  {usageCount !== undefined ? (
+                  {usageCount >= 0 ? (
                     <span className={styles.glyphPopoverBadge}>
                       {`出現数: ${usageCount}`}
                     </span>
                   ) : null}
-                  {glyph.commentContent ? (
+                  {comment ? (
                     <div className={styles.glyphPopoverComment}>
-                      {glyph.commentContent}
-                    </div>
-                  ) : glyph.comment ? (
-                    <div className={styles.glyphPopoverComment}>
-                      {glyph.comment}
+                      {renderPopoverComment(comment, keywordMap)}
                     </div>
                   ) : null}
                   {hasExamples ? (
                     <Link
-                      href={`/character/${glyph.binary}`}
+                      href={`/character/${characterId}`}
                       className={styles.glyphPopoverLink}
                     >
                       全用例を見る

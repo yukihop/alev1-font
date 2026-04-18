@@ -3,10 +3,9 @@
 import type { FC } from 'react';
 
 import GlyphPopoverTrigger from './GlyphPopoverTrigger';
-import type { RenderableGlyphRecord } from './glyph-record';
 
 type AlevGlyphTriggerProps = {
-  glyph: RenderableGlyphRecord;
+  characterId: string;
   selected?: boolean;
   triggerClassName: string;
   selectedTriggerClassName?: string;
@@ -20,7 +19,7 @@ function joinClassNames(...values: Array<string | undefined | false | null>): st
 
 const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
   const {
-    glyph,
+    characterId,
     selected = false,
     triggerClassName,
     selectedTriggerClassName,
@@ -30,10 +29,10 @@ const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
 
   return (
     <GlyphPopoverTrigger
-      glyph={glyph}
+      characterId={characterId}
       className={joinClassNames(triggerClassName, selected && selectedTriggerClassName)}
       contentClassName={contentClassName}
-      ariaLabel={ariaLabel ?? `Show glyph ${glyph.hex}`}
+      ariaLabel={ariaLabel ?? `Show character ${characterId}`}
       pressed={selected}
     />
   );

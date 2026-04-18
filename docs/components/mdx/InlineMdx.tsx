@@ -1,5 +1,3 @@
-import { renderInlineMdx, renderStaticInlineMdx } from '@/lib/mdx';
-
 type InlineMdxProps = {
   source?: string | null;
   staticAlev?: boolean;
@@ -11,6 +9,8 @@ async function InlineMdx(props: InlineMdxProps) {
   if (!source) {
     return null;
   }
+
+  const { renderInlineMdx, renderStaticInlineMdx } = await import('@/lib/mdx');
 
   return staticAlev
     ? renderStaticInlineMdx(source, hashLinkBase)

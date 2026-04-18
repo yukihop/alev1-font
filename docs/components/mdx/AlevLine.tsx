@@ -1,15 +1,9 @@
 import type { FC } from 'react';
 
-import {
-  loadKeywordMap,
-  loadLexicon,
-  loadUsageCounts,
-} from '@/lib/alev';
+import { loadKeywordMap } from '@/lib/alev';
 import { resolveAlevTokenBinary } from '@/lib/alev-shared';
 
 import AlevLineClient from './AlevLineClient';
-import { buildRenderableSource, collectRenderableBinaries } from './alev-renderable';
-import { createRenderableGlyphMap } from './glyph-record';
 
 type AlevLineProps = {
   source: string;
@@ -17,7 +11,7 @@ type AlevLineProps = {
   className?: string;
 };
 
-function normalizeSelectedHex(
+function normalizeSelectedCharacterId(
   value: string | undefined,
   keywordMap: Record<string, string>,
 ): string | null {
@@ -43,25 +37,16 @@ function normalizeSelectedHex(
 }
 
 const AlevLine: FC<AlevLineProps> = props => {
-  const lexicon = loadLexicon();
   const keywordMap = loadKeywordMap();
-  const usageCounts = loadUsageCounts();
-  const lines = buildRenderableSource(props.source, keywordMap);
-  const glyphByBinary = createRenderableGlyphMap(
-    collectRenderableBinaries(lines),
-    (binary) => lexicon.get(binary),
-    usageCounts,
-  );
-  const selectedBinary = normalizeSelectedHex(
+  const selectedCharacterId = normalizeSelectedCharacterId(
     props.selected,
     keywordMap,
   );
 
   return (
     <AlevLineClient
-      lines={lines}
-      glyphByBinary={glyphByBinary}
-      selectedBinary={selectedBinary}
+      source={props.source}
+      selectedCharacterId={selectedCharacterId}
       className={props.className}
     />
   );

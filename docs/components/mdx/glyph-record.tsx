@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 import type { LexiconGlyphRecord } from '@alev/data';
 
 import {
@@ -7,8 +5,6 @@ import {
   codepointLabelForBinary,
   glyphCharForBinary,
 } from '@/lib/alev-shared';
-
-import InlineMdx from './InlineMdx';
 
 export type DocsGlyphRecord = {
   binary: string;
@@ -20,11 +16,8 @@ export type DocsGlyphRecord = {
 };
 
 export type RenderableGlyphRecord = DocsGlyphRecord & {
-  commentContent: ReactNode | null;
   usageCount: number;
 };
-
-export type RenderableGlyphMap = Record<string, RenderableGlyphRecord>;
 
 export function createGlyphRecord(
   binary: string,
@@ -50,26 +43,5 @@ export function createRenderableGlyphRecord(
   return {
     ...glyph,
     usageCount,
-    commentContent: glyph.comment ? (
-      <InlineMdx source={glyph.comment} staticAlev />
-    ) : null,
   };
-}
-
-export function createRenderableGlyphMap(
-  binaries: Iterable<string>,
-  resolveEntry: (binary: string) => LexiconGlyphRecord | undefined,
-  usageCounts: Record<string, number>,
-): RenderableGlyphMap {
-  const glyphByBinary: RenderableGlyphMap = {};
-
-  for (const binary of binaries) {
-    glyphByBinary[binary] = createRenderableGlyphRecord(
-      binary,
-      resolveEntry(binary),
-      usageCounts[binary] ?? 0,
-    );
-  }
-
-  return glyphByBinary;
 }
