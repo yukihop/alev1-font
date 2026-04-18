@@ -66,6 +66,10 @@
   padding: 28px 32px 12px;
 }
 
+.header > :first-child {
+  min-width: 0;
+}
+
 .eyebrow {
   margin: 0 0 10px;
   color: var(--accent);
@@ -123,7 +127,9 @@
   }
 
   .header {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
   }
 
   .pagination {
