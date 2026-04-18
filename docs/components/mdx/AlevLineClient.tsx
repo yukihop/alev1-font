@@ -2,16 +2,20 @@
 
 import type { FC } from 'react';
 
+import { binaryToHex } from '@/lib/alev-shared';
+
 import alevTextStyles from './AlevText.module.css';
 import { CheckIcon, CopyIcon, useCopyFeedback } from './CopyPillButton';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import AlevRenderableFragments from './AlevRenderableFragments';
 import styles from './AlevLine.module.css';
 import type { AlevRenderableFragment } from './alev-renderable';
+import type { RenderableGlyphMap } from './glyph-record';
 
 type AlevLineClientProps = {
   lines: AlevRenderableFragment[][];
-  selectedHex?: string | null;
+  glyphByBinary: RenderableGlyphMap;
+  selectedBinary?: string | null;
   className?: string;
   lineClassName?: string;
   lineKeyPrefix?: string;
@@ -25,10 +29,6 @@ function joinClassNames(...values: Array<string | undefined | false | null>): st
   return values.filter(Boolean).join(' ');
 }
 
-function hexToBinary(hex: string): string {
-  return Number.parseInt(hex, 16).toString(2).padStart(8, '0');
-}
-
 function buildCopySequence(
   lines: AlevRenderableFragment[][],
   mode: 'hex' | 'bin',
@@ -39,8 +39,8 @@ function buildCopySequence(
         .map((fragment) => {
           if (fragment.type === 'glyph') {
             return mode === 'hex'
-              ? `0x${fragment.hex}`
-              : `0b${hexToBinary(fragment.hex)}`;
+              ? `0x${binaryToHex(fragment.binary)}`
+              : `0b${fragment.binary}`;
           }
 
           return fragment.value;
@@ -53,7 +53,8 @@ function buildCopySequence(
 const AlevLineClient: FC<AlevLineClientProps> = props => {
   const {
     lines,
-    selectedHex,
+    glyphByBinary,
+    selectedBinary,
     className,
     lineClassName,
     lineKeyPrefix = 'alev-line',
@@ -81,7 +82,8 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
           >
             <AlevRenderableFragments
               fragments={line}
-              selectedHex={selectedHex}
+              glyphByBinary={glyphByBinary}
+              selectedBinary={selectedBinary}
               triggerClassName={glyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTrigger}
               selectedTriggerClassName={selectedGlyphTriggerClassName ?? glyphTriggerStyles.inlineGlyphTriggerSelected}
               contentClassName={glyphContentClassName ?? glyphTriggerStyles.inlineGlyph}

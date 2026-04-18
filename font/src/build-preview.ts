@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { METADATA_PATH, PREVIEW_PATH, isMain, loadGlyphModel, loadLexicon, writeText } from './shared.ts';
+import { binaryForHex } from './shared.ts';
 
 export async function buildPreview() {
   const model = await loadGlyphModel();
@@ -8,7 +9,7 @@ export async function buildPreview() {
   const manifest = JSON.parse(await readFile(METADATA_PATH, 'utf8'));
   const cards = manifest.glyphs
     .map((glyph) => {
-      const keywords = lexicon.get(glyph.hex).keywords;
+      const keywords = lexicon.get(binaryForHex(glyph.hex))?.keywords ?? [];
       const keywordText = keywords.length ? keywords.join(', ') : '&nbsp;';
       return `
         <article class="card">

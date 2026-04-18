@@ -4,7 +4,6 @@ import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
-import { useSourceData } from './SourceDataProvider';
 import styles from './AlevSignalDemo.module.css';
 
 type DemoGlyph = {
@@ -80,10 +79,11 @@ const createStableSlots = (glyphs: DemoGlyph[]): Slot[] =>
 const getStableFocusHex = (glyphs: DemoGlyph[]): string =>
   createStableSlot(glyphs, slotCount).hex;
 
-const AlevSignalDemoClient: FC = () => {
-  const {
-    sourceData: { glyphs },
-  } = useSourceData();
+type AlevSignalDemoClientProps = {
+  glyphs: DemoGlyph[];
+};
+
+const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = ({ glyphs }) => {
   const [slots, setSlots] = useState(() => createStableSlots(glyphs));
   const [focusHex, setFocusHex] = useState(() => getStableFocusHex(glyphs));
   const [glitchPhase, setGlitchPhase] = useState(false);

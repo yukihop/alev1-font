@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 
 import DocsShell from '@/components/DocsShell';
 import RichText from '@/components/RichText';
-import SourceDataBoundary from '@/components/mdx/SourceDataBoundary';
 import { getAdjacentArticles, getArticleEntry, loadArticleSource, scanArticles } from '@/lib/articles';
 import { renderMdx } from '@/lib/mdx';
 
@@ -37,9 +36,7 @@ const ArticlePage = async (props: { params: Promise<{ slug: string }> }) => {
 
   return (
     <DocsShell current={entry} entries={entries} prev={prev} next={next}>
-      <SourceDataBoundary>
-        <RichText>{content}</RichText>
-      </SourceDataBoundary>
+      <RichText>{content}</RichText>
     </DocsShell>
   );
 };

@@ -1,13 +1,17 @@
 import { Children, type FC, type ReactNode } from 'react';
 
-import { normalizeAlevToken } from '@alev/data';
-
-import { loadSourceData } from '@/lib/source-data';
+import {
+  loadKeywordMap,
+  loadLexicon,
+  loadUsageCounts,
+} from '@/lib/alev';
+import { normalizeAlevToken } from '@/lib/alev-shared';
 
 import alevTextStyles from './AlevText.module.css';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import { buildRenderableLine } from './alev-renderable';
 import AlevRenderableFragments from './AlevRenderableFragments';
+import { createRenderableGlyphMap } from './glyph-record';
 import styles from './AlevInline.module.css';
 
 type AlevInlineProps = {
@@ -35,14 +39,23 @@ const AlevInline: FC<AlevInlineProps> = props => {
     return null;
   }
 
-  const sourceData = loadSourceData();
-  const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
-  const fragments = buildRenderableLine(text, sourceData.keywordMap, glyphHexSet);
+  const lexicon = loadLexicon();
+  const keywordMap = loadKeywordMap();
+  const usageCounts = loadUsageCounts();
+  const fragments = buildRenderableLine(text, keywordMap);
+  const glyphByBinary = createRenderableGlyphMap(
+    fragments.flatMap((fragment) =>
+      fragment.type === 'glyph' ? [fragment.binary] : [],
+    ),
+    (binary) => lexicon.get(binary),
+    usageCounts,
+  );
 
   return (
     <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>
       <AlevRenderableFragments
         fragments={fragments}
+        glyphByBinary={glyphByBinary}
         triggerClassName={glyphTriggerStyles.inlineGlyphTrigger}
         contentClassName={glyphTriggerStyles.inlineGlyph}
         keyPrefix={`alev-inline-${text}`}
@@ -57,7 +70,7 @@ export const StaticAlevInline: FC<AlevInlineProps> = props => {
     return null;
   }
 
-  const { keywordMap } = loadSourceData();
+  const keywordMap = loadKeywordMap();
 
   return (
     <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>

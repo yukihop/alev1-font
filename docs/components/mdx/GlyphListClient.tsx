@@ -1,23 +1,19 @@
-'use client';
-
 import Link from 'next/link';
 import type { FC } from 'react';
 
 import alevTextStyles from './AlevText.module.css';
 import { GlyphMetaCopyPills } from './CopyPillButton';
-import { useSourceData } from './SourceDataProvider';
+import type { RenderableGlyphRecord } from './glyph-record';
 import styles from './Glyphs.module.css';
 
-const GlyphListClient: FC = () => {
-  const {
-    glyphs,
-    sourceData: { usageCounts },
-  } = useSourceData();
-  const visibleGlyphs = glyphs.filter((glyph) => (usageCounts[glyph.hex] ?? 0) > 0);
+type GlyphListClientProps = {
+  glyphs: RenderableGlyphRecord[];
+};
 
+const GlyphListClient: FC<GlyphListClientProps> = ({ glyphs }) => {
   return (
     <ol className={styles.list}>
-      {visibleGlyphs.map(glyph => (
+      {glyphs.map(glyph => (
         <li key={glyph.hex} id={`glyph-${glyph.hex}`} className={styles.glyphRow}>
           <div className={`${styles.glyphCell} ${alevTextStyles.glyphText}`} title={glyph.codepoint}>
             {glyph.char}
@@ -30,7 +26,7 @@ const GlyphListClient: FC = () => {
             />
             <div className={styles.glyphCopyStatus}>
               <span className={styles.glyphPopoverBadge}>
-                {`出現数: ${usageCounts[glyph.hex] ?? 0}`}
+                {`出現数: ${glyph.usageCount}`}
               </span>
               {glyph.commentContent ? (
                 <div className={styles.glyphComment}>{glyph.commentContent}</div>

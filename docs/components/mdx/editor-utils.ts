@@ -1,9 +1,8 @@
 import {
   binaryToHex,
-  glyphCharForHex,
   normalizeAlevToken,
-  resolveAlevTokenHex,
-} from '@alev/data/client';
+  resolveAlevTokenBinary,
+} from '@/lib/alev-shared';
 
 export type KeywordMap = Record<string, string>;
 
@@ -63,7 +62,10 @@ const TOKEN_SUFFIX_PATTERN = /^[^\s\[\]]*/;
 const TOKEN_SEPARATOR_PATTERN = /^[\s\[\]:]/;
 
 export const resolveTokenHex = (token: string, keywordMap: KeywordMap): string | null =>
-  resolveAlevTokenHex(token, keywordMap);
+  (() => {
+    const resolvedBinary = resolveAlevTokenBinary(token, keywordMap);
+    return resolvedBinary ? binaryToHex(resolvedBinary) : null;
+  })();
 
 export const normalizeEditorToken = (token: string, keywordMap: KeywordMap): string =>
   normalizeAlevToken(token, keywordMap);

@@ -1,6 +1,7 @@
 import { access } from 'node:fs/promises';
 
 import {
+  binaryValues,
   DONOR_FONT_PATH,
   DONOR_LICENSE_PATH,
   isMain,
@@ -20,10 +21,6 @@ export async function runCheck() {
     throw new Error('glyph-model.yaml must define a font section.');
   }
 
-  if (lexicon.size !== 256) {
-    throw new Error(`Lexicon normalization failed. Expected 256 entries, received ${lexicon.size}.`);
-  }
-
   if (svgParts.size !== 8) {
     throw new Error(`Expected 8 SVG parts, received ${svgParts.size}.`);
   }
@@ -35,8 +32,15 @@ export async function runCheck() {
   await access(DONOR_FONT_PATH);
   await access(DONOR_LICENSE_PATH);
 
+  for (const binary of lexicon.keys()) {
+    if (!/^[01]{8}$/.test(binary)) {
+      throw new Error(`Lexicon key must be an 8-bit binary string, received ${binary}.`);
+    }
+  }
+
+  const glyphSlotCount = binaryValues().length;
   const keywordCount = [...lexicon.values()].reduce((count, entry) => count + entry.keywords.length, 0);
-  console.log(`check passed: 256 glyph slots, ${keywordCount} keyword(s), 8 SVG parts, 2 bracket glyphs, donor font present`);
+  console.log(`check passed: ${glyphSlotCount} glyph slots, ${keywordCount} keyword(s), 8 SVG parts, 2 bracket glyphs, donor font present`);
 }
 
 if (isMain(import.meta)) {

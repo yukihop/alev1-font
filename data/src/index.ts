@@ -2,21 +2,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { binaryToHex } from './client.ts';
-
-export {
-  binaryToHex,
-  glyphCharForHex,
-  normalizeAlevToken,
-  resolveAlevTokenHex,
-  tokenizeAlevLine,
-  type AlevLineFragment,
-  type KeywordLookup,
-} from './client.ts';
-
 export type LexiconGlyphRecord = {
   binary: string;
-  hex: string;
   keywords: string[];
   comment: string | null;
 };
@@ -61,23 +48,6 @@ function readRequiredText(filePath: string): string {
   return readFileSync(filePath, 'utf8');
 }
 
-function createDefaultLexiconMap(): Map<string, LexiconGlyphRecord> {
-  return new Map(
-    binaryValues().map((binary) => {
-      const hex = binaryToHex(binary);
-      return [
-        hex,
-        {
-          binary,
-          hex,
-          keywords: [],
-          comment: null,
-        },
-      ];
-    }),
-  );
-}
-
 function createSection(title: string | null): CorpusSection {
   return {
     title,
@@ -85,22 +55,17 @@ function createSection(title: string | null): CorpusSection {
   };
 }
 
-export function binaryValues(): string[] {
-  return Array.from({ length: 256 }, (_, index) =>
-    index.toString(2).padStart(8, '0'),
-  );
-}
-
-export function hexValues(): string[] {
-  return Array.from({ length: 256 }, (_, index) =>
-    index.toString(16).toUpperCase().padStart(2, '0'),
-  );
+function binaryToHex(binary: string): string {
+  return Number.parseInt(binary, 2)
+    .toString(16)
+    .toUpperCase()
+    .padStart(2, '0');
 }
 
 export function parseLexiconSource(
   source: string,
 ): Map<string, LexiconGlyphRecord> {
-  const lexicon = createDefaultLexiconMap();
+  const lexicon = new Map<string, LexiconGlyphRecord>();
   const seenBinaries = new Set<string>();
   const seenKeywords = new Map<string, string>();
   const lines = String(source ?? '').replace(/\r\n?/g, '\n').split('\n');
@@ -131,7 +96,6 @@ export function parseLexiconSource(
     }
 
     seenBinaries.add(rawBinary);
-    const hex = binaryToHex(rawBinary);
     const normalizedKeywords =
       current.keywords === '-'
         ? []
@@ -173,9 +137,8 @@ export function parseLexiconSource(
     }
 
     const comment = current.commentLines.join('\n').trim() || null;
-    lexicon.set(hex, {
+    lexicon.set(rawBinary, {
       binary: rawBinary,
-      hex,
       keywords: normalizedKeywords,
       comment,
     });

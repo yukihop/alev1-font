@@ -1,4 +1,9 @@
-import { loadSourceData } from '@/lib/source-data';
+import {
+  loadCorpus,
+  loadKeywordMap,
+  loadLexicon,
+  loadUsageCounts,
+} from '@/lib/alev';
 
 import type {
   CorpusRenderableItem,
@@ -6,30 +11,40 @@ import type {
 } from './CorpusViewClient';
 import InlineMdx from './InlineMdx';
 import { buildRenderableLine } from './alev-renderable';
+import { createRenderableGlyphMap, type RenderableGlyphMap } from './glyph-record';
 
-function lineContainsHex(
+function lineContainsBinary(
   line: ReturnType<typeof buildRenderableLine>,
-  hex: string,
+  binary: string,
 ): boolean {
-  return line.some((fragment) => fragment.type === 'glyph' && fragment.hex === hex);
+  return line.some(
+    (fragment) => fragment.type === 'glyph' && fragment.binary === binary,
+  );
 }
 
+export type CorpusRenderableData = {
+  sections: CorpusRenderableSection[];
+  glyphByBinary: RenderableGlyphMap;
+};
+
 export const buildCorpusRenderableSections = (
-  filterHex?: string,
+  filterBinary?: string,
   options?: {
     hashLinkBase?: string;
   },
-): CorpusRenderableSection[] => {
-  const sourceData = loadSourceData();
-  const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
+): CorpusRenderableData => {
+  const corpus = loadCorpus();
+  const keywordMap = loadKeywordMap();
+  const lexicon = loadLexicon();
+  const usageCounts = loadUsageCounts();
   const { hashLinkBase } = options ?? {};
-
-  return sourceData.corpus.sections.flatMap((section): CorpusRenderableSection[] => {
+  const usedBinaries = new Set<string>();
+  const sections = corpus.sections.flatMap((section): CorpusRenderableSection[] => {
     const items: CorpusRenderableItem[] = [];
 
     for (const item of section.items) {
       if (item.type === 'paragraph') {
-        if (!filterHex) {
+        if (!filterBinary) {
           items.push({
             type: 'paragraph',
             content: <InlineMdx source={item.text} hashLinkBase={hashLinkBase} />,
@@ -42,17 +57,27 @@ export const buildCorpusRenderableSections = (
         item.alevLines === null
           ? null
           : item.alevLines.map((line) =>
-              buildRenderableLine(line, sourceData.keywordMap, glyphHexSet),
+              buildRenderableLine(line, keywordMap),
             );
 
       if (
-        filterHex &&
+        filterBinary &&
         !(
           alevLines !== null &&
-          alevLines.some((line) => lineContainsHex(line, filterHex))
+          alevLines.some((line) => lineContainsBinary(line, filterBinary))
         )
       ) {
         continue;
+      }
+
+      if (alevLines !== null) {
+        for (const line of alevLines) {
+          for (const fragment of line) {
+            if (fragment.type === 'glyph') {
+              usedBinaries.add(fragment.binary);
+            }
+          }
+        }
       }
 
       items.push({
@@ -77,4 +102,13 @@ export const buildCorpusRenderableSections = (
         ]
       : [];
   });
+
+  return {
+    sections,
+    glyphByBinary: createRenderableGlyphMap(
+      usedBinaries,
+      (binary) => lexicon.get(binary),
+      usageCounts,
+    ),
+  };
 };

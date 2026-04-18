@@ -1,6 +1,7 @@
 import {
   FEATURES_PATH,
   glyphNameForHex,
+  hexForBinary,
   inputGlyphNameForChar,
   isMain,
   loadLexicon,
@@ -14,7 +15,7 @@ export async function generateFeatures() {
 
   for (const entry of lexicon.values()) {
     for (const keyword of entry.keywords) {
-      conceptEntries.push({ keyword, hex: entry.hex });
+      conceptEntries.push({ keyword, hex: hexForBinary(entry.binary) });
     }
   }
 
@@ -32,10 +33,10 @@ export async function generateFeatures() {
   );
 
   for (const entry of lexicon.values()) {
-    const hexSequence = ['0', 'x', ...entry.hex].map(inputGlyphNameForChar).join(' ');
+    const hex = hexForBinary(entry.binary);
     const binarySequence = ['0', 'b', ...entry.binary].map(inputGlyphNameForChar).join(' ');
-    valueRules.push(`  sub ${hexSequence} by ${glyphNameForHex(entry.hex)};`);
-    valueRules.push(`  sub ${binarySequence} by ${glyphNameForHex(entry.hex)};`);
+    valueRules.push(`  sub ${['0', 'x', ...hex].map(inputGlyphNameForChar).join(' ')} by ${glyphNameForHex(hex)};`);
+    valueRules.push(`  sub ${binarySequence} by ${glyphNameForHex(hex)};`);
   }
 
   const contents = [

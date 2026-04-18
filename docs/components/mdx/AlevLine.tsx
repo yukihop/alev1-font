@@ -1,11 +1,15 @@
 import type { FC } from 'react';
 
-import { resolveAlevTokenHex } from '@alev/data';
-
-import { loadSourceData } from '@/lib/source-data';
+import {
+  loadKeywordMap,
+  loadLexicon,
+  loadUsageCounts,
+} from '@/lib/alev';
+import { resolveAlevTokenBinary } from '@/lib/alev-shared';
 
 import AlevLineClient from './AlevLineClient';
-import { buildRenderableSource } from './alev-renderable';
+import { buildRenderableSource, collectRenderableBinaries } from './alev-renderable';
+import { createRenderableGlyphMap } from './glyph-record';
 
 type AlevLineProps = {
   source: string;
@@ -16,7 +20,6 @@ type AlevLineProps = {
 function normalizeSelectedHex(
   value: string | undefined,
   keywordMap: Record<string, string>,
-  glyphHexSet: Set<string>,
 ): string | null {
   if (value == null || value === '') {
     return null;
@@ -31,32 +34,34 @@ function normalizeSelectedHex(
     throw new Error(`AlevLine selected must resolve from a single token, received "${value}".`);
   }
 
-  const resolvedHex = resolveAlevTokenHex(normalized, keywordMap);
-  if (!resolvedHex || !glyphHexSet.has(resolvedHex)) {
+  const resolvedBinary = resolveAlevTokenBinary(normalized, keywordMap);
+  if (!resolvedBinary) {
     throw new Error(`AlevLine selected must resolve to a valid glyph, received "${value}".`);
   }
 
-  return resolvedHex;
+  return resolvedBinary;
 }
 
 const AlevLine: FC<AlevLineProps> = props => {
-  const sourceData = loadSourceData();
-  const glyphHexSet = new Set(sourceData.glyphs.map((glyph) => glyph.hex));
-  const lines = buildRenderableSource(
-    props.source,
-    sourceData.keywordMap,
-    glyphHexSet,
+  const lexicon = loadLexicon();
+  const keywordMap = loadKeywordMap();
+  const usageCounts = loadUsageCounts();
+  const lines = buildRenderableSource(props.source, keywordMap);
+  const glyphByBinary = createRenderableGlyphMap(
+    collectRenderableBinaries(lines),
+    (binary) => lexicon.get(binary),
+    usageCounts,
   );
-  const selectedHex = normalizeSelectedHex(
+  const selectedBinary = normalizeSelectedHex(
     props.selected,
-    sourceData.keywordMap,
-    glyphHexSet,
+    keywordMap,
   );
 
   return (
     <AlevLineClient
       lines={lines}
-      selectedHex={selectedHex}
+      glyphByBinary={glyphByBinary}
+      selectedBinary={selectedBinary}
       className={props.className}
     />
   );

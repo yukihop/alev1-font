@@ -6,7 +6,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import CopyPillButton, { useCopyFeedback } from "./CopyPillButton";
-import type { RenderableGlyphRecord } from "./SourceDataProvider";
+import type { RenderableGlyphRecord } from "./glyph-record";
 import styles from "./Glyphs.module.css";
 
 type GlyphPopoverTriggerProps = {
@@ -15,7 +15,6 @@ type GlyphPopoverTriggerProps = {
   contentClassName?: string;
   ariaLabel?: string;
   pressed?: boolean;
-  usageCount?: number;
   children?: ReactNode;
 };
 
@@ -26,7 +25,6 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
     contentClassName,
     ariaLabel,
     pressed,
-    usageCount,
     children,
   } = props;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -37,7 +35,8 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const instanceId = useId();
   const { copiedId, copyText } = useCopyFeedback();
-  const hasExamples = (usageCount ?? 0) > 0;
+  const usageCount = glyph.usageCount ?? 0;
+  const hasExamples = usageCount > 0;
 
   useEffect(() => {
     setMounted(true);

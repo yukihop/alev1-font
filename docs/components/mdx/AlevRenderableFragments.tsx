@@ -3,12 +3,13 @@
 import type { FC } from 'react';
 
 import AlevGlyphTrigger from './AlevGlyphTrigger';
-import { useSourceData } from './SourceDataProvider';
 import type { AlevRenderableFragment } from './alev-renderable';
+import type { RenderableGlyphMap } from './glyph-record';
 
 type AlevRenderableFragmentsProps = {
   fragments: AlevRenderableFragment[];
-  selectedHex?: string | null;
+  glyphByBinary: RenderableGlyphMap;
+  selectedBinary?: string | null;
   triggerClassName: string;
   selectedTriggerClassName?: string;
   contentClassName?: string;
@@ -18,34 +19,30 @@ type AlevRenderableFragmentsProps = {
 const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
   const {
     fragments,
-    selectedHex,
+    glyphByBinary,
+    selectedBinary,
     triggerClassName,
     selectedTriggerClassName,
     contentClassName,
     keyPrefix,
   } = props;
-  const {
-    glyphMap,
-    sourceData: { usageCounts },
-  } = useSourceData();
 
   return fragments.map((fragment, fragmentIndex) => {
     if (fragment.type === 'space' || fragment.type === 'bracket' || fragment.type === 'text') {
       return <span key={`${keyPrefix}-${fragmentIndex}`}>{fragment.value}</span>;
     }
 
-    const glyph = glyphMap.get(fragment.hex);
+    const glyph = glyphByBinary[fragment.binary];
     if (!glyph) {
-      return <span key={`${keyPrefix}-${fragmentIndex}`}>{fragment.value}</span>;
+      throw new Error(`Missing glyph metadata for binary ${fragment.binary}.`);
     }
 
-    const glyphSelected = selectedHex === fragment.hex;
+    const glyphSelected = selectedBinary === fragment.binary;
 
     return (
       <AlevGlyphTrigger
         key={`${keyPrefix}-${fragmentIndex}-${glyph.hex}`}
         glyph={glyph}
-        usageCount={usageCounts[glyph.hex] ?? 0}
         selected={glyphSelected}
         triggerClassName={triggerClassName}
         selectedTriggerClassName={selectedTriggerClassName}

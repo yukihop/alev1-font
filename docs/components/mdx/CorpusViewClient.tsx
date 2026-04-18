@@ -4,6 +4,7 @@ import glyphTriggerStyles from "./AlevGlyphTrigger.module.css";
 import AlevLineClient from "./AlevLineClient";
 import styles from "./CorpusView.module.css";
 import type { AlevRenderableFragment } from "./alev-renderable";
+import type { RenderableGlyphMap } from "./glyph-record";
 
 export type CorpusRenderableEntry = {
   type: "entry";
@@ -33,13 +34,14 @@ export type CorpusRenderableSection = {
 
 type CorpusViewClientProps = {
   sections: CorpusRenderableSection[];
-  selectedHex?: string | null;
+  glyphByBinary: RenderableGlyphMap;
+  selectedBinary?: string | null;
 };
 
 const isAbsoluteUrl = (value: string): boolean => /^https?:\/\//.test(value);
 
 const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
-  const { sections, selectedHex = null } = props;
+  const { sections, glyphByBinary, selectedBinary = null } = props;
 
   return (
     <div className={styles.root}>
@@ -99,7 +101,8 @@ const CorpusViewClient: FC<CorpusViewClientProps> = (props) => {
                         <div className={styles.exampleBlock}>
                           <AlevLineClient
                             lines={item.alevLines}
-                            selectedHex={selectedHex}
+                            glyphByBinary={glyphByBinary}
+                            selectedBinary={selectedBinary}
                             lineKeyPrefix={`${item.position}-${itemIndex}`}
                             glyphTriggerClassName={
                               glyphTriggerStyles.inlineGlyphTrigger

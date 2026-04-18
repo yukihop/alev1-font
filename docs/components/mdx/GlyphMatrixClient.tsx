@@ -1,23 +1,27 @@
 'use client';
 
 import type { FC } from 'react';
+import { useMemo } from 'react';
+
+import { hexToBinary } from '@/lib/alev-shared';
 
 import alevTextStyles from './AlevText.module.css';
 import AlevGlyphTrigger from './AlevGlyphTrigger';
-import { useSourceData } from './SourceDataProvider';
+import type { RenderableGlyphRecord } from './glyph-record';
 import styles from './Glyphs.module.css';
 
 type GlyphMatrixPanelProps = {
   rows: string[];
   cols: string[];
+  glyphs: RenderableGlyphRecord[];
 };
 
 const GlyphMatrixClient: FC<GlyphMatrixPanelProps> = props => {
-  const { rows, cols } = props;
-  const {
-    glyphMap,
-    sourceData: { usageCounts },
-  } = useSourceData();
+  const { rows, cols, glyphs } = props;
+  const glyphMap = useMemo(
+    () => new Map(glyphs.map((glyph) => [glyph.binary, glyph])),
+    [glyphs],
+  );
 
   return (
     <div className={styles.matrixWrap}>
@@ -35,22 +39,21 @@ const GlyphMatrixClient: FC<GlyphMatrixPanelProps> = props => {
             <tr key={row}>
               <th>{row}</th>
               {cols.map(col => {
-                const hex = `${row}${col}`;
-                const glyph = glyphMap.get(hex);
+                const binary = hexToBinary(`${row}${col}`);
+                const glyph = glyphMap.get(binary);
+
+                if (!glyph) {
+                  throw new Error(`Missing glyph record for matrix cell ${row}${col}.`);
+                }
 
                 return (
-                  <td key={hex}>
-                    {glyph ? (
-                      <AlevGlyphTrigger
-                        glyph={glyph}
-                        usageCount={usageCounts[glyph.hex] ?? 0}
-                        triggerClassName={`${styles.matrixLink} ${(usageCounts[glyph.hex] ?? 0) > 0 ? styles.matrixLinkKeyword : ''}`.trim()}
-                        contentClassName={`${styles.glyphMark} ${alevTextStyles.glyphText}`}
-                        ariaLabel={`Show glyph ${glyph.hex}`}
-                      />
-                    ) : (
-                      <span className={styles.matrixEmpty}>-</span>
-                    )}
+                  <td key={`${row}${col}`}>
+                    <AlevGlyphTrigger
+                      glyph={glyph}
+                      triggerClassName={`${styles.matrixLink} ${glyph.usageCount > 0 ? styles.matrixLinkKeyword : ''}`.trim()}
+                      contentClassName={`${styles.glyphMark} ${alevTextStyles.glyphText}`}
+                      ariaLabel={`Show glyph ${glyph.hex}`}
+                    />
                   </td>
                 );
               })}

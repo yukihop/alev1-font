@@ -1,4 +1,4 @@
-import { type KeywordLookup, tokenizeAlevLine } from '@alev/data/client';
+import { type KeywordMap, tokenizeAlevLine } from '@/lib/alev-shared';
 
 export type AlevRenderableFragment =
   | {
@@ -16,13 +16,12 @@ export type AlevRenderableFragment =
   | {
       type: 'glyph';
       value: string;
-      hex: string;
+      binary: string;
     };
 
 export function buildRenderableLine(
   line: string,
-  keywordLookup: KeywordLookup,
-  glyphHexSet: Set<string>,
+  keywordLookup: KeywordMap,
 ): AlevRenderableFragment[] {
   const fragments = tokenizeAlevLine(line, keywordLookup);
 
@@ -31,7 +30,7 @@ export function buildRenderableLine(
       return [fragment];
     }
 
-    if (!fragment.resolvedHex || !glyphHexSet.has(fragment.resolvedHex)) {
+    if (!fragment.resolvedBinary) {
       return [
         {
           type: 'text',
@@ -47,7 +46,7 @@ export function buildRenderableLine(
       {
         type: 'glyph',
         value: fragment.value,
-        hex: fragment.resolvedHex,
+        binary: fragment.resolvedBinary,
       },
       ...(needsSpacer
         ? [
@@ -63,8 +62,7 @@ export function buildRenderableLine(
 
 export function buildRenderableSource(
   source: string,
-  keywordLookup: KeywordLookup,
-  glyphHexSet: Set<string>,
+  keywordLookup: KeywordMap,
 ): AlevRenderableFragment[][] {
   const normalizedSource = String(source ?? '').replace(/\r\n?/g, '\n').trim();
   if (!normalizedSource) {
@@ -73,5 +71,21 @@ export function buildRenderableSource(
 
   return normalizedSource
     .split('\n')
-    .map((line) => buildRenderableLine(line.trim(), keywordLookup, glyphHexSet));
+    .map((line) => buildRenderableLine(line.trim(), keywordLookup));
+}
+
+export function collectRenderableBinaries(
+  lines: AlevRenderableFragment[][],
+): string[] {
+  const binaries = new Set<string>();
+
+  for (const line of lines) {
+    for (const fragment of line) {
+      if (fragment.type === 'glyph') {
+        binaries.add(fragment.binary);
+      }
+    }
+  }
+
+  return [...binaries];
 }

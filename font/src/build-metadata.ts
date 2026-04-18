@@ -1,6 +1,7 @@
 import {
   DIST_DIR,
   bitArrayForHex,
+  binaryForHex,
   codepointForHex,
   codepointLabel,
   ensureDir,
@@ -8,19 +9,17 @@ import {
   hexValues,
   isMain,
   loadGlyphModel,
-  loadLexicon,
   writeJson,
 } from './shared.ts';
 
 export async function buildMetadata() {
   const model = await loadGlyphModel();
-  const lexicon = await loadLexicon();
   await ensureDir(DIST_DIR);
 
   const glyphs = hexValues().map((hex) => {
     const codepoint = codepointForHex(hex);
     return {
-      binary: lexicon.get(hex).binary,
+      binary: binaryForHex(hex),
       hex,
       glyphName: glyphNameForHex(hex),
       codepoint: codepointLabel(codepoint),
