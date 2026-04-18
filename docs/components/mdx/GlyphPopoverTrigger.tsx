@@ -92,6 +92,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   } = props;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const hideTimerRef = useRef<number | null>(null);
+  const suppressNextClickRef = useRef(false);
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
@@ -107,6 +108,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   const comment = lexiconEntry?.comment ?? null;
   const usageCount = usageCounts[characterId] ?? 0;
   const hasExamples = usageCount > 0;
+  const popoverId = `${instanceId}-popover`;
 
   useEffect(() => {
     setMounted(true);
@@ -119,6 +121,14 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
 
     window.clearTimeout(hideTimerRef.current);
     hideTimerRef.current = null;
+  };
+
+  const isFocusVisible = (element: HTMLElement) => {
+    try {
+      return element.matches(":focus-visible");
+    } catch {
+      return false;
+    }
   };
 
   const positionPopover = () => {
@@ -136,17 +146,24 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
 
   // ポップオーバーが描画された後にビューポート端からはみ出していれば位置を補正する
   useLayoutEffect(() => {
-    if (!open || !popoverRef.current) {
+    const trigger = triggerRef.current;
+    const popover = popoverRef.current;
+    if (!open || !trigger || !popover) {
       return;
     }
 
-    const popover = popoverRef.current;
+    const rect = trigger.getBoundingClientRect();
     const popRect = popover.getBoundingClientRect();
+    const gap = 8;
     const margin = 12;
     const vw = window.innerWidth;
+    const vh = window.innerHeight;
     const halfW = popRect.width / 2;
 
     let adjustedLeft = position.left;
+    let adjustedTop = rect.bottom + gap;
+
+    const topWhenFlipped = rect.top - popRect.height - gap;
 
     if (adjustedLeft - halfW < margin) {
       adjustedLeft = halfW + margin;
@@ -154,10 +171,26 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
       adjustedLeft = vw - margin - halfW;
     }
 
-    if (adjustedLeft !== position.left) {
-      setPosition((prev) => ({ ...prev, left: adjustedLeft }));
+    if (adjustedTop + popRect.height > vh - margin && topWhenFlipped >= margin) {
+      adjustedTop = topWhenFlipped;
+    } else if (adjustedTop + popRect.height > vh - margin) {
+      adjustedTop = Math.max(margin, vh - margin - popRect.height);
     }
-  }, [open, position.left]);
+
+    if (adjustedTop < margin) {
+      adjustedTop = margin;
+    }
+
+    if (adjustedLeft !== position.left || adjustedTop !== position.top) {
+      setPosition((prev) => {
+        if (prev.left === adjustedLeft && prev.top === adjustedTop) {
+          return prev;
+        }
+
+        return { left: adjustedLeft, top: adjustedTop };
+      });
+    }
+  }, [open, position.left, position.top]);
 
   const showPopover = () => {
     clearHideTimer();
@@ -167,6 +200,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
 
   const hidePopover = () => {
     clearHideTimer();
+    suppressNextClickRef.current = false;
     setOpen(false);
   };
 
@@ -178,6 +212,17 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
   };
 
   const copyId = `${instanceId}-${hex}`;
+
+  const focusStaysWithinPopover = (nextFocusedNode: Node | null) => {
+    if (!nextFocusedNode) {
+      return false;
+    }
+
+    return (
+      triggerRef.current?.contains(nextFocusedNode) === true ||
+      popoverRef.current?.contains(nextFocusedNode) === true
+    );
+  };
 
   useEffect(() => {
     if (!open) {
@@ -230,6 +275,8 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
         type="button"
         className={className}
         aria-label={ariaLabel ?? `Show character ${characterId}`}
+        aria-controls={open ? popoverId : undefined}
+        aria-expanded={open}
         aria-pressed={pressed}
         onPointerEnter={(e) => {
           if (e.pointerType === "touch") return;
@@ -239,9 +286,29 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
           if (e.pointerType === "touch") return;
           scheduleHide();
         }}
-        onFocus={showPopover}
-        onBlur={scheduleHide}
+        onFocus={(event) => {
+          if (!isFocusVisible(event.currentTarget)) {
+            return;
+          }
+
+          suppressNextClickRef.current = true;
+          showPopover();
+        }}
+        onBlur={(event) => {
+          suppressNextClickRef.current = false;
+          if (focusStaysWithinPopover(event.relatedTarget)) {
+            clearHideTimer();
+            return;
+          }
+
+          scheduleHide();
+        }}
         onClick={() => {
+          if (suppressNextClickRef.current) {
+            suppressNextClickRef.current = false;
+            return;
+          }
+
           if (open) {
             hidePopover();
             return;
@@ -257,6 +324,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
       {mounted && open
         ? createPortal(
             <div
+              id={popoverId}
               ref={popoverRef}
               className={styles.glyphPopover}
               style={{ top: `${position.top}px`, left: `${position.left}px` }}
@@ -266,6 +334,15 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
               }}
               onPointerLeave={(e) => {
                 if (e.pointerType === "touch") return;
+                scheduleHide();
+              }}
+              onFocus={clearHideTimer}
+              onBlur={(event) => {
+                if (focusStaysWithinPopover(event.relatedTarget)) {
+                  clearHideTimer();
+                  return;
+                }
+
                 scheduleHide();
               }}
             >
