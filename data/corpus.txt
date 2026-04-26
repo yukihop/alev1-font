@@ -474,4 +474,4 @@ i will do perfect live
 @One Live One Love
 -
 i prf prove love
-訳は「私は愛を証明し終えました。」
+! 訳は「私は愛を証明し終えました。」2文字目の :prf: は動作の完了を表す文字。
