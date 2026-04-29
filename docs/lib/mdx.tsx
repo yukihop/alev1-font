@@ -3,25 +3,26 @@ import {
   cache,
   type ComponentPropsWithoutRef,
   type ReactElement,
-} from 'react';
-import { compileMDX } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
+} from "react";
+import * as runtime from "react/jsx-runtime";
+import { compile, run } from "@mdx-js/mdx";
+import remarkGfm from "remark-gfm";
 
-import AlevLine from '@/components/mdx/AlevLine';
-import AlevInline from '@/components/mdx/AlevInline';
-import AlevSignalDemo from '@/components/mdx/AlevSignalDemoClient';
-import CorpusView from '@/components/mdx/CorpusView';
-import GlyphList from '@/components/mdx/GlyphList';
-import GlyphMatrix from '@/components/mdx/GlyphMatrix';
+import AlevLine from "@/components/mdx/AlevLine";
+import AlevInline from "@/components/mdx/AlevInline";
+import AlevSignalDemo from "@/components/mdx/AlevSignalDemoClient";
+import CorpusView from "@/components/mdx/CorpusView";
+import GlyphList from "@/components/mdx/GlyphList";
+import GlyphMatrix from "@/components/mdx/GlyphMatrix";
 import HomeMenu, {
   HomeMenuCard,
   HomeMenuSection,
-} from '@/components/mdx/HomeMenu';
-import LayeredGlyph from '@/components/mdx/LayeredGlyph';
-import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
-import SimpleEditor from '@/components/mdx/SimpleEditorClient';
-import { StaticAlevInline } from '@/components/mdx/AlevInline';
-import { remarkAlevInline } from '@/lib/remark-alev-inline';
+} from "@/components/mdx/HomeMenu";
+import LayeredGlyph from "@/components/mdx/LayeredGlyph";
+import LayeredGlyphSequence from "@/components/mdx/LayeredGlyphSequence";
+import SimpleEditor from "@/components/mdx/SimpleEditorClient";
+import { StaticAlevInline } from "@/components/mdx/AlevInline";
+import { remarkAlevInline } from "@/lib/remark-alev-inline";
 
 const components = {
   AlevLine,
@@ -50,14 +51,14 @@ const staticInlineComponents = {
 };
 
 type InlineMdxComponents = typeof inlineComponents & {
-  a: (props: ComponentPropsWithoutRef<'a'>) => ReactElement;
+  a: (props: ComponentPropsWithoutRef<"a">) => ReactElement;
 };
 
 function resolveHashHref(
   href: string | undefined,
   hashLinkBase: string | undefined,
 ): string | undefined {
-  if (!href || !hashLinkBase || !href.startsWith('#')) {
+  if (!href || !hashLinkBase || !href.startsWith("#")) {
     return href;
   }
 
@@ -76,42 +77,37 @@ function createInlineComponents(
   };
 }
 
-export async function renderMdx(source: string) {
-  const { content } = await compileMDX({
-    source,
-    components,
-    options: {
-      parseFrontmatter: false,
-      mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkAlevInline],
-      },
-    },
+async function compileMdxSource(source: string, remarkPlugins: unknown[]) {
+  const compiled = await compile(source, {
+    outputFormat: "function-body",
+    remarkPlugins,
   });
+  const { default: Content } = await run(compiled, {
+    ...runtime,
+    baseUrl: import.meta.url,
+  });
+  return Content;
+}
 
-  return content;
+export async function renderMdx(source: string) {
+  const Content = await compileMdxSource(source, [remarkGfm, remarkAlevInline]);
+  return <Content components={components} />;
 }
 
 async function compileInlineMdx(
   source: string,
   componentsMap: InlineMdxComponents,
 ) {
-  const normalizedSource = String(source ?? '').trim();
+  const normalizedSource = String(source ?? "").trim();
   if (!normalizedSource) {
     return null;
   }
 
-  const { content } = await compileMDX({
-    source: normalizedSource,
-    components: componentsMap,
-    options: {
-      parseFrontmatter: false,
-      mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkAlevInline],
-      },
-    },
-  });
-
-  return content;
+  const Content = await compileMdxSource(normalizedSource, [
+    remarkGfm,
+    remarkAlevInline,
+  ]);
+  return <Content components={componentsMap} />;
 }
 
 export const renderInlineMdx = cache(
