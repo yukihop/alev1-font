@@ -1,10 +1,7 @@
-import { cache } from 'react';
+import { cache } from "react";
 
-import {
-  loadCorpusDocument,
-  loadLexiconData,
-} from '@alev/data';
-import { buildKeywordMap, collectUsageCounts } from './alev-shared';
+import { loadCorpusDocument, loadLexiconData } from "@alev/data";
+import { buildKeywordMap, collectUsageCounts } from "./alev-shared";
 
 export const loadLexicon = cache(() => loadLexiconData());
 

@@ -1,4 +1,8 @@
-import { type KeywordMap, tokenizeAlevLine } from '@/lib/alev-shared';
+import {
+  binaryToHex,
+  type KeywordMap,
+  tokenizeAlevLine,
+} from '@/lib/alev-shared';
 
 export type AlevRenderableFragment =
   | {
@@ -72,6 +76,27 @@ export function buildRenderableSource(
   return normalizedSource
     .split('\n')
     .map((line) => buildRenderableLine(line.trim(), keywordLookup));
+}
+
+export function buildCopySequence(
+  lines: AlevRenderableFragment[][],
+  mode: 'hex' | 'bin',
+): string {
+  return lines
+    .map((line) =>
+      line
+        .map((fragment) => {
+          if (fragment.type === 'glyph') {
+            return mode === 'hex'
+              ? `0x${binaryToHex(fragment.binary)}`
+              : `0b${fragment.binary}`;
+          }
+
+          return fragment.value;
+        })
+        .join(''),
+    )
+    .join('\n');
 }
 
 export function collectRenderableBinaries(

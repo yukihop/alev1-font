@@ -4,6 +4,10 @@ import { loadKeywordMap } from '@/lib/alev';
 import { resolveAlevTokenBinary } from '@/lib/alev-shared';
 
 import AlevLineClient from './AlevLineClient';
+import {
+  buildCopySequence,
+  buildRenderableSource,
+} from './alev-renderable';
 
 type AlevLineProps = {
   source: string;
@@ -42,10 +46,13 @@ const AlevLine: FC<AlevLineProps> = props => {
     props.selected,
     keywordMap,
   );
+  const lines = buildRenderableSource(props.source, keywordMap);
 
   return (
     <AlevLineClient
-      source={props.source}
+      lines={lines}
+      hexCopy={buildCopySequence(lines, 'hex')}
+      binaryCopy={buildCopySequence(lines, 'bin')}
       selectedCharacterId={selectedCharacterId}
       className={props.className}
     />

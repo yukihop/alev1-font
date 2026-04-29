@@ -3,21 +3,17 @@
 import type { FC } from 'react';
 import { useRef, useState } from 'react';
 
-import { binaryToHex } from '@/lib/alev-shared';
-import { useAlevClientData } from '@/lib/alev-data-context';
-
 import alevTextStyles from './AlevText.module.css';
 import { CheckIcon, CopyIcon, useCopyFeedback } from './CopyPillButton';
 import glyphTriggerStyles from './AlevGlyphTrigger.module.css';
 import AlevRenderableFragments from './AlevRenderableFragments';
 import styles from './AlevLine.module.css';
-import {
-  buildRenderableSource,
-  type AlevRenderableFragment,
-} from './alev-renderable';
+import type { AlevRenderableFragment } from './alev-renderable';
 
 type AlevLineClientProps = {
-  source: string;
+  lines: AlevRenderableFragment[][];
+  hexCopy: string;
+  binaryCopy: string;
   selectedCharacterId?: string | null;
   className?: string;
   lineClassName?: string;
@@ -32,30 +28,11 @@ function joinClassNames(...values: Array<string | undefined | false | null>): st
   return values.filter(Boolean).join(' ');
 }
 
-function buildCopySequence(
-  lines: AlevRenderableFragment[][],
-  mode: 'hex' | 'bin',
-): string {
-  return lines
-    .map((line) =>
-      line
-        .map((fragment) => {
-          if (fragment.type === 'glyph') {
-            return mode === 'hex'
-              ? `0x${binaryToHex(fragment.binary)}`
-              : `0b${fragment.binary}`;
-          }
-
-          return fragment.value;
-        })
-        .join(''),
-    )
-    .join('\n');
-}
-
 const AlevLineClient: FC<AlevLineClientProps> = props => {
   const {
-    source,
+    lines,
+    hexCopy,
+    binaryCopy,
     selectedCharacterId,
     className,
     lineClassName,
@@ -65,18 +42,14 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
     glyphContentClassName,
     showCopyActions = true,
   } = props;
-  const { keywordMap } = useAlevClientData();
   const { copiedId, copyText } = useCopyFeedback();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuWrapRef = useRef<HTMLDivElement | null>(null);
-  const lines = buildRenderableSource(source, keywordMap);
 
   if (lines.length === 0) {
     return null;
   }
 
-  const hexCopy = buildCopySequence(lines, 'hex');
-  const binaryCopy = buildCopySequence(lines, 'bin');
   const copyMenuId = `${lineKeyPrefix}-copy-menu`;
 
   const copyFromMenu = (copyId: string, copyValue: string) => {

@@ -9,7 +9,7 @@ import remarkGfm from 'remark-gfm';
 
 import AlevLine from '@/components/mdx/AlevLine';
 import AlevInline from '@/components/mdx/AlevInline';
-import AlevSignalDemo from '@/components/mdx/AlevSignalDemo';
+import AlevSignalDemo from '@/components/mdx/AlevSignalDemoClient';
 import CorpusView from '@/components/mdx/CorpusView';
 import GlyphList from '@/components/mdx/GlyphList';
 import GlyphMatrix from '@/components/mdx/GlyphMatrix';
@@ -19,7 +19,7 @@ import HomeMenu, {
 } from '@/components/mdx/HomeMenu';
 import LayeredGlyph from '@/components/mdx/LayeredGlyph';
 import LayeredGlyphSequence from '@/components/mdx/LayeredGlyphSequence';
-import SimpleEditor from '@/components/mdx/SimpleEditor';
+import SimpleEditor from '@/components/mdx/SimpleEditorClient';
 import { StaticAlevInline } from '@/components/mdx/AlevInline';
 import { remarkAlevInline } from '@/lib/remark-alev-inline';
 

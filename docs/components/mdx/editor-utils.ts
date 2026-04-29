@@ -12,9 +12,7 @@ export type SimpleEditorProps = {
   defaultLetterSpacing?: number;
 };
 
-export type SimpleEditorPanelProps = SimpleEditorProps & {
-  keywordMap: KeywordMap;
-};
+export type SimpleEditorPanelProps = SimpleEditorProps;
 
 export type VisualPreset = {
   value: string;

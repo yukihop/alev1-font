@@ -3,6 +3,8 @@
 import type { CSSProperties, FC } from "react";
 import { useId, useRef, useState } from "react";
 
+import { useAlevClientData } from "@/lib/alev-data-context";
+
 import {
   KeywordSuggestionsPopover,
   useKeywordSuggestions,
@@ -66,8 +68,8 @@ const SimpleEditorClient: FC<SimpleEditorPanelProps> = (props) => {
     defaultValue = DEFAULT_EDITOR_VALUE,
     defaultFontSize = DEFAULT_FONT_SIZE,
     defaultLetterSpacing = DEFAULT_LETTER_SPACING,
-    keywordMap: sourceKeywordMap,
   } = props;
+  const { keywordMap: sourceKeywordMap } = useAlevClientData();
   const keywordMap = Object.fromEntries(
     Object.entries(sourceKeywordMap).sort(([left], [right]) =>
       left.localeCompare(right),

@@ -1,7 +1,10 @@
 'use client';
 
 import type { FC } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+
+import { glyphCharForBinary, binaryToHex } from '@/lib/alev-shared';
+import { useAlevClientData } from '@/lib/alev-data-context';
 
 import alevTextStyles from './AlevText.module.css';
 import styles from './AlevSignalDemo.module.css';
@@ -9,7 +12,7 @@ import styles from './AlevSignalDemo.module.css';
 type DemoGlyph = {
   hex: string;
   char: string;
-  keywords: string[];
+  featured: boolean;
 };
 
 type Slot = {
@@ -46,18 +49,18 @@ const createSlot = (glyphs: DemoGlyph[]): Slot => {
   return {
     hex: glyph.hex,
     char: glyph.char,
-    featured: glyph.keywords.length > 0,
+    featured: glyph.featured,
   };
 };
 
 const pickGlyph = (glyphs: DemoGlyph[]): DemoGlyph => {
-  const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
+  const featuredGlyphs = glyphs.filter(glyph => glyph.featured);
   const pool = featuredGlyphs.length > 0 && Math.random() < initialFeaturedBias ? featuredGlyphs : glyphs;
   return pool[Math.floor(Math.random() * pool.length)] ?? glyphs[0];
 };
 
 const createStableSlot = (glyphs: DemoGlyph[], slotIndex: number): Slot => {
-  const featuredGlyphs = glyphs.filter(glyph => glyph.keywords.length > 0);
+  const featuredGlyphs = glyphs.filter(glyph => glyph.featured);
   const featuredRatio = getDeterministicRatio(glyphs, slotIndex, "featured");
   const useFeaturedPool =
     featuredGlyphs.length > 0 && featuredRatio < initialFeaturedBias;
@@ -69,7 +72,7 @@ const createStableSlot = (glyphs: DemoGlyph[], slotIndex: number): Slot => {
   return {
     hex: glyph.hex,
     char: glyph.char,
-    featured: glyph.keywords.length > 0,
+    featured: glyph.featured,
   };
 };
 
@@ -79,11 +82,19 @@ const createStableSlots = (glyphs: DemoGlyph[]): Slot[] =>
 const getStableFocusHex = (glyphs: DemoGlyph[]): string =>
   createStableSlot(glyphs, slotCount).hex;
 
-type AlevSignalDemoClientProps = {
-  glyphs: DemoGlyph[];
-};
+function createDemoGlyphs(
+  lexicon: ReturnType<typeof useAlevClientData>['lexicon'],
+): DemoGlyph[] {
+  return lexicon.map((entry) => ({
+    hex: binaryToHex(entry.binary),
+    char: glyphCharForBinary(entry.binary),
+    featured: entry.keywords.length > 0,
+  }));
+}
 
-const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = ({ glyphs }) => {
+const AlevSignalDemoClient: FC = () => {
+  const { lexicon } = useAlevClientData();
+  const glyphs = useMemo(() => createDemoGlyphs(lexicon), [lexicon]);
   const [slots, setSlots] = useState(() => createStableSlots(glyphs));
   const [focusHex, setFocusHex] = useState(() => getStableFocusHex(glyphs));
   const [glitchPhase, setGlitchPhase] = useState(false);
