@@ -1,6 +1,7 @@
 'use client';
 
 import type { FC } from 'react';
+import { useRef, useState } from 'react';
 
 import { binaryToHex } from '@/lib/alev-shared';
 import { useAlevClientData } from '@/lib/alev-data-context';
@@ -66,6 +67,8 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
   } = props;
   const { keywordMap } = useAlevClientData();
   const { copiedId, copyText } = useCopyFeedback();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuWrapRef = useRef<HTMLDivElement | null>(null);
   const lines = buildRenderableSource(source, keywordMap);
 
   if (lines.length === 0) {
@@ -74,9 +77,21 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
 
   const hexCopy = buildCopySequence(lines, 'hex');
   const binaryCopy = buildCopySequence(lines, 'bin');
+  const copyMenuId = `${lineKeyPrefix}-copy-menu`;
+
+  const copyFromMenu = (copyId: string, copyValue: string) => {
+    void copyText(copyId, copyValue);
+    setMenuOpen(false);
+  };
 
   return (
-    <div className={joinClassNames(styles.wrap, className)}>
+    <div
+      className={joinClassNames(
+        styles.wrap,
+        showCopyActions && styles.wrapWithCopyMenu,
+        className,
+      )}
+    >
       <div className={styles.block}>
         {lines.map((line, lineIndex) => (
           <div
@@ -95,41 +110,90 @@ const AlevLineClient: FC<AlevLineClientProps> = props => {
         ))}
       </div>
       {showCopyActions ? (
-        <div className={styles.copyActions}>
+        <div
+          ref={menuWrapRef}
+          className={styles.copyMenuWrap}
+          onBlur={(event) => {
+            const nextFocus = event.relatedTarget as Node | null;
+            if (!nextFocus || !menuWrapRef.current?.contains(nextFocus)) {
+              setMenuOpen(false);
+            }
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              setMenuOpen(false);
+            }
+          }}
+        >
           <button
             type="button"
-            className={styles.copyButton}
-            aria-label="Copy hex sequence"
+            className={styles.copyMenuTrigger}
+            aria-label="Open copy menu"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            aria-controls={copyMenuId}
             onClick={() => {
-              void copyText(`${lineKeyPrefix}-hex`, hexCopy);
+              setMenuOpen(current => !current);
             }}
           >
-            <span>hex</span>
-            {copiedId === `${lineKeyPrefix}-hex` ? (
-              <CheckIcon className={styles.copyIcon} />
-            ) : (
-              <CopyIcon className={styles.copyIcon} />
-            )}
+            <EllipsisIcon className={styles.copyMenuTriggerIcon} />
           </button>
-          <button
-            type="button"
-            className={styles.copyButton}
-            aria-label="Copy binary sequence"
-            onClick={() => {
-              void copyText(`${lineKeyPrefix}-bin`, binaryCopy);
-            }}
-          >
-            <span>bin</span>
-            {copiedId === `${lineKeyPrefix}-bin` ? (
-              <CheckIcon className={styles.copyIcon} />
-            ) : (
-              <CopyIcon className={styles.copyIcon} />
-            )}
-          </button>
+          {menuOpen ? (
+            <div
+              id={copyMenuId}
+              className={styles.copyMenu}
+              role="menu"
+              aria-label="Copy sequence"
+            >
+              <button
+                type="button"
+                className={styles.copyMenuItem}
+                role="menuitem"
+                onClick={() => {
+                  copyFromMenu(`${lineKeyPrefix}-hex`, hexCopy);
+                }}
+              >
+                {copiedId === `${lineKeyPrefix}-hex` ? (
+                  <CheckIcon className={styles.copyMenuItemIcon} />
+                ) : (
+                  <CopyIcon className={styles.copyMenuItemIcon} />
+                )}
+                <span>Copy as hex</span>
+              </button>
+              <button
+                type="button"
+                className={styles.copyMenuItem}
+                role="menuitem"
+                onClick={() => {
+                  copyFromMenu(`${lineKeyPrefix}-bin`, binaryCopy);
+                }}
+              >
+                {copiedId === `${lineKeyPrefix}-bin` ? (
+                  <CheckIcon className={styles.copyMenuItemIcon} />
+                ) : (
+                  <CopyIcon className={styles.copyMenuItemIcon} />
+                )}
+                <span>Copy as bin</span>
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
   );
 };
+
+const EllipsisIcon: FC<{ className?: string }> = ({ className }) => (
+  <svg
+    viewBox="0 0 16 16"
+    aria-hidden="true"
+    className={className}
+    fill="currentColor"
+  >
+    <circle cx="4" cy="8" r="1.35" />
+    <circle cx="8" cy="8" r="1.35" />
+    <circle cx="12" cy="8" r="1.35" />
+  </svg>
+);
 
 export default AlevLineClient;

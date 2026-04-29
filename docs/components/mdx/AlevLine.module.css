@@ -1,14 +1,24 @@
 .wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.5rem;
+  position: relative;
+  display: grid;
+  width: 100%;
   max-width: 100%;
+  padding: 0.72rem 0.82rem;
+  background: light-dark(
+    color-mix(in srgb, var(--bg-soft) 76%, transparent),
+    color-mix(in srgb, var(--bg-soft) 68%, transparent)
+  );
+}
+
+.wrapWithCopyMenu {
+  padding-right: 3rem;
 }
 
 .block {
   display: grid;
   gap: 4px;
   min-width: 0;
+  overflow-x: auto;
 }
 
 .line {
@@ -18,52 +28,79 @@
   line-height: 1.4;
 }
 
-.copyActions {
-  display: inline-flex;
-  flex-direction: column;
-  align-self: center;
-  gap: 0.16rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 120ms ease;
+.copyMenuWrap {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  z-index: 2;
 }
 
-.wrap:hover .copyActions,
-.wrap:has(.copyButton:focus-visible) .copyActions {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.copyButton {
+.copyMenuTrigger {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.18rem;
-  padding: 0;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
   border: 0;
   background: transparent;
   color: var(--text-muted);
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.copyMenuTrigger:hover,
+.copyMenuTrigger:focus-visible,
+.copyMenuTrigger[aria-expanded="true"] {
+  color: var(--text);
+}
+
+.copyMenuTriggerIcon {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.copyMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 10.75rem;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-elevated) 96%, transparent);
+  box-shadow: var(--shadow);
+}
+
+.copyMenuItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.46rem 0.58rem;
+  border: 0;
+  background: transparent;
+  color: var(--text);
   font: inherit;
-  font-size: 0.8rem;
-  line-height: 1.1;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  text-align: left;
   cursor: pointer;
   white-space: nowrap;
 }
 
-.copyButton:hover,
-.copyButton:focus-visible {
-  color: var(--text);
+.copyMenuItem:hover,
+.copyMenuItem:focus-visible {
+  background: color-mix(in srgb, var(--accent-soft) 56%, transparent);
+  outline: none;
 }
 
-.copyIcon {
-  width: 0.82rem;
-  height: 0.82rem;
+.copyMenuItemIcon {
+  width: 0.95rem;
+  height: 0.95rem;
   flex: 0 0 auto;
-}
-
-@media (max-width: 720px) {
-  .copyActions {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  color: var(--text-muted);
 }
