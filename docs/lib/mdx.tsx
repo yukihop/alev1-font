@@ -77,7 +77,10 @@ function createInlineComponents(
   };
 }
 
-async function compileMdxSource(source: string, remarkPlugins: unknown[]) {
+async function compileMdxSource(
+  source: string,
+  remarkPlugins: NonNullable<Parameters<typeof compile>[1]>["remarkPlugins"],
+) {
   const compiled = await compile(source, {
     outputFormat: "function-body",
     remarkPlugins,
