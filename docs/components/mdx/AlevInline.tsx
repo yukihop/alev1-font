@@ -1,7 +1,10 @@
 import { Children, type FC, type ReactNode } from 'react';
 
 import { loadKeywordMap } from '@/lib/alev';
-import { normalizeAlevToken } from '@/lib/alev-shared';
+import {
+  normalizeAlevSourceToBinaryText,
+  normalizeAlevToken,
+} from '@/lib/alev-shared';
 
 import alevTextStyles from './AlevText.module.css';
 import AlevInlineClient from './AlevInlineClient';
@@ -32,6 +35,8 @@ const AlevInline: FC<AlevInlineProps> = props => {
     return null;
   }
 
+  normalizeAlevSourceToBinaryText(text, loadKeywordMap());
+
   return <AlevInlineClient source={text} />;
 };
 
@@ -42,6 +47,7 @@ export const StaticAlevInline: FC<AlevInlineProps> = props => {
   }
 
   const keywordMap = loadKeywordMap();
+  normalizeAlevSourceToBinaryText(text, keywordMap);
 
   return (
     <span className={`${styles.inline} ${alevTextStyles.glyphText}`} title={text}>

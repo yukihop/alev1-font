@@ -25,7 +25,7 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
   } = props;
 
   return fragments.map((fragment, fragmentIndex) => {
-    if (fragment.type === 'space' || fragment.type === 'bracket' || fragment.type === 'text') {
+    if (fragment.type === 'space' || fragment.type === 'bracket') {
       return <span key={`${keyPrefix}-${fragmentIndex}`}>{fragment.value}</span>;
     }
     const glyphSelected = selectedCharacterId === fragment.binary;

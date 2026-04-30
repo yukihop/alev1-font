@@ -14,10 +14,6 @@ export type AlevRenderableFragment =
       value: '[' | ']';
     }
   | {
-      type: 'text';
-      value: string;
-    }
-  | {
       type: 'glyph';
       value: string;
       binary: string;
@@ -35,12 +31,7 @@ export function buildRenderableLine(
     }
 
     if (!fragment.resolvedBinary) {
-      return [
-        {
-          type: 'text',
-          value: fragment.value,
-        },
-      ];
+      throw new Error(`Unresolved ALEV token "${fragment.value}" in "${line}".`);
     }
 
     const nextFragment = fragments[fragmentIndex + 1];

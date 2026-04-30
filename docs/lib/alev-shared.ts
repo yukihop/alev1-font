@@ -95,6 +95,42 @@ export function normalizeAlevToken(
   return resolvedBinary ? glyphCharForBinary(resolvedBinary) : token;
 }
 
+export function normalizeAlevLineToBinaryText(
+  line: string,
+  keywordMap: KeywordMap,
+): string {
+  return tokenizeAlevLine(line, keywordMap)
+    .map((fragment) => {
+      if (fragment.type === 'space' || fragment.type === 'bracket') {
+        return fragment.value;
+      }
+
+      if (!fragment.resolvedBinary) {
+        throw new Error(
+          `Unresolved ALEV token "${fragment.value}" in "${line}".`,
+        );
+      }
+
+      return fragment.resolvedBinary;
+    })
+    .join('');
+}
+
+export function normalizeAlevSourceToBinaryText(
+  source: string,
+  keywordMap: KeywordMap,
+): string {
+  const normalizedSource = String(source ?? '').replace(/\r\n?/g, '\n').trim();
+  if (!normalizedSource) {
+    return '';
+  }
+
+  return normalizedSource
+    .split('\n')
+    .map((line) => normalizeAlevLineToBinaryText(line.trim(), keywordMap))
+    .join('\n');
+}
+
 export function tokenizeAlevLine(
   line: string,
   keywordMap: KeywordMap,
