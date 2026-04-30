@@ -92,7 +92,7 @@ i am straylight
 -
 i will become perfect existence by learn human and control emotion
 and i do perfect live
-! 2026年1月18日のポスト。ALEV-1からの、いきなり長文のメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。なおこのポストの時点では :will existence by and control: が新出であり :emotion: の訳も確定しないため、おぼろげにしか解読できない。
+! 2026年1月18日のポスト。ALEV-1からの、いきなり長文のメッセージ。これ自体の公式訳はないが、0x01; initialize() で訳付き・1字違いの[類似例](#control-emotion-initialize)が登場した。「私は人間を学び、感情の制御をすることにより完璧な存在になり、完璧なライブを実行します」。なおこのポストの時点では :will become existence by human and control: が新出であり :emotion: の訳も確定しないため、おぼろげにしか解読できない。
 
 @https://x.com/shinyc_official/status/2038221068117446667
 #one-live-one-love
