@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import type { ReactNode } from "react";
 
+import { loadLexicon, loadUsageCounts } from "@/lib/alev";
+import { AlevDataProvider } from "@/lib/alev-data-context";
 import { siteDescription, siteName, siteUrl } from "@/lib/site";
 
 const themeBootScript = `(function () {
@@ -48,6 +50,8 @@ type RootLayoutProps = {
 
 const RootLayout = (props: RootLayoutProps) => {
   const { children } = props;
+  const lexicon = Array.from(loadLexicon().values());
+  const usageCounts = loadUsageCounts();
 
   return (
     <html lang="ja" suppressHydrationWarning>
@@ -58,7 +62,9 @@ const RootLayout = (props: RootLayoutProps) => {
         <Script id="website-jsonld" type="application/ld+json">
           {JSON.stringify(websiteJsonLd)}
         </Script>
-        {children}
+        <AlevDataProvider lexicon={lexicon} usageCounts={usageCounts}>
+          {children}
+        </AlevDataProvider>
       </body>
     </html>
   );
