@@ -150,7 +150,8 @@ and i do perfect live
 
 @46:19
 完璧なロボットが生命であることを証明するためです。
-i prove perfect robot is 0b10110101 life
+i prove perfect robot is possess life
+! :is: に動詞が後続する唯一の用例。英語的に考えるなら進行形、中国語的に考えるなら強調・焦点化のような用法か。
 
 @46:28
 ふゆは完璧を求めますか？
