@@ -8,6 +8,7 @@ import * as runtime from "react/jsx-runtime";
 import { compile, run } from "@mdx-js/mdx";
 import remarkGfm from "remark-gfm";
 
+import Alert from "@/components/mdx/Alert";
 import AlevLine from "@/components/mdx/AlevLine";
 import AlevInline from "@/components/mdx/AlevInline";
 import AlevSignalDemo from "@/components/mdx/AlevSignalDemoClient";
@@ -25,6 +26,7 @@ import { StaticAlevInline } from "@/components/mdx/AlevInline";
 import { remarkAlevInline } from "@/lib/remark-alev-inline";
 
 const components = {
+  Alert,
   AlevLine,
   AlevInline,
   AlevSignalDemo,
