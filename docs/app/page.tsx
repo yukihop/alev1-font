@@ -9,7 +9,7 @@ import { createPageMetadata } from '@/lib/site';
 
 export async function generateMetadata(): Promise<Metadata> {
   const entry = await getArticleEntry('index');
-  return entry ? createPageMetadata(entry.title, entry.path) : {};
+  return entry ? createPageMetadata(entry.title, entry.path, entry.description) : {};
 }
 
 const HomePage = async () => {

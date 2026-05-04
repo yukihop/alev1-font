@@ -17,7 +17,7 @@ export const dynamicParams = false;
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await props.params;
   const entry = await getArticleEntry(slug);
-  return entry ? createPageMetadata(entry.title, entry.path) : {};
+  return entry ? createPageMetadata(entry.title, entry.path, entry.description) : {};
 }
 
 const ArticlePage = async (props: { params: Promise<{ slug: string }> }) => {

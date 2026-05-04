@@ -9,12 +9,16 @@ import contentRoot from './contentRoot';
 
 export type ArticleFrontMatter = {
   title: string;
+  description: string;
+  heading?: string;
 };
 
 export type ArticleEntry = {
   slug: string;
   path: string;
   title: string;
+  description: string;
+  heading?: string;
   order: number;
 };
 
@@ -51,6 +55,8 @@ async function scanArticlesImpl(): Promise<{ siteTitle: string; entries: Article
           slug,
           path: slug === 'index' ? '/' : `/${slug}`,
           title: frontMatter.title,
+          description: frontMatter.description,
+          heading: frontMatter.heading,
           order: order.includes(slug) ? order.indexOf(slug) : Number.POSITIVE_INFINITY,
         } satisfies ArticleEntry;
       }),

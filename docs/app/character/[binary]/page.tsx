@@ -28,8 +28,13 @@ function createCharacterEntry(binary: string): ArticleEntry {
     slug: `character/${binary}`,
     path: `/character/${binary}`,
     title: `${binary}の使用例`,
+    description: createCharacterDescription(binary),
     order: Number.POSITIVE_INFINITY,
   };
+}
+
+function createCharacterDescription(binary: string): string {
+  return `ALEV文字 ${binary} の詳細、出現数、使用例を確認できます。`;
 }
 
 export function generateStaticParams() {
@@ -48,7 +53,11 @@ export async function generateMetadata(
   const { binary } = await props.params;
 
   return isBinaryGlyphSlug(binary)
-    ? createPageMetadata(`${binary}の使用例`, `/character/${binary}`)
+    ? createPageMetadata(
+        `${binary}の使用例`,
+        `/character/${binary}`,
+        createCharacterDescription(binary),
+      )
     : {};
 }
 

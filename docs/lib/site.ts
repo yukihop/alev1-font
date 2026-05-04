@@ -12,7 +12,11 @@ export function canonicalPath(path: string): string {
   return path.endsWith("/") ? path : `${path}/`;
 }
 
-export function createPageMetadata(title: string, path: string): Metadata {
+export function createPageMetadata(
+  title: string,
+  path: string,
+  description: string,
+): Metadata {
   const canonical = canonicalPath(path);
   const pageTitle =
     canonical === "/"
@@ -23,7 +27,7 @@ export function createPageMetadata(title: string, path: string): Metadata {
     title: {
       absolute: pageTitle,
     },
-    description: siteDescription,
+    description,
     alternates: {
       canonical,
     },
@@ -32,13 +36,13 @@ export function createPageMetadata(title: string, path: string): Metadata {
       url: canonical,
       siteName,
       title: pageTitle,
-      description: siteDescription,
+      description,
       locale: "ja_JP",
     },
     twitter: {
       card: "summary",
       title: pageTitle,
-      description: siteDescription,
+      description,
     },
   };
 }

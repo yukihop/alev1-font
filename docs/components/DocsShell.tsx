@@ -16,6 +16,7 @@ type DocsShellProps = {
 
 const DocsShell: FC<DocsShellProps> = (props) => {
   const { current, entries, children, prev, next } = props;
+  const heading = current.heading ?? current.title;
 
   return (
     <div className={styles.shell}>
@@ -41,7 +42,7 @@ const DocsShell: FC<DocsShellProps> = (props) => {
         <header className={styles.header}>
           <div>
             <p className={styles.eyebrow}>ALEV-1 Language & Font</p>
-            <h1 className={styles.title}>{current.title}</h1>
+            <h1 className={styles.title}>{heading}</h1>
           </div>
           <ThemeToggle />
         </header>
