@@ -34,7 +34,6 @@
 
 .paragraphText {
   font-size: 1rem;
-  line-height: 1.85;
 }
 
 .entry:last-child {
@@ -74,7 +73,6 @@
 .comment,
 .unknown {
   margin: 0;
-  line-height: 1.7;
 }
 
 .commentBlock {

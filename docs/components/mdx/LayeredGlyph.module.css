@@ -19,6 +19,7 @@
   display: grid;
   place-items: center;
   font-size: clamp(2.4rem, 5vw, 3.2rem);
+  line-height: 1;
 }
 
 .layeredGlyphBackdrop,

@@ -1,6 +1,7 @@
 .richText {
   display: grid;
   gap: 20px;
+  line-height: 1.7;
 }
 
 .richText > * {
