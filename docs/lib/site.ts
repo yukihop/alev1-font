@@ -38,11 +38,13 @@ export function createPageMetadata(
       title: pageTitle,
       description,
       locale: "ja_JP",
+      images: ["/assets/opengraph-image.png"],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: pageTitle,
       description,
+      images: ["/assets/opengraph-image.png"],
     },
   };
 }

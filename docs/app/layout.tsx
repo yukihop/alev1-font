@@ -41,6 +41,13 @@ export const metadata: Metadata = {
     title: siteName,
     description: siteDescription,
     locale: "ja_JP",
+    images: ["/assets/opengraph-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+    images: ["/assets/opengraph-image.png"],
   },
 };
 
