@@ -89,7 +89,7 @@
 }
 
 .comment strong {
-  color: #ffcfdc;
+  color: var(--attention-accent);
 }
 
 .unknown {

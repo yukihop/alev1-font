@@ -11,6 +11,7 @@
   --border: rgba(137, 155, 226, 0.16);
   --accent: #89a2ff;
   --accent-soft: rgba(105, 129, 255, 0.18);
+  --attention-accent: #ffc0cb;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
   --radius-lg: 22px;
   --radius-md: 16px;
@@ -34,6 +35,7 @@ html[data-theme="light"] {
   --border: rgba(100, 121, 188, 0.18);
   --accent: #355fd9;
   --accent-soft: rgba(53, 95, 217, 0.1);
+  --attention-accent: #9f1239;
   --shadow: 0 24px 60px rgba(22, 34, 67, 0.12);
   background:
     radial-gradient(circle at top, rgba(53, 95, 217, 0.14), transparent 28%),

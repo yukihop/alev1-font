@@ -4,10 +4,10 @@
   gap: 0.85rem;
   overflow: hidden;
   padding: 1rem 1.05rem;
-  border: 1px solid color-mix(in srgb, pink 48%, var(--border));
+  border: 1px solid color-mix(in srgb, var(--attention-accent) 48%, var(--border));
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, pink 7%, var(--bg-soft));
-  color: pink;
+  background: color-mix(in srgb, var(--attention-accent) 7%, var(--bg-soft));
+  color: var(--attention-accent);
 }
 
 .content {
