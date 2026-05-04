@@ -18,7 +18,7 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: siteName,
-  alternateName: "ALEV-1",
+  alternateName: ["ALEV文字", "ALEV文字ドキュメント", "ALEV-1 Language & Font"],
   url: siteUrl.toString(),
   inLanguage: "ja",
 };

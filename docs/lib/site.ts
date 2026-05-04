@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const siteUrl = new URL("https://alev1-font.pages.dev");
-export const siteName = "ALEV文字ドキュメント";
+export const siteName = "ALEV-1文字ドキュメント＆フォント";
 export const siteDescription = "ALEV文字解析とフォント配布プロジェクト";
 
 export function canonicalPath(path: string): string {
@@ -14,15 +14,31 @@ export function canonicalPath(path: string): string {
 
 export function createPageMetadata(title: string, path: string): Metadata {
   const canonical = canonicalPath(path);
+  const pageTitle =
+    canonical === "/"
+      ? `${siteName} - ${siteDescription}`
+      : `${title} | ${siteName}`;
 
   return {
-    title,
+    title: {
+      absolute: pageTitle,
+    },
+    description: siteDescription,
     alternates: {
       canonical,
     },
     openGraph: {
+      type: "website",
       url: canonical,
-      title,
+      siteName,
+      title: pageTitle,
+      description: siteDescription,
+      locale: "ja_JP",
+    },
+    twitter: {
+      card: "summary",
+      title: pageTitle,
+      description: siteDescription,
     },
   };
 }
