@@ -20,7 +20,7 @@ export function createPageMetadata(
   const canonical = canonicalPath(path);
   const pageTitle =
     canonical === "/"
-      ? `${siteName} - ${siteDescription}`
+      ? siteName
       : `${title} | ${siteName}`;
 
   return {
