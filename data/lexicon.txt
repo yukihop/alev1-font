@@ -98,7 +98,7 @@ learn
 「学習する」。
 
 @10100101
-receive, accept
+receive, accept, acknowledge
 「（要求を）受領する」と「（愛を）受け取る」の2用例。
 
 @10100110
@@ -138,8 +138,8 @@ control
 「制御する」。
 
 @10110101
-hold, possess
-:life: (= "life") や :emotion: (= "emotion") の直前に置かれる動詞。文脈から "holding" あるいは "possessing" のような意味に見える。
+have, hold, possess
+:life: (= "life") や :emotion: (= "emotion") の直前に置かれる動詞。文脈から「持つ」「有する」のような意味に見える。
 
 @10110110
 require
