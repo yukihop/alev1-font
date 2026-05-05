@@ -9,9 +9,11 @@ import { AlevDataProvider } from "@/lib/alev-data-context";
 import { siteDescription, siteName, siteUrl } from "@/lib/site";
 
 const themeBootScript = `(function () {
-  var stored = localStorage.getItem('alev-docs-theme');
-  var theme = stored === 'light' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = theme;
+  try {
+    var stored = localStorage.getItem('alev-docs-theme');
+    var theme = stored === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+  } catch {}
 })();`;
 
 const websiteJsonLd = {
