@@ -104,6 +104,12 @@ one live one love
 
 [[// 0x01; initialize()]]
 
+@冒頭無料配信6:56
+#undef
+UNDEFINED
+undefined
+! [initialize() 冒頭無料配信](https://www.youtube.com/live/OF7kk8ZcBwk)より。ALEV-1の会場スキャン序盤に、"「I TO SHI I」... UNDEFINED[11110000]を代入。推論を進めています..." と表示される。第2・第3公演でも同タイミングで同文が表示される。
+
 @45:03
 私はロボット。
 -
@@ -203,6 +209,11 @@ i will reach perfection
 
 
 [[// 0x02; evolve()]]
+
+@冒頭無料配信7:49
+UNDEFINED
+undefined
+! [evolve() 冒頭無料配信](https://www.youtube.com/live/dlPqm2S6dQc)より。[第1公演](#undef)と同様。
 
 @46:18
 私はロボット。
@@ -318,6 +329,11 @@ it detect noise
 
 
 [[// 0x03; overflow()]]
+
+@冒頭無料配信7:53
+UNDEFINED
+undefined
+! [overflow() 冒頭無料配信](https://www.youtube.com/live/3dhZhcgBVNk)より。[第1公演](#undef)と同様。
 
 @44:01
 私はALEV-1。
