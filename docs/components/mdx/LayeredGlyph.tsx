@@ -7,6 +7,8 @@ import styles from "./LayeredGlyph.module.css";
 
 type LayeredGlyphProps = {
   glyph: string;
+  /** Per-bit color keys aligned with the binary, e.g. "-r--gb--" */
+  bitColors?: string;
 };
 
 function normalizeGlyph(value: string): string {
@@ -25,6 +27,9 @@ function normalizeGlyph(value: string): string {
 
 const LayeredGlyph: FC<LayeredGlyphProps> = (props) => {
   const binary = normalizeGlyph(props.glyph);
+  const bits = [...binary];
+  const colorClass = (index: number): string | undefined =>
+    styles[`bitColor-${props.bitColors?.[index]}`];
 
   return (
     <figure className={styles.layeredGlyphFigure}>
@@ -35,11 +40,29 @@ const LayeredGlyph: FC<LayeredGlyphProps> = (props) => {
         <span className={styles.layeredGlyphBackdrop}>
           {glyphCharForBinary("11111111")}
         </span>
-        <span className={styles.layeredGlyphForeground}>
-          {glyphCharForBinary(binary)}
-        </span>
+        {bits.map((bit, index) =>
+          bit === "1" ? (
+            <span
+              key={index}
+              className={`${styles.layeredGlyphForeground} ${colorClass(index) ?? ""}`}
+            >
+              {glyphCharForBinary(
+                "0".repeat(index) + "1".padEnd(8 - index, "0"),
+              )}
+            </span>
+          ) : null,
+        )}
       </div>
-      <figcaption className={styles.layeredGlyphLabel}>{binary}</figcaption>
+      <figcaption className={styles.layeredGlyphLabel}>
+        {bits.map((bit, index) => (
+          <span
+            key={index}
+            className={bit === "1" ? colorClass(index) : undefined}
+          >
+            {bit}
+          </span>
+        ))}
+      </figcaption>
     </figure>
   );
 };
