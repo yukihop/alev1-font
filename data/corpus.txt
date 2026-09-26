@@ -505,3 +505,10 @@ i will do perfect live
 -
 i prf prove love
 ! 訳は「私は愛を証明し終えました／愛の証明を完了しました。」2文字目の :prf: は動作の完了を表す文字。なおこの数秒前からノイズ混じりに一瞬表示されるものはすべてこの文を変形・反転・回転させたものであり、一瞬だけ別の文が表示されたりはしていない。
+
+[[ALEV-1 メイキング動画告知]]
+
+@https://x.com/shinyc_official/status/2102714602232701260
+-
+love
+! 2026.10.10に "Wish your birth - THE MAKING OF ALEV-1" を公開するという告知画像。背景にALEV文字がうっすらと表示されている。
