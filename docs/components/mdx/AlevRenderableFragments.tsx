@@ -38,7 +38,6 @@ const AlevRenderableFragments: FC<AlevRenderableFragmentsProps> = props => {
         triggerClassName={triggerClassName}
         selectedTriggerClassName={selectedTriggerClassName}
         contentClassName={contentClassName}
-        ariaLabel={`Show character ${fragment.binary}`}
       />
     );
   });

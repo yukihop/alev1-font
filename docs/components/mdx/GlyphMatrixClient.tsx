@@ -42,7 +42,6 @@ const GlyphMatrixClient: FC<GlyphMatrixPanelProps> = props => {
                       characterId={characterId}
                       triggerClassName={`${styles.matrixLink} ${usageCounts[characterId] > 0 ? styles.matrixLinkKeyword : ''}`.trim()}
                       contentClassName={`${styles.glyphMark} ${alevTextStyles.glyphText}`}
-                      ariaLabel={`Show character ${characterId}`}
                     />
                   </td>
                 );

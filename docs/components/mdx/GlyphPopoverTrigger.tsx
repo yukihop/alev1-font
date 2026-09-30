@@ -21,8 +21,7 @@ type GlyphPopoverTriggerProps = {
   characterId: string;
   className: string;
   contentClassName?: string;
-  ariaLabel?: string;
-  pressed?: boolean;
+  current?: boolean;
   children?: ReactNode;
 };
 
@@ -86,8 +85,7 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
     characterId,
     className,
     contentClassName,
-    ariaLabel,
-    pressed,
+    current,
     children,
   } = props;
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -274,10 +272,10 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
         ref={triggerRef}
         type="button"
         className={className}
-        aria-label={ariaLabel ?? `Show character ${characterId}`}
+        aria-label={characterId}
         aria-controls={open ? popoverId : undefined}
         aria-expanded={open}
-        aria-pressed={pressed}
+        aria-current={current || undefined}
         onPointerEnter={(e) => {
           if (e.pointerType === "touch") return;
           showPopover();

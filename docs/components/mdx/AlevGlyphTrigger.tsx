@@ -10,7 +10,6 @@ type AlevGlyphTriggerProps = {
   triggerClassName: string;
   selectedTriggerClassName?: string;
   contentClassName?: string;
-  ariaLabel?: string;
 };
 
 function joinClassNames(...values: Array<string | undefined | false | null>): string {
@@ -24,7 +23,6 @@ const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
     triggerClassName,
     selectedTriggerClassName,
     contentClassName,
-    ariaLabel,
   } = props;
 
   return (
@@ -32,8 +30,7 @@ const AlevGlyphTrigger: FC<AlevGlyphTriggerProps> = props => {
       characterId={characterId}
       className={joinClassNames(triggerClassName, selected && selectedTriggerClassName)}
       contentClassName={contentClassName}
-      ariaLabel={ariaLabel ?? `Show character ${characterId}`}
-      pressed={selected}
+      current={selected}
     />
   );
 };
