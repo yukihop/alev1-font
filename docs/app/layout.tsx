@@ -64,6 +64,9 @@ const RootLayout = (props: RootLayoutProps) => {
 
   return (
     <html lang="ja" suppressHydrationWarning>
+      <head>
+        <link rel="describedby" href="/llms.txt" />
+      </head>
       <body>
         <Script id="theme-boot" strategy="beforeInteractive">
           {themeBootScript}

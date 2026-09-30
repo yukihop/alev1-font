@@ -1,0 +1,8 @@
+/
+  Link: </llms.txt>; rel="describedby"
+
+/:slug/
+  Link: </llms.txt>; rel="describedby"
+
+/character/:binary/
+  Link: </llms.txt>; rel="describedby"

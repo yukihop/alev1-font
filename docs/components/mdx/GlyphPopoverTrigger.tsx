@@ -319,6 +319,9 @@ const GlyphPopoverTrigger: FC<GlyphPopoverTriggerProps> = (props) => {
           {children ?? char}
         </span>
       </button>
+      <span className={styles.visuallyHidden} aria-hidden="true">
+        {` (${characterId})`}
+      </span>
       {mounted && open
         ? createPortal(
             <div
