@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type { FC } from 'react';
 import { useEffect, useRef } from 'react';
 
+import { useAlevClientData } from '@/lib/alev-data-context';
+import { binaryToHex, HEX_DIGITS } from '@/lib/alev-shared';
 import glyphData from '@/lib/generated/alev-glyph-data';
 
 import styles from './AlevSignalDemo.module.css';
@@ -10,7 +13,9 @@ import styles from './AlevSignalDemo.module.css';
 // 冬優子・あさひ・愛依・ALEV-1
 const symbolColors = ['#5aff19', '#ff3737', '#f550ff', '#008cff'];
 
-const eventDuration = 3;
+// 拡大した字が消え始める時刻（演出開始からの秒数）
+const releaseAt = 3.25;
+const eventDuration = releaseAt + 0.5;
 // 注目演出はおよそこの間隔で毎回起き、開始時刻は最大 eventJitter 秒揺らぐ。
 // 間隔が詰まったときは前の演出と点灯が重なって2つ同時になる
 const eventInterval = 1.8;
@@ -27,17 +32,37 @@ const rows = [
   { y: 0.78, size: 0.07, alpha: 0.5, speed: 0.9, sweep: 3.2, spacing: 44 },
   { y: 0.9, size: 0.045, alpha: 0.3, speed: -1.2, sweep: 3.8, spacing: 56 },
 ];
-const nearRows = [2, 4];
+// 注目する字はこれらの帯から選ぶ
+const nearRows = [2, 4, 5];
+// 直近この回数の演出で選んだ字は選ばない
+const recentEvents = 5;
 // 注目した字を拡大したときの大きさ（高さに対する比）
 const ghostScale = 0.42;
 // 帯の中身はこの字数ごとに区切って生成する
 const rowChunk = 48;
 
-const partPathData = Object.values(glyphData.parts).map(part =>
-  part.elements
+type Shape = (typeof glyphData.parts)[keyof typeof glyphData.parts] | typeof glyphData.brackets.open;
+
+const shapePathData = (shape: Shape) =>
+  shape.elements
     .map(element => ('d' in element.attributes ? element.attributes.d : `M${element.attributes.points}Z`))
-    .join(''),
-);
+    .join('');
+
+const partPathData = Object.values(glyphData.parts).map(shapePathData);
+
+// 括弧の形は字の半分の幅しかないので、字の枠の中央に置いておき、描くときに括る字の側へ寄せる
+const bracketShapes = [
+  { glyph: '[', data: shapePathData(glyphData.brackets.open) },
+  { glyph: ']', data: shapePathData(glyphData.brackets.close) },
+];
+
+// 括弧は文の一部として表示するが、拡大や詳細表示の対象にはしない
+const isBracket = (glyph: string) => glyph === '[' || glyph === ']';
+
+// 幅 cell の枠に置いた括弧を、括る側の隣の字から字の大きさの 0.27 倍の位置まで寄せるずらし量。
+// advance と size は隣の字の送り幅と大きさ
+const bracketShift = (glyph: string, cell: number, advance: number, size: number) =>
+  (glyph === '[' ? 1 : -1) * (cell / 2 + (advance - size) / 2 - size * 0.27);
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
 const fract = (value: number) => value - Math.floor(value);
@@ -69,10 +94,94 @@ type Scene = {
   height: number;
   paths: Path2D[];
   // 帯の slot 番目の字。null は字間の空白
-  glyphAt: (rowIndex: number, slot: number) => string | null;
+  slotAt: (rowIndex: number, slot: number) => Slot | null;
   sprite: (binary: string, size: number) => HTMLCanvasElement;
+  // 注目する字を選ぶときの重み。頻出する字ばかり選ばれないよう、コーパス中の出現回数の平方根の逆数にする
+  weights: Map<string, number>;
   // 演出ごとに選んだ字。直前の演出との位置関係を見るために覚えておく
   targets: Map<number, EventTarget>;
+  // クリックで選んだ字。閉じたあとも、フォーカス中と重なっていた演出を出さないよう残しておく
+  selection: Selection | null;
+  fonts: { ui: string; mono: string };
+  // 詳細に表示する意味（キーワード）
+  meaning: (binary: string) => string;
+};
+
+// 帯に並ぶ字と、それが属するコーパスの文（sentences の添字）と文中の位置
+type Slot = {
+  // ビット表現、または括弧の '[' ']'
+  binary: string;
+  sentence: number;
+  position: number;
+};
+
+type Selection = {
+  // 親用例と、そのうち詳細を表示している字の位置
+  sentence: string[];
+  position: number;
+  accent: string;
+  openedAt: number;
+  // 開いている間は Infinity
+  closedAt: number;
+  // 親用例の字に切り替えた時刻。切り替えるまでは openedAt と同じ
+  switchedAt: number;
+};
+
+// 詳細の最終行。字のページへのリンクになる
+const detailsLabel = '>> DETAILS';
+
+// 選んだ字を引き寄せる（戻す）のにかかる秒数
+const selectDuration = 0.9;
+
+// 引き寄せの進み具合。0 で元の位置、1 で引き寄せ終わり。引き寄せ途中で閉じたときはその位置から戻る
+const selectionProgress = (selection: Selection, t: number) => {
+  const opened = clamp01((Math.min(t, selection.closedAt) - selection.openedAt) / selectDuration);
+  return Math.max(0, opened - Math.max(0, t - selection.closedAt) / selectDuration);
+};
+
+// フォーカス中と時間が重なる演出は、選んだ字の演出も含めて出さない
+const hiddenBySelection = (scene: Scene, start: number) =>
+  scene.selection !== null && start < scene.selection.closedAt && start + eventDuration > scene.selection.openedAt;
+
+
+// 選んだ字を引き寄せる先。右側に詳細を、下に親用例を表示する
+const selectionHome = (scene: Scene) => ({
+  x: scene.width / 2 - scene.height * ghostScale * 0.9,
+  y: scene.height * 0.4,
+});
+
+// 詳細の欄。行の高さを上から順に並べ、全体を引き寄せた字の高さに揃える
+const infoLayout = (scene: Scene) => {
+  const small = Math.max(11, scene.height * 0.042);
+  const large = Math.max(16, scene.height * 0.075);
+  const heights = [small * 1.8, small * 1.8, large * 1.6, small * 2];
+  const total = heights.reduce((sum, value) => sum + value, 0);
+  const centerY = selectionHome(scene).y;
+  return {
+    x: scene.width / 2 + 16,
+    top: centerY - total / 2,
+    bottom: centerY + total / 2,
+    small,
+    large,
+    heights,
+  };
+};
+
+// 親用例の列。字数によらず横幅に収まるようにする
+// 括弧は字の半分の枠に収める
+const sentenceLayout = (scene: Scene, sentence: string[]) => {
+  const cells = sentence.map(glyph => (isBracket(glyph) ? 0.5 : 1));
+  const total = cells.reduce((sum, value) => sum + value, 0);
+  const size = Math.min(scene.height * 0.074, (scene.width - 32) / total / 1.6);
+  const advance = size * 1.6;
+  let cursor = (scene.width - total * advance) / 2;
+  const xs = sentence.map((glyph, index) => {
+    const cell = cells[index] * advance;
+    const center = cursor + cell / 2;
+    cursor += cell;
+    return isBracket(glyph) ? center + bracketShift(glyph, cell, advance, size) : center;
+  });
+  return { advance, size, y: scene.height * 0.84, xs };
 };
 
 const rowMetrics = (scene: Scene, rowIndex: number, t: number) => {
@@ -91,10 +200,9 @@ const rowMetrics = (scene: Scene, rowIndex: number, t: number) => {
   };
 };
 
-type EventTarget = {
+type EventTarget = Slot & {
   rowIndex: number;
   slot: number;
-  binary: string;
   metrics: ReturnType<typeof rowMetrics>;
   hi: number;
   lo: number;
@@ -110,32 +218,47 @@ const eventTarget = (scene: Scene, id: number): EventTarget => {
   const candidates = nearRows.flatMap(rowIndex => {
     const metrics = rowMetrics(scene, rowIndex, eventStart(id) + 0.3);
     return Array.from({ length: metrics.last - metrics.first + 1 }, (_, index) => metrics.first + index).flatMap(slot => {
-      const binary = scene.glyphAt(rowIndex, slot);
+      const glyph = scene.slotAt(rowIndex, slot);
       const x = metrics.slotX(slot);
-      return binary && x > metrics.size && x < scene.width - metrics.size
-        ? [{ rowIndex, slot, binary, metrics, hi: Number.parseInt(binary.slice(0, 4), 2), lo: Number.parseInt(binary.slice(4), 2) }]
+      return glyph && !isBracket(glyph.binary) && x > metrics.size && x < scene.width - metrics.size
+        ? [
+            {
+              ...glyph,
+              rowIndex,
+              slot,
+              metrics,
+              hi: Number.parseInt(glyph.binary.slice(0, 4), 2),
+              lo: Number.parseInt(glyph.binary.slice(4), 2),
+            },
+          ]
         : [];
     });
   });
-  // 直前の演出と点灯が重なっても拡大した字同士がぶつからないよう、格子上で十分離れた字を選ぶ
+  // 最近選んだ字は避ける。また直前の演出と点灯が重なっても拡大した字同士がぶつからないよう、格子上で十分離れた字を選ぶ
+  const recent = Array.from({ length: recentEvents }, (_, index) => scene.targets.get(id - 1 - index)?.binary);
   const previous = scene.targets.get(id - 1);
   const clear = candidates.filter(
     candidate =>
-      !previous ||
-      Math.abs(latticeX(scene, candidate.lo) - latticeX(scene, previous.lo)) > scene.height * ghostScale * 1.05,
+      !recent.includes(candidate.binary) &&
+      (!previous ||
+        Math.abs(latticeX(scene, candidate.lo) - latticeX(scene, previous.lo)) > scene.height * ghostScale * 1.05),
   );
   const pool = clear.length > 0 ? clear : candidates;
-  const target = pool[Math.floor(hash(id * 3.7 + 1) * pool.length)] ?? {
+  const weightOf = (candidate: (typeof pool)[number]) => scene.weights.get(candidate.binary) ?? 1;
+  let remaining = hash(id * 3.7 + 1) * pool.reduce((sum, candidate) => sum + weightOf(candidate), 0);
+  const target = pool.find(candidate => (remaining -= weightOf(candidate)) < 0) ?? pool.at(-1) ?? {
     rowIndex: nearRows[0],
     slot: 0,
     binary: '11111111',
+    sentence: -1,
+    position: 0,
     metrics: rowMetrics(scene, nearRows[0], eventStart(id) + 0.3),
     hi: 15,
     lo: 15,
   };
 
   for (const key of scene.targets.keys()) {
-    if (key < id - 8) {
+    if (key < id - recentEvents) {
       scene.targets.delete(key);
     }
   }
@@ -151,15 +274,17 @@ type FocusEvent = ReturnType<typeof activeEvents>[number] & {
 // 256文字の空間を表す16×16の格子。上位4ビットが行、下位4ビットが列
 const latticeX = (scene: Scene, lo: number) => scene.width * 0.22 + lo * ((scene.width * 0.56) / 15);
 const latticeY = (scene: Scene, hi: number) => scene.height * 0.3 + hi * ((scene.height * 0.4) / 15);
-const arrivedAmount = (v: number) => clamp01((v - 0.9) / 0.3) * (1 - clamp01((v - 2.5) / 0.4));
+const arrivedAmount = (v: number) => clamp01((v - 0.9) / 0.3) * (1 - clamp01((v - releaseAt) / 0.4));
 
 const drawFrame = (ctx: CanvasRenderingContext2D, scene: Scene, t: number) => {
   const { width, height } = scene;
-  const events: FocusEvent[] = activeEvents(t).map(event => ({
-    ...event,
-    accent: symbolColors[event.id % symbolColors.length],
-    target: eventTarget(scene, event.id),
-  }));
+  const events: FocusEvent[] = activeEvents(t)
+    .filter(event => !hiddenBySelection(scene, event.start))
+    .map(event => ({
+      ...event,
+      accent: symbolColors[event.id % symbolColors.length],
+      target: eventTarget(scene, event.id),
+    }));
 
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
@@ -220,7 +345,7 @@ const drawFrame = (ctx: CanvasRenderingContext2D, scene: Scene, t: number) => {
     }
 
     for (let slot = metrics.first; slot <= metrics.last; slot += 1) {
-      const binary = scene.glyphAt(rowIndex, slot);
+      const binary = scene.slotAt(rowIndex, slot)?.binary;
       if (!binary) {
         continue;
       }
@@ -235,7 +360,8 @@ const drawFrame = (ctx: CanvasRenderingContext2D, scene: Scene, t: number) => {
           ? toBinary(1 + Math.floor(hash(slot * 3.1 + rowIndex * 17 + Math.floor(t * 24)) * 255))
           : binary;
       const glow = behind < 1.5 ? 1 : Math.exp(-(behind - 1.5) / trail);
-      const x = metrics.slotX(slot);
+      const x =
+        metrics.slotX(slot) + (isBracket(shown) ? bracketShift(shown, metrics.advance, metrics.advance, metrics.size) : 0);
 
       ctx.globalAlpha = focused ? 1 : Math.min(1, row.alpha * (0.2 + 1.1 * glow));
       ctx.drawImage(scene.sprite(shown, metrics.size), x - metrics.size / 2, metrics.y - metrics.size / 2, metrics.size, metrics.size);
@@ -243,10 +369,11 @@ const drawFrame = (ctx: CanvasRenderingContext2D, scene: Scene, t: number) => {
   });
 
   events.forEach(event => drawFocus(ctx, scene, event, t));
+  drawSelection(ctx, scene, t);
 };
 
 const drawFocus = (ctx: CanvasRenderingContext2D, scene: Scene, event: FocusEvent, t: number) => {
-  const { width, height, paths } = scene;
+  const { width, height } = scene;
   const { id, v, accent, target } = event;
 
   // 照準が流れている字を捕まえ、その字の座標まで移動する
@@ -255,7 +382,7 @@ const drawFocus = (ctx: CanvasRenderingContext2D, scene: Scene, event: FocusEven
   const gx = sourceX + (latticeX(scene, target.lo) - sourceX) * moveP;
   const gy = target.metrics.y + (latticeY(scene, target.hi) - target.metrics.y) * moveP;
   const ghostSize = height * ghostScale;
-  const fade = 1 - clamp01((v - 2.5) / 0.4);
+  const fade = 1 - clamp01((v - releaseAt) / 0.4);
   const lineAlpha = clamp01(v / 0.3) * fade;
 
   ctx.fillStyle = accent;
@@ -281,7 +408,7 @@ const drawFocus = (ctx: CanvasRenderingContext2D, scene: Scene, event: FocusEven
     ctx.fillRect(cx - 0.75, cy - (sy > 0 ? tick : 0), 1.5, tick);
   }
 
-  if (v < 0.95 || v > 2.9) {
+  if (v < 0.95 || v > releaseAt + 0.4) {
     return;
   }
 
@@ -290,7 +417,7 @@ const drawFocus = (ctx: CanvasRenderingContext2D, scene: Scene, event: FocusEven
   const tubes = [...target.binary].map((bit, partIndex): number => {
     const seed = id * 8 + partIndex;
     const onAt = 1.0 + hash(seed) * 0.35;
-    const offAt = 2.45 + hash(seed + 0.3) * 0.4;
+    const offAt = releaseAt - 0.05 + hash(seed + 0.3) * 0.4;
     if (bit !== '1' || v < onAt || v > offAt) {
       return 0;
     }
@@ -302,37 +429,243 @@ const drawFocus = (ctx: CanvasRenderingContext2D, scene: Scene, event: FocusEven
     }
     return hash(seed * 7 + frame) < 0.015 ? 0.35 : 1;
   });
-  const litCount = [...target.binary].filter(bit => bit === '1').length;
-  const lit = tubes.reduce((sum, value) => sum + value, 0) / Math.max(1, litCount);
   const presence = clamp01((v - 0.95) / 0.15) * fade;
 
-  // 周囲の帯を沈めて字を浮かせる
-  const shade = ctx.createRadialGradient(gx, gy, 0, gx, gy, ghostSize * 1.2);
+  drawGhost(ctx, scene, { x: gx, y: gy, size: ghostSize, binary: target.binary, accent, tubes, presence });
+};
+
+type Ghost = {
+  x: number;
+  y: number;
+  size: number;
+  binary: string;
+  accent: string;
+  // 部品ごとの点灯の度合い
+  tubes: number[];
+  presence: number;
+};
+
+// 拡大した字を、周囲の帯を沈めて光で包んで描く
+const drawGhost = (ctx: CanvasRenderingContext2D, scene: Scene, ghost: Ghost) => {
+  const { x, y, size, binary, accent, tubes, presence } = ghost;
+  const litCount = [...binary].filter(bit => bit === '1').length;
+  const lit = tubes.reduce((sum, value) => sum + value, 0) / Math.max(1, litCount);
+
+  const shade = ctx.createRadialGradient(x, y, 0, x, y, size * 1.2);
   shade.addColorStop(0, 'rgba(2, 4, 9, 0.85)');
   shade.addColorStop(1, 'rgba(2, 4, 9, 0)');
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = presence;
   ctx.fillStyle = shade;
-  ctx.fillRect(gx - ghostSize * 1.2, gy - ghostSize * 1.2, ghostSize * 2.4, ghostSize * 2.4);
+  ctx.fillRect(x - size * 1.2, y - size * 1.2, size * 2.4, size * 2.4);
   ctx.globalCompositeOperation = 'lighter';
 
-  const aura = ctx.createRadialGradient(gx, gy, 0, gx, gy, ghostSize * 1.4);
+  const aura = ctx.createRadialGradient(x, y, 0, x, y, size * 1.4);
   aura.addColorStop(0, accent);
   aura.addColorStop(1, `${accent}00`);
   ctx.globalAlpha = 0.3 * lit;
   ctx.fillStyle = aura;
-  ctx.fillRect(gx - ghostSize * 1.4, gy - ghostSize * 1.4, ghostSize * 2.8, ghostSize * 2.8);
+  ctx.fillRect(x - size * 1.4, y - size * 1.4, size * 2.8, size * 2.8);
 
   // 点かない管もガラスとしてうっすら見せる
   ctx.save();
-  ctx.translate(gx - ghostSize / 2, gy - ghostSize / 2);
-  ctx.scale(ghostSize / 1000, ghostSize / 1000);
+  ctx.translate(x - size / 2, y - size / 2);
+  ctx.scale(size / 1000, size / 1000);
   ctx.fillStyle = '#ffffff';
-  paths.forEach((path, partIndex) => {
-    ctx.globalAlpha = target.binary[partIndex] === '1' ? Math.max(tubes[partIndex], 0.06 * presence) : 0.06 * presence;
+  scene.paths.forEach((path, partIndex) => {
+    ctx.globalAlpha = binary[partIndex] === '1' ? Math.max(tubes[partIndex], 0.06 * presence) : 0.06 * presence;
     ctx.fill(path);
   });
   ctx.restore();
+};
+
+// クリックで選んだ字。背景を沈め、字を引き寄せて照準を締め、詳細の欄へ線を引き、下に親用例を並べる
+const drawSelection = (ctx: CanvasRenderingContext2D, scene: Scene, t: number) => {
+  const { selection, width, height } = scene;
+  if (!selection) {
+    return;
+  }
+  const p = selectionProgress(selection, t);
+  const amount = easeInOutCubic(p);
+  // 開くときは拡大表示されていた字からそのまま引き継ぎ、閉じるときは戻りながら消える
+  const open = selection.closedAt === Infinity;
+  const alpha = open ? 1 : amount;
+  if (alpha <= 0) {
+    return;
+  }
+
+  const { sentence, position, accent } = selection;
+  const binary = sentence[position];
+  const home = selectionHome(scene);
+  const row = sentenceLayout(scene, sentence);
+  // 格子上の元の位置から引き寄せる
+  const latticeHomeX = latticeX(scene, Number.parseInt(binary.slice(4), 2));
+  const latticeHomeY = latticeY(scene, Number.parseInt(binary.slice(0, 4), 2));
+  const x = latticeHomeX + (home.x - latticeHomeX) * amount;
+  const y = latticeHomeY + (home.y - latticeHomeY) * amount;
+  const size = height * ghostScale * (1 + 0.12 * amount);
+  const sinceOpen = t - selection.openedAt;
+  const sinceSwitch = t - selection.switchedAt;
+  const switched = selection.switchedAt > selection.openedAt;
+  // 詳細の文字は、切り替えるたびに定まり直す
+  const since = open ? sinceSwitch : Infinity;
+
+  // 親用例の字に切り替えた直後は、字がでたらめに乱れたあと、新しい字の管が1本ずつ不規則に灯る
+  const switching = switched ? sinceSwitch : Infinity;
+  const frame = Math.floor(t * 24);
+  const shownBinary = switching < 0.35 ? toBinary(1 + Math.floor(hash(frame * 1.7) * 255)) : binary;
+  const tubes = [...shownBinary].map((bit, partIndex) => {
+    if (bit !== '1') {
+      return 0;
+    }
+    if (switching < 0.35) {
+      return hash(frame + partIndex * 3.1) < 0.6 ? 1 : 0.2;
+    }
+    const onAt = 0.35 + hash(selection.switchedAt + partIndex) * 0.25;
+    if (switching < onAt) {
+      return 0;
+    }
+    if (switching < onAt + 0.3) {
+      return hash(partIndex * 3 + frame) < 0.2 + (switching - onAt) / 0.3 ? 1 : 0.1;
+    }
+    return 1;
+  });
+
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 0.6 * amount;
+  ctx.fillStyle = '#020409';
+  ctx.fillRect(0, 0, width, height);
+  ctx.globalCompositeOperation = 'lighter';
+
+  drawGhost(ctx, scene, { x, y, size, binary: shownBinary, accent, tubes: tubes.map(level => level * alpha), presence: alpha });
+
+  ctx.fillStyle = accent;
+
+  // 大きく開いた照準が字に向かって締まり、締まったあとはゆっくり呼吸する
+  const bracket = size * 0.62 * (1 + 0.8 * (1 - easeOutExpo(p))) * (1 + 0.015 * Math.sin(t * 2.4));
+  const tick = Math.max(6, bracket * 0.22);
+  ctx.globalAlpha = 0.9 * amount;
+  for (const [sx, sy] of [
+    [-1, -1],
+    [1, -1],
+    [-1, 1],
+    [1, 1],
+  ]) {
+    const cx = x + sx * bracket;
+    const cy = y + sy * bracket;
+    ctx.fillRect(cx - (sx > 0 ? tick : 0), cy - 0.75, tick, 1.5);
+    ctx.fillRect(cx - 0.75, cy - (sy > 0 ? tick : 0), 1.5, tick);
+  }
+
+  // 照準の右端から詳細の欄へ伸びる線
+  const lineFrom = x + bracket + 6;
+  const lineTo = width / 2 + 12;
+  const lineP = easeInOutCubic(clamp01((p - 0.45) / 0.45));
+  ctx.globalAlpha = 0.7 * amount;
+  ctx.fillRect(lineFrom, y - 0.5, Math.max(0, (lineTo - lineFrom) * lineP), 1);
+
+  // 引き寄せ終わる間際から、開いている間は字の上を走査線が定期的に走る
+  const scanP = ((since - 0.5) % 2.2) / 0.45;
+  if (scanP > 0 && scanP < 1) {
+    ctx.globalAlpha = Math.sin(scanP * Math.PI) * 0.8;
+    ctx.fillRect(x - size * 0.55, y - size / 2 + size * scanP - 1, size * 1.1, 2);
+  }
+
+  // 詳細を1行ずつ、でたらめな文字が左から定まっていくように浮かび上がらせる。閉じるときは全体が薄れて消える
+  // 表示し終えたあとも、行ごとにときどき一瞬だけ一部の文字が乱れる
+  const layout = infoLayout(scene);
+  const maxWidth = width - layout.x - 16;
+  const lines = [
+    { label: 'BIN', text: binary, noise: '01', size: layout.small, weight: 400, family: scene.fonts.mono },
+    {
+      label: 'HEX',
+      text: `0x${binaryToHex(binary)}`,
+      noise: HEX_DIGITS.join(''),
+      size: layout.small,
+      weight: 400,
+      family: scene.fonts.mono,
+    },
+    {
+      label: '',
+      text: scene.meaning(binary),
+      noise: 'abcdefghijklmnopqrstuvwxyz',
+      size: layout.large,
+      weight: 600,
+      family: scene.fonts.ui,
+    },
+    {
+      label: '',
+      text: detailsLabel,
+      noise: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      size: layout.small,
+      weight: 400,
+      family: scene.fonts.mono,
+    },
+  ];
+  ctx.textBaseline = 'middle';
+  let lineTop = layout.top;
+  lines.forEach((line, index) => {
+    const lineY = lineTop + layout.heights[index] / 2;
+    lineTop += layout.heights[index];
+    // 開いたときは薄く現れながら、切り替えたときはその場で、でたらめな文字が定まっていく
+    const fadeIn = clamp01((sinceOpen - 0.5 - index * 0.15) / 0.3);
+    if (fadeIn <= 0) {
+      return;
+    }
+    const reveal = clamp01((since - (switched ? 0.1 : 0.5) - index * 0.15) / 0.6);
+    const burstClock = since - 1.6 - index * 0.7;
+    const burst = Math.floor(burstClock / 2.4);
+    const bursting = burstClock > 0 && burstClock % 2.4 < 0.3 && hash(burst * 5.1 + index) < 0.7;
+    const chars = [...line.text];
+    const shown = chars
+      .map((char, charIndex) =>
+        charIndex < reveal * chars.length && !(bursting && hash(charIndex * 1.3 + burst * 7 + index) < 0.25)
+          ? char
+          : line.noise[Math.floor(hash(charIndex + index * 17 + Math.floor(t * 20)) * line.noise.length)],
+      )
+      .join('');
+
+    ctx.font = `${line.weight} ${line.size}px ${line.family}`;
+    ctx.globalAlpha = fadeIn * alpha;
+    let textX = layout.x;
+    if (line.label) {
+      ctx.fillStyle = accent;
+      ctx.fillText(line.label, textX, lineY);
+      textX += ctx.measureText(`${line.label}  `).width;
+    }
+    // 長い意味は欄の幅に収まるまで縮める
+    const fitted = line.size * Math.min(1, (maxWidth - (textX - layout.x)) / ctx.measureText(line.text).width);
+    ctx.font = `${line.weight} ${fitted}px ${line.family}`;
+    ctx.fillStyle = index === 3 ? accent : '#eff3ff';
+    ctx.shadowColor = accent;
+    ctx.shadowBlur = index === 2 ? 12 : 0;
+    ctx.fillText(shown, textX, lineY);
+    ctx.shadowBlur = 0;
+    if (index === 3) {
+      ctx.fillRect(textX, lineY + fitted * 0.7, ctx.measureText(shown).width, 1);
+    }
+  });
+
+  // 親用例を下からふわりと浮かせて並べ、詳細を表示中の字に印を付ける。表示し終えたあとも、ときどき一瞬だけ一部の字が乱れる
+  sentence.forEach((glyph, index) => {
+    const appear = open ? easeInOutCubic(clamp01((sinceOpen - 0.7 - index * 0.04) / 0.6)) : 1;
+    if (appear <= 0) {
+      return;
+    }
+    const gx = row.xs[index];
+    const gy = row.y + (1 - appear) * row.size * 0.6;
+    const burstClock = sinceOpen - 2 - index * 0.37;
+    const burst = Math.floor(burstClock / 2.8);
+    const scrambled = !isBracket(glyph) && open && burstClock > 0 && burstClock % 2.8 < 0.25 && hash(burst * 3.7 + index * 1.9) < 0.3;
+    const shown = scrambled ? toBinary(1 + Math.floor(hash(index * 5.3 + Math.floor(t * 24)) * 255)) : glyph;
+    const current = index === position;
+    ctx.globalAlpha = appear * alpha * (current ? 1 : 0.5);
+    ctx.drawImage(scene.sprite(shown, row.size), gx - row.size / 2, gy - row.size / 2, row.size, row.size);
+    if (current) {
+      ctx.fillStyle = accent;
+      ctx.fillRect(gx - row.size * 0.4, gy + row.size * 0.62, row.size * 0.8, 2);
+    }
+  });
 };
 
 const vertexShader = `#version 300 es
@@ -440,14 +773,30 @@ const createPost = (gl: WebGL2RenderingContext) => {
   };
 };
 
+// 中心 (cx, cy) の拡大した字に (x, y) が重なっているか
+const hitsGhost = (scene: Scene, cx: number, cy: number, x: number, y: number) =>
+  Math.abs(x - cx) < (scene.height * ghostScale) / 2 && Math.abs(y - cy) < (scene.height * ghostScale) / 2;
+
+// 座標 (x, y) で拡大表示されている字の演出
+const focusedEventAt = (scene: Scene, t: number, x: number, y: number) =>
+  activeEvents(t).find(({ id, start, v }) => {
+    if (hiddenBySelection(scene, start) || v < 0.95 || v > releaseAt + 0.4) {
+      return false;
+    }
+    const target = eventTarget(scene, id);
+    return hitsGhost(scene, latticeX(scene, target.lo), latticeY(scene, target.hi), x, y);
+  });
+
 type AlevSignalDemoClientProps = {
-  // コーパスの各行をビット表現の配列にしたもの
+  // コーパスの各行をビット表現（括弧は '[' ']'）の配列にしたもの
   sentences: string[][];
 };
 
 const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
   const { sentences } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { lexiconMap } = useAlevClientData();
+  const router = useRouter();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -464,13 +813,17 @@ const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
     }
 
     const paths = partPathData.map(data => new Path2D(data));
+    const bracketPaths = new Map(
+      bracketShapes.map(shape => [shape.glyph, new Path2D(shape.data)]),
+    );
     const sprites = new Map<string, HTMLCanvasElement>();
-    const chunks = new Map<string, (string | null)[]>();
+    const chunks = new Map<string, (Slot | null)[]>();
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // 描画はすべて時刻から決まるので、起点をずらしてリロードのたびに違う状況から始める
     const origin = Math.random() * 100000;
     let dpr = 1;
     let frameId = 0;
+    let lastTime = origin;
 
     const sprite = (binary: string, size: number) => {
       const pixels = Math.ceil(size * dpr);
@@ -485,14 +838,20 @@ const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
       if (imageCtx) {
         imageCtx.scale(pixels / 1000, pixels / 1000);
         imageCtx.fillStyle = '#ffffff';
-        paths.forEach((path, index) => binary[index] === '1' && imageCtx.fill(path));
+        const bracket = bracketPaths.get(binary);
+        if (bracket) {
+          imageCtx.translate(250, 0);
+          imageCtx.fill(bracket);
+        } else {
+          paths.forEach((path, index) => binary[index] === '1' && imageCtx.fill(path));
+        }
       }
       sprites.set(key, image);
       return image;
     };
 
     // 帯ごとにコーパスの文を空白を挟んで並べる。区切りごとに位置から決まる文を選ぶので、何度流れても同じ並びにならない
-    const glyphAt = (rowIndex: number, slot: number) => {
+    const slotAt = (rowIndex: number, slot: number) => {
       const chunk = Math.floor(slot / rowChunk);
       const key = `${rowIndex}:${chunk}`;
       let glyphs = chunks.get(key);
@@ -500,7 +859,8 @@ const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
         glyphs = [];
         let sentence = Math.floor(hash(rowIndex * 7.919 + chunk * 1.37) * sentences.length);
         while (sentences.length > 0 && glyphs.length < rowChunk) {
-          glyphs.push(...sentences[sentence % sentences.length], null, null);
+          const index = sentence % sentences.length;
+          glyphs.push(...sentences[index].map((binary, position) => ({ binary, sentence: index, position })), null, null);
           sentence += 1 + Math.floor(hash(sentence * 1.7 + chunk) * 7);
         }
         if (chunks.size > 256) {
@@ -511,9 +871,26 @@ const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
       return glyphs[slot - chunk * rowChunk] ?? null;
     };
 
-    const scene: Scene = { width: 0, height: 0, paths, glyphAt, sprite, targets: new Map() };
+    const counts = new Map<string, number>();
+    sentences.flat().forEach(binary => counts.set(binary, (counts.get(binary) ?? 0) + 1));
+    const weights = new Map([...counts].map(([binary, count]) => [binary, 1 / Math.sqrt(count)]));
+
+    const style = getComputedStyle(canvas);
+    const scene: Scene = {
+      width: 0,
+      height: 0,
+      paths,
+      slotAt,
+      sprite,
+      weights,
+      targets: new Map(),
+      selection: null,
+      fonts: { ui: style.getPropertyValue('--font-ui'), mono: style.getPropertyValue('--font-mono') },
+      meaning: binary => lexiconMap.get(binary)?.keywords.join(', ') || '未解読',
+    };
 
     const render = (t: number) => {
+      lastTime = t;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       drawFrame(ctx, scene, t);
       post?.(source, t);
@@ -546,17 +923,94 @@ const AlevSignalDemoClient: FC<AlevSignalDemoClientProps> = props => {
       }
     });
 
+    // 詳細の欄の上にあるか
+    const hitsInfo = (x: number, y: number) => {
+      const layout = infoLayout(scene);
+      return x > layout.x - 8 && x < scene.width - 8 && y > layout.top && y < layout.bottom;
+    };
+
+    // 詳細の最終行のリンクの上にあるか
+    const hitsDetails = (x: number, y: number) => {
+      const layout = infoLayout(scene);
+      ctx.font = `400 ${layout.small}px ${scene.fonts.mono}`;
+      const right = layout.x + ctx.measureText(detailsLabel).width;
+      return x > layout.x - 4 && x < right + 4 && y > layout.bottom - layout.heights[3] && y < layout.bottom;
+    };
+
+    // 親用例の何番目の字の上にあるか。どの字の上にもなければ -1
+    const sentenceIndexAt = (selection: Selection, x: number, y: number) => {
+      const row = sentenceLayout(scene, selection.sentence);
+      return Math.abs(y - row.y) < row.advance / 2
+        ? selection.sentence.findIndex(
+            (glyph, index) => !isBracket(glyph) && Math.abs(x - row.xs[index]) < row.advance / 2,
+          )
+        : -1;
+    };
+
+    // 拡大表示中の字をクリックすると引き寄せて詳細を表示する。リンクをクリックすると字のページへ移り、
+    // 親用例の字をクリックするとその字に切り替え、それらの外をクリックすると元の演出に戻す
+    const handleClick = (event: MouseEvent) => {
+      const { selection } = scene;
+      const { offsetX: x, offsetY: y } = event;
+      if (selection?.closedAt === Infinity) {
+        const home = selectionHome(scene);
+        const index = sentenceIndexAt(selection, x, y);
+        if (hitsDetails(x, y)) {
+          router.push(`/character/${selection.sentence[selection.position]}`);
+        } else if (index >= 0) {
+          if (index !== selection.position) {
+            // 色は今と違う3色から選び直す
+            const others = symbolColors.filter(color => color !== selection.accent);
+            scene.selection = {
+              ...selection,
+              position: index,
+              accent: others[Math.floor(Math.random() * others.length)],
+              switchedAt: lastTime,
+            };
+          }
+        } else if (!hitsInfo(x, y) && !hitsGhost(scene, home.x, home.y, x, y)) {
+          scene.selection = { ...selection, closedAt: lastTime };
+        }
+      } else {
+        const focused = focusedEventAt(scene, lastTime, x, y);
+        if (focused) {
+          const target = eventTarget(scene, focused.id);
+          scene.selection = {
+            sentence: sentences[target.sentence] ?? [target.binary],
+            position: target.position,
+            accent: symbolColors[focused.id % symbolColors.length],
+            openedAt: lastTime,
+            closedAt: Infinity,
+            switchedAt: lastTime,
+          };
+        }
+      }
+    };
+    const handlePointerMove = (event: PointerEvent) => {
+      const { selection } = scene;
+      const { offsetX: x, offsetY: y } = event;
+      const pointing =
+        selection?.closedAt === Infinity
+          ? hitsDetails(x, y) || ![-1, selection.position].includes(sentenceIndexAt(selection, x, y))
+          : focusedEventAt(scene, lastTime, x, y);
+      canvas.style.cursor = pointing ? 'pointer' : '';
+    };
     resizeObserver.observe(canvas);
+    // 動きを減らす設定では1枚絵だけを描き、字を選ぶ操作も受け付けない
     if (!reducedMotion) {
       intersectionObserver.observe(canvas);
+      canvas.addEventListener('click', handleClick);
+      canvas.addEventListener('pointermove', handlePointerMove);
     }
 
     return () => {
       cancelAnimationFrame(frameId);
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
+      canvas.removeEventListener('click', handleClick);
+      canvas.removeEventListener('pointermove', handlePointerMove);
     };
-  }, [sentences]);
+  }, [sentences, lexiconMap, router]);
 
   return (
     <div className={styles.panel}>

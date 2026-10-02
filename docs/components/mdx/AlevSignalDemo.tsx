@@ -12,9 +12,12 @@ const AlevSignalDemo: FC = () => {
   );
   const sentences = [...new Set(lines)]
     .map(line =>
-      tokenizeAlevLine(line, keywordMap).flatMap(fragment =>
-        fragment.type === 'token' && fragment.resolvedBinary ? [fragment.resolvedBinary] : [],
-      ),
+      tokenizeAlevLine(line, keywordMap).flatMap(fragment => {
+        if (fragment.type === 'bracket') {
+          return [fragment.value];
+        }
+        return fragment.type === 'token' && fragment.resolvedBinary ? [fragment.resolvedBinary] : [];
+      }),
     )
     .filter(sentence => sentence.length > 0);
 
